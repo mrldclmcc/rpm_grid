@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brian Alsruhe's RPM Program</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* * === Color & Font Theming using CSS Variables ===
+         * We define our color palette and base font as CSS variables in the :root selector.
+         * This makes it easy to maintain a consistent design and allows us to completely
+         * redefine the palette for dark mode using a single media query.
+         */
+        :root {
+            --font-sans: 'Inter', sans-serif;
+            
+            /* Light Mode Palette (Calder-Inspired) */
+            --bg-primary: #F8F8F8; /* Soft Off-White */
+            --bg-secondary: #FFFFFF;
+            --bg-accent: #EAEAEA; /* Subtle hover background */
+            --text-primary: #1a1a1a; /* Near Black */
+            --text-secondary: #555555;
+            --border-color: #DDDDDD;
+            --accent-red: #D42D2D;   /* Calder Red */
+            --accent-blue: #0058A8;  /* Calder Blue */
+            --accent-yellow: #F7B800;/* Calder Yellow */
+            --selected-bg: var(--accent-blue);
+            --selected-text: #FFFFFF;
+            --cell-hover-bg: var(--accent-red);
+            --cell-hover-text: #FFFFFF;
+        }
+
+        /* * Dark Mode Palette Override
+         * The '@media (prefers-color-scheme: dark)' query automatically detects the user's
+         * OS-level preference and applies this theme. We just redefine the CSS variables.
+         */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #121212;
+                --bg-secondary: #1E1E1E;
+                --bg-accent: #2a2a2a;
+                --text-primary: #EAEAEA;
+                --text-secondary: #AAAAAA;
+                --border-color: #333333;
+                --selected-bg: var(--accent-blue);
+                --selected-text: #FFFFFF;
+                --cell-hover-bg: var(--accent-red);
+                --cell-hover-text: #FFFFFF;
+            }
+        }
+
+        /* Applying the theme variables to the page */
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* * === Interactive Grid Styles ===
+         * These classes are dynamically added and removed by JavaScript to create the
+         * hover and selection effects on the program grid. They use the CSS variables
+         * defined above to ensure they work seamlessly in both light and dark modes.
+         */
+
+        /* Applied to a cell when hovered directly */
+        .cell-hover {
+            background-color: var(--cell-hover-bg) !important;
+            color: var(--cell-hover-text) !important;
+            transform: scale(1.05);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Applied to all cells in a row when any cell in that row is hovered */
+        .row-hover {
+            background-color: var(--bg-accent) !important;
+        }
+
+        /* Applied to all cells in a column when any cell in that column is hovered */
+        .col-hover {
+            background-color: var(--bg-accent) !important;
+        }
+
+        /* Applied to a cell or row header when it is clicked/selected */
+        .selected {
+            background-color: var(--selected-bg) !important;
+            color: var(--selected-text) !important;
+            box-shadow: 0 0 0 2px var(--selected-bg);
+        }
+        
+        /* Utility for smooth transitions on grid cells */
+        .grid-cell {
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col antialiased">
+
+    <header style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color);" class="p-6 md:p-8 shadow-sm">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight" style="color: var(--text-primary);">
+                Brian Alsruhe's <span style="color: var(--accent-red);">Reps Per Minute</span> (RPM) Program
+            </h1>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto p-4 md:p-8">
+        
+        <section id="overview-section" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);" class="rounded-lg p-6 mb-8">
+            <div id="concise-overview" class="text-base" style="color: var(--text-secondary);"></div>
+            <div id="full-details-container" class="prose prose-sm md:prose-base max-w-none mt-4 hidden" style="color: var(--text-secondary);"></div>
+            <button id="toggle-details-btn" class="mt-4 font-semibold py-2 px-4 rounded-md text-sm transition-colors duration-200" style="background-color: var(--accent-blue); color: var(--selected-text);">
+                Read Full Program Details
+            </button>
+        </section>
+
+        <section id="program-container" class="mb-8">
+             <h2 class="text-2xl font-bold mb-4">Program Schedule</h2>
+             <div id="program-grid" class="grid-container grid gap-1 select-none">
+                </div>
+        </section>
+
+        <section id="content-display">
+             <h2 class="text-2xl font-bold mb-4">Workout Details</h2>
+             <div id="content-target" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);" class="rounded-lg p-6 min-h-[200px]">
+                </div>
+        </section>
+    </main>
+
+    <footer style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-color);" class="text-center p-4 mt-8">
+        <p class="text-sm" style="color: var(--text-secondary);">Interactive guide generated for the RPM Program.</p>
+    </footer>
+
+    <script>
+        // Wait for the entire HTML document to be parsed before running any JavaScript.
+        // This is crucial to prevent errors from trying to access elements that don't exist yet.
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ================================================================
+            // 1. DATA STRUCTURE: Program Configuration Object
+            // ================================================================
+            // This object holds all the content for the entire 9-week program.
+            // It serves as a single source of truth, making the program easy to update.
+            [cite_start]// Data sourced from the provided 'rpm-technical-details.txt' file. [cite: 12, 13, 14, 15, 16, 17, 18, 19, 20, 29]
+            const programConfig = {
+                [cite_start]programTitle: "Brian Alsruhe's Reps Per Minute (RPM) Program", // [cite: 13]
+                [cite_start]conciseOverview: "The RPM program is a 9-week, full-body strength and conditioning program specifically designed to be run in a caloric deficit. Its primary goals are to burn body fat, build work capacity, and enhance technical proficiency. It's structured to be less physically demanding on the central nervous system (CNS) and spine, making it an excellent 'bridge program' between more intense training cycles, and highly suitable for individuals with less time for the gym.", // [cite: 13]
+                fullProgramDetails: `
+                    <h3 class="font-bold text-lg mb-2" style="color: var(--text-primary);">1. Program Overview</h3>
+                    [cite_start]<p class="mb-4">The RPM program is a 9-week, <strong>full-body strength and conditioning program</strong> specifically designed to be run in a <strong>caloric deficit</strong>. [cite: 31] [cite_start]Its primary goals are to <strong>burn body fat, build work capacity, and enhance technical proficiency</strong>. [cite: 32] [cite_start]Unlike programs focused solely on maximizing strength, RPM aims to make the user <strong>leaner, more athletic, and explosive</strong>. [cite: 33] [cite_start]It is structured to be <strong>less physically demanding on the central nervous system (CNS) and spine</strong> than heavier programs, making it an excellent <strong>"bridge program"</strong> between more intense training cycles. [cite: 34] [cite_start]It is also highly suitable for individuals with <strong>less time for the gym</strong> as each session is efficient and time-bound. [cite: 35] [cite_start]The core principle is <strong>"Reps Per Minute"</strong> (RPM), where every second in the program is "on the clock," making the clock a "brutal coach". [cite: 36]</p>
+                    
+                    <h3 class="font-bold text-lg my-2" style="color: var(--text-primary);">2. Key Principles and Mechanics</h3>
+                    [cite_start]<p class="mb-4">The program is run in an <strong>"Every Minute on the Minute" (EMOM) style</strong>. [cite: 38] [cite_start]At the start of every minute, you perform a set, and rest for the remainder of that minute. [cite: 40] [cite_start]Faster reps mean more rest. [cite: 41] [cite_start]It uses an <strong>undulating intensity</strong> (Heavy, Light, Medium) based on your 1 Repetition Maximum (1RM) that changes throughout the week and increases across three 3-week waves. [cite: 47, 49, 50] [cite_start]It also incorporates <strong>autoregulation</strong>, allowing you to adjust weight or reps based on how you feel. [cite: 55, 56, 57] [cite_start]The main emphasis is always: <strong>"Never sacrifice FORM for SPEED and never sacrifice SPEED for WEIGHT"</strong>. [cite: 61]</p>
+
+                    <h3 class="font-bold text-lg my-2" style="color: var(--text-primary);">3. Program Structure Details</h3>
+                    [cite_start]<p class="mb-4">The program is <strong>9 weeks long</strong>, split into three 3-week waves, performed <strong>4 times per week</strong>. [cite: 72, 73] [cite_start]Each session consists of <strong>four 10-minute blocks</strong>, targeting Lower Body, Back, Pressing, and finally Core or Conditioning. [cite: 74, 76] [cite_start]Intensities are varied to ensure recovery; for instance, a heavy deadlift day might be followed by a light squat day. [cite: 77]</p>
+
+                    <h3 class="font-bold text-lg my-2" style="color: var(--text-primary);">4. Target Audience</h3>
+                    [cite_start]<p class="mb-4">This program is ideal for those looking to <strong>lose body fat</strong>, <strong>build work capacity</strong>, improve conditioning, and enhance technical proficiency in their lifts. [cite: 78, 79, 80] [cite_start]It serves as an excellent "bridge program" for recovery between heavier cycles and is perfect for those with limited gym time. [cite: 81, 82] [cite_start]It is <strong>NOT</strong> for individuals whose sole goal is to add maximal weight to their 1RM. [cite: 85][cite_start]</p>`, // [cite: 14, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]
+                [cite_start]daysOfWeek: ['Day 1', 'Day 2', 'Day 3', 'Day 4'], // [cite: 15]
+                weeks: [
+                    // Wave 1 (Weeks 1-3)
+                    {
+                        [cite_start]name: "Week 1", // [cite: 17]
+                        [cite_start]wavePercentages: { light: '40% for 5-6 reps', medium: '50% for 4-5 reps', heavy: '60% for 3-4 reps' }, // [cite: 18, 98]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Heavy', exercise: 'Conventional Deadlifts', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Farmer\'s Walk', pct: '40-45%', reps: '150 ft', details: '*Replace with Deadlift or Row variation if not possible, using same reps & intensity.*' }, { hlm: 'Medium', exercise: 'Strict Press', pct: '50-55%', reps: '4-5', details: '*Add an Ab/Oblique Exercise during the remainder of the minute if desired.*' }, { hlm: 'Assistance Focus', exercise: 'Hanging Leg Raises / Knee Raises', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 3-5 Chest to Bar Chin-Ups or 10-15 Inverted Rows. Even Minutes: 5 Hanging Leg Raises or Knee Raises.' [cite_start]} ] }, // [cite: 99, 100, 101]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Light', exercise: 'Squats (High Bar/Low Bar)', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Pendlay Rows', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Bench Press', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Burpees & Squats', pct: 'N/A', reps: 'N/A', details: 'Perform 3-5 Burpees and 10 Prisoner Squats. [cite_start]*Add an Ab/Oblique Exercise or Floor Presses/Single Arm DB Rows during remainder of minute if too easy.*' } ] }, // [cite: 102, 103, 104]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Medium', exercise: 'Stiff Leg or Romanian DLs', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Weighted Pull-Ups', pct: '60-65%', reps: '3-4', details: '*Add Push-Ups during remainder of minute if desired.*' }, { hlm: 'Light', exercise: '"Z" Press', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Assistance Focus', exercise: 'Dumbbell Russian Twists & Rows', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 7 Weighted Russian Twists (Each Side). Even Minutes: 8 Single Arm Dumbbell Rows (Each Side).' [cite_start]} ] }, // [cite: 105, 106, 107]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Heavy', exercise: 'Front Squats or Zercher', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Sandbag/Keg/Stone Load', pct: '40-45%', reps: '5-6', details: '*Replace with Squat or Row variation if not possible.*' }, { hlm: 'Medium', exercise: 'Floor Press', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Dumbbell ManMakers or Devil Presses', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Dumbbell ManMakers or 5 Dumbbell Devil Presses.' [cite_start]} ] } // [cite: 108, 109, 110]
+                        ]
+                    },
+                    {
+                        name: "Week 2",
+                        [cite_start]wavePercentages: { light: '40% for 5-6 reps', medium: '50% for 4-5 reps', heavy: '60% for 3-4 reps' }, // [cite: 111]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Light', exercise: 'Pause Deadlifts (2" Off Ground)', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Front Carry (Sandbag/Keg/Stone)', pct: '50-55%', reps: '100 ft', details: '*Replace with marching in place or Deadlift/Row variation if not possible.*' }, { hlm: 'Heavy', exercise: 'Push Press', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Assistance Focus', exercise: 'Hollow Rocks & Dips/Push-Ups', pct: 'N/A', reps: 'N/A', details: ':20 Seconds Hollow Rocks, :20 Seconds Dips or Deficit Push-Ups, :20 Seconds Rest.' [cite_start]} ] }, // [cite: 112, 113, 114]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Medium', exercise: 'Pin Squat (Pin at bottom)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Cheat Barbell Rows', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Pause Bench Press', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Pull-Ups, Hand Release Push-Ups, Jumping Squats', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Pull-Ups or 6 Inverted Rows, 5 Hand Release Push-Ups, 10 Jumping Squats.' [cite_start]} ] }, // [cite: 115, 116, 117]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Heavy', exercise: 'Block Pulls or Rack Deadlifts', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Weighted Chin-Ups', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Pin Press (Pins just above Eye)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Assistance Focus', exercise: 'Dumbbell Russian Twists & Rows', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 50ft Single Arm DB/KB Waiter\'s Walk (Each Side) or :20s hold. Even Minutes: 30 Seconds Inverted Rows.' [cite_start]} ] }, // [cite: 118, 119, 120]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Light', exercise: 'Pause Squats', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Sandbag/Keg/Stone Load to Shoulder', pct: '50-55%', reps: '4-5', details: '*Replace with Squat or Row variation if not possible.*' }, { hlm: 'Heavy', exercise: 'Close Grip Bench Press', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Mindset Focus', exercise: 'Dumbbell Strict Presses & Shrugs', pct: 'N/A', reps: 'N/A', details: 'For 5 minutes WITHOUT rest: 5-8 Strict DB Presses, 10 Long Pause DB Shrugs. [cite_start]*Dumbbells remain in hands for the entire 5 minutes.*' } ] } // [cite: 121, 122, 123]
+                        ]
+                    },
+                    {
+                        name: "Week 3",
+                        [cite_start]wavePercentages: { light: '40% for 5-6 reps', medium: '50% for 4-5 reps', heavy: '60% for 3-4 reps' }, // [cite: 124]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Medium', exercise: 'Deficit Deadlifts', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Farmer\'s Walk', pct: '60-65%', reps: '50 ft', details: '*Add a 10-20 Second Hold at finish line if desired.*' }, { hlm: 'Light', exercise: '"Z" Pin Press', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Planks', pct: 'N/A', reps: 'N/A', details: ':40 Second Plank (or :30s if too hard). Use remainder of minute to rest. [cite_start]*Option to do 10-Minute Plank Challenge (hold position for full 10 minutes).*' } ] }, // [cite: 125, 126, 127]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Heavy', exercise: 'Box Squats', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Dumbbell Rows (Single Arm)', pct: '40-45%', reps: ':20s/side', details: '' }, { hlm: 'Medium', exercise: 'Pin Bench Press (Sticking Point)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Burpees, Squats, Push-Ups, Mountain Climbers, Jumping Jacks', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Burpees, 5 Squats, 5 Push-Ups, 12 Mountain Climbers, 12 Jumping Jacks.' [cite_start]} ] }, // [cite: 128, 129, 130]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Light', exercise: 'Snatch Grip Deadlifts', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Weighted Pull-Ups', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Push Jerk or Split Jerk', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Tabatas (Plate Halos & Plate Russian Twists)', pct: 'N/A', reps: 'N/A', details: ':20s work/:10s rest for 8 rounds (4 mins), then 1 min rest, repeat for 8 rounds.' [cite_start]} ] }, // [cite: 131, 132, 133]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Medium', exercise: 'Bulgarian Split Squats', pct: '50-55%', reps: '3-4/side', details: '' }, { hlm: 'Heavy', exercise: 'Sandbag/Keg/Stone Load', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'JM Press or Larson Press', pct: '40-45%', reps: '5-6', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Legs', pct: 'N/A', reps: 'N/A', details: 'Perform 6 Lunges (Total), 6 Jumping Lunges (Total), 7 Squats, 7 Jumping Squats.' [cite_start]} ] } // [cite: 134, 135, 136]
+                        ]
+                    },
+                    // Wave 2 (Weeks 4-6)
+                    {
+                        name: "Week 4",
+                        [cite_start]wavePercentages: { light: '45% for 5-6 reps', medium: '55% for 4-5 reps', heavy: '65% for 3-4 reps' }, // [cite: 137]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Heavy', exercise: 'Conventional Deadlifts', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Farmer’s Walk', pct: '45-50%', reps: '150 ft', details: '*Replace with Deadlift or Row variation if not possible, using same reps & intensity.*' }, { hlm: 'Medium', exercise: 'Strict Press', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Assistance Finisher', exercise: 'Lats Barbell Rows', pct: 'N/A', reps: 'N/A', details: 'Barbell Rows & Burpee Lateral Jumps. Minute 1: 8 reps, Minute 2: 7 reps, down to Minute 6: 3 reps. Barbell should be close to bodyweight.' [cite_start]} ] }, // [cite: 138, 139, 140, 141, 142]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Light', exercise: 'Squats (High Bar/Low Bar)', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Pendlay Rows', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Bench Press', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Max Reps for 60 seconds each', pct: 'N/A', reps: 'N/A', details: 'With 60 seconds rest between. Push-Ups, Sit-Ups (Feet Anchored), Squats (DEEP), Hollow Rocks, Burpees.' [cite_start]} ] }, // [cite: 143, 144, 145]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Medium', exercise: 'Stiff Leg or Romanian DLs', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Weighted Pull-Ups', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: '"Z" Press', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Assistance Focus', exercise: 'Pull-Ups/Inverted Rows & Sumo Deadlifts/Goblet Squats', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 3-5 Pull-Ups or 10-15 Inverted Rows. Even Minutes: 5-8 Sumo Deadlifts or 8-12 Goblet Squats.' [cite_start]} ] }, // [cite: 146, 147, 148]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Heavy', exercise: 'Front Squats or Zercher', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Sandbag/Keg/Stone Load', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Floor Press', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: '8 Rounds of :30s Max Reps', pct: 'N/A', reps: 'N/A', details: 'Dumbbell/Kettlebell Goblet Squats (DEEP), :30s Max Reps Burpees, :30s Rest.' [cite_start]} ] } // [cite: 149, 150, 151]
+                        ]
+                    },
+                    {
+                        name: "Week 5",
+                        [cite_start]wavePercentages: { light: '45% for 5-6 reps', medium: '55% for 4-5 reps', heavy: '65% for 3-4 reps' }, // [cite: 152]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Light', exercise: 'Pause Deadlifts (2" Off Ground)', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Front Carry (Sandbag/Keg/Stone)', pct: '55-60%', reps: '100 ft', details: '' }, { hlm: 'Heavy', exercise: 'Push Press', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Assistance Focus', exercise: 'As Many Rounds As Possible in 10 Minutes', pct: 'N/A', reps: 'N/A', details: '10 DB Incline Squeeze Presses, 10 Pull-Ups or 30 Inverted Rows, 10 Dips or 30 Push-Ups, 20 Band or Cable Tricep Extensions.' [cite_start]} ] }, // [cite: 153, 154, 155, 156]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Medium', exercise: 'Pin Squat (Pin at bottom)', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Cheat Barbell Rows', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Pause Bench Press', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Push-Up Challenge', pct: 'N/A', reps: 'N/A', details: 'Begin standing. Drop & perform 1 push-up, stand. Drop & perform 2 push-ups, stand. Continue up, then work back down to 1 rep. No rest between sets.' [cite_start]} ] }, // [cite: 157, 158, 159]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Heavy', exercise: 'Block Pulls or Rack Deadlifts', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Weighted Chin-Ups', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Pin Press (Pins just above Eye)', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Assistance Focus', exercise: 'Dumbbell/Kettlebell "Z" Presses & Hollow Rocks', pct: 'N/A', reps: 'N/A', details: '10 "Z" Presses (Moderate Weight), 25 Hollow Rocks.' [cite_start]} ] }, // [cite: 160, 161, 162]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Light', exercise: 'Pause Squats', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Sandbag/Keg/Stone Load to Shoulder', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Close Grip Bench Press', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Mindset Focus', exercise: '"Bring Sally Up" (Moby - Flower)', pct: 'N/A', reps: 'N/A', details: 'Choose bodyweight exercise (Squats, Push-Ups, Dips). Drop to bottom position on "Bring Sally Down", return to start on "Bring Sally Up". [cite_start]*Add weight if too easy.*' } ] } // [cite: 163, 164, 165]
+                        ]
+                    },
+                    {
+                        name: "Week 6",
+                        [cite_start]wavePercentages: { light: '45% for 5-6 reps', medium: '55% for 4-5 reps', heavy: '65% for 3-4 reps' }, // [cite: 166]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Medium', exercise: 'Deficit Deadlifts', pct: '60-65%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Farmer\'s Walk', pct: '70-75%', reps: '50 ft', details: '' }, { hlm: 'Light', exercise: '"Z" Pin Press', pct: '50-55%', reps: '5-6', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Cable Wood Chops/Barbell Full Contact Twists & Barbell Overhead Side Bands', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 8 Cable Wood Chops or Barbell Full Contact Twists (Each Side). Even Minutes: 4 Barbell Overhead Side Bands.' [cite_start]} ] }, // [cite: 167, 168, 169]
+                            [cite_start]{ dayName: 'Day 2', blocks: [ { hlm: 'Heavy', exercise: 'Box Squats', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Dumbbell Rows (Single Arm)', pct: '45-50%', reps: ':20s/side', details: '' }, { hlm: 'Medium', exercise: 'Pin Bench Press (Sticking Point)', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Burpee Ladder', pct: 'N/A', reps: 'N/A', details: 'Minute 1: 2 Burpees, Minute 2: 4 Burpees, Minute 3: 6 Burpees, Minute 4: 8 Burpees, Minute 5: 10 Burpees, then back down: Minute 6: 8 Burpees, etc..' } ] }, // [cite: 170, 171, 172]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Light', exercise: 'Snatch Grip Deadlifts', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Medium', exercise: 'Weighted Pull-Ups', pct: '55-60%', reps: '4-5', details: '' }, { hlm: 'Heavy', exercise: 'Push Jerk or Split Jerk', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Tabatas ("V" Sit-Ups/Flutter Kicks & Dead Bugs/Hollow Rocks)', pct: 'N/A', reps: 'N/A', details: ':20s work/:10s rest for 8 rounds (4 mins), then 1 min rest, repeat for 8 rounds.' [cite_start]} ] }, // [cite: 173, 174, 175]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Medium', exercise: 'Bulgarian Split Squats', pct: '55-60%', reps: '3-4/side', details: '' }, { hlm: 'Heavy', exercise: 'Sandbag/Keg/Stone Load', pct: '65-70%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'JM Press or Larson Press', pct: '45-50%', reps: '5-6', details: '' }, { hlm: 'Conditioning Focus', exercise: '5 Rounds for Legs', pct: 'N/A', reps: 'N/A', details: ':30s Jumping Squats (High As Possible), :30s Prisoner Squats (Deep), :30s Wall Sit (Hands not touching Body), :30s Rest.' [cite_start]} ] } // [cite: 176, 177, 178]
+                        ]
+                    },
+                    // Wave 3 (Weeks 7-9)
+                    {
+                        name: "Week 7",
+                        [cite_start]wavePercentages: { light: '50% for 5-6 reps', medium: '60% for 4-5 reps', heavy: '70% for 2-3 reps' }, // [cite: 179]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Heavy', exercise: 'Conventional Deadlifts', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Farmer’s Walk', pct: '50-55%', reps: '150 ft', details: '*Replace with Deadlift or Row variation if not possible, using same reps & intensity.*' }, { hlm: 'Medium', exercise: 'Strict Press', pct: '60-65%', reps: '4-5', details: '' }, { hlm: 'Assistance Focus', exercise: 'Hanging Leg Raises or Knee Raises', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 3-5 Chest to Bar Chin-Ups or 10-15 Inverted Rows. Even Minutes: 5 Hanging Leg Raises or Knee Raises.' [cite_start]} ] }, // [cite: 180, 181, 182, 183]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Light', exercise: 'Squats (High Bar/Low Bar)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Pendlay Rows', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Bench Press', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Burpees & Squats', pct: 'N/A', reps: 'N/A', details: 'Perform 3-5 Burpees and 10 Prisoner Squats.' [cite_start]} ] }, // [cite: 184, 185, 186]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Medium', exercise: 'Stiff Leg or Romanian DLs', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Weighted Pull-Ups', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: '"Z" Press', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Assistance Focus', exercise: 'Dumbbell Russian Twists & Rows', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 7 Weighted Russian Twists (Each Side). Even Minutes: 8 Single Arm Dumbbell Rows (Each Side).' [cite_start]} ] }, // [cite: 187, 188, 189]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Heavy', exercise: 'Front Squats or Zercher', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Sandbag/Keg/Stone Load', pct: '50-55%', reps: '4-5', details: '*Replace with Row variation if not possible.*' }, { hlm: 'Medium', exercise: 'Floor Press', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Dumbbell ManMakers', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Dumbbell ManMakers.' [cite_start]} ] } // [cite: 190, 191, 192]
+                        ]
+                    },
+                    {
+                        name: "Week 8",
+                        [cite_start]wavePercentages: { light: '50% for 5-6 reps', medium: '60% for 4-5 reps', heavy: '70% for 2-3 reps' }, // [cite: 193]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Light', exercise: 'Pause Deadlifts (2" Off Ground)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Front Carry (Sandbag/Keg/Stone)', pct: '60-65%', reps: '3-4', details: '*Replace with marching in place or Deadlift/Row variation if not possible.*' }, { hlm: 'Heavy', exercise: 'Push Press', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Assistance Focus', exercise: 'Hollow Rocks & Dips/Push-Ups', pct: 'N/A', reps: 'N/A', details: ':20 Seconds Hollow Rocks, :20 Seconds Dips or Deficit Push-Ups, :20 Seconds Rest.' [cite_start]} ] }, // [cite: 194, 195, 196]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Medium', exercise: 'Pin Squat (Pin at bottom)', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Cheat Barbell Rows', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Pause Bench Press', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Pull-Ups, Hand Release Push-Ups, Jumping Squats', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Pull-Ups or 6 Inverted Rows, 5 Hand Release Push-Ups, 10 Jumping Squats.' [cite_start]} ] }, // [cite: 197, 198, 199]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Heavy', exercise: 'Block Pulls or Rack Deadlifts', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Weighted Chin-Ups', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Pin Press (Pins just above Eye)', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Assistance Focus', exercise: 'Dumbbell Russian Twists & Rows', pct: 'N/A', reps: 'N/A', details: 'Odd Minutes: 50ft Single Arm DB/KB Waiter\'s Walk (Each Side) or :20s hold. Even Minutes: 30 Seconds Inverted Rows.' [cite_start]} ] }, // [cite: 200, 201, 202]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Light', exercise: 'Pause Squats', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Sandbag/Keg/Stone Load to Shoulder', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Close Grip Bench Press', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Mindset Focus', exercise: 'Dumbbell Strict Presses & Shrugs', pct: 'N/A', reps: 'N/A', details: 'For 5 minutes WITHOUT rest: 5-8 Strict DB Presses, 10 Long Pause DB Shrugs. [cite_start]*Dumbbells remain in hands for the entire 5 minutes.*' } ] } // [cite: 203, 204, 205]
+                        ]
+                    },
+                    {
+                        name: "Week 9",
+                        [cite_start]wavePercentages: { light: '50% for 5-6 reps', medium: '60% for 4-5 reps', heavy: '70% for 2-3 reps' }, // [cite: 206]
+                        days: [
+                            { dayName: 'Day 1', blocks: [ { hlm: 'Medium', exercise: 'Deficit Deadlifts', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Farmer\'s Walk', pct: '70-75%', reps: '50 ft', details: '' }, { hlm: 'Light', exercise: '"Z" Pin Press', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Planks', pct: 'N/A', reps: 'N/A', details: ':40 Second Plank (or :30s if too hard). Use remainder of minute to rest. [cite_start]*Option to do 10-Minute Plank Challenge (hold position for full 10 minutes).*' } ] }, // [cite: 207, 208, 209]
+                            { dayName: 'Day 2', blocks: [ { hlm: 'Heavy', exercise: 'Box Squats', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'Dumbbell Rows (Single Arm)', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Pin Bench Press (Sticking Point)', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Burpees, Squats, Push-Ups, Mountain Climbers, Jumping Jacks', pct: 'N/A', reps: 'N/A', details: 'Perform 3 Burpees, 5 Squats, 5 Push-Ups, 12 Mountain Climbers, 12 Jumping Jacks.' [cite_start]} ] }, // [cite: 210, 211, 212]
+                            { dayName: 'Day 3', blocks: [ { hlm: 'Light', exercise: 'Snatch Grip Deadlifts', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Medium', exercise: 'Weighted Pull-Ups', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Push Jerk or Split Jerk', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Core/Oblique Focus', exercise: 'Tabatas (Plate Halos & Plate Russian Twists)', pct: 'N/A', reps: 'N/A', details: ':20s work/:10s rest for 8 rounds (4 mins), then 1 min rest, repeat for 8 rounds.' [cite_start]} ] }, // [cite: 213, 214, 215]
+                            { dayName: 'Day 4', blocks: [ { hlm: 'Medium', exercise: 'Bulgarian Split Squats', pct: '60-65%', reps: '3-4', details: '' }, { hlm: 'Heavy', exercise: 'Sandbag/Keg/Stone Load', pct: '70-75%', reps: '3-4', details: '' }, { hlm: 'Light', exercise: 'JM Press or Larson Press', pct: '50-55%', reps: '4-5', details: '' }, { hlm: 'Conditioning Focus', exercise: 'Legs', pct: 'N/A', reps: 'N/A', details: 'Perform 6 Lunges (Total), 6 Jumping Lunges (Total), 7 Squats, 7 Jumping Squats.' [cite_start]} ] } // [cite: 216, 217, 218]
+                        ]
+                    }
+                ]
+            };
+
+            // ================================================================
+            // 2. DOM Element References
+            // ================================================================
+            // Storing references to frequently used DOM elements improves performance
+            // by avoiding repeated queries to the DOM.
+            const gridContainer = document.getElementById('program-grid'); [cite_start]// [cite: 3]
+            const contentTarget = document.getElementById('content-target'); [cite_start]// [cite: 4]
+            const conciseOverviewEl = document.getElementById('concise-overview');
+            const fullDetailsContainerEl = document.getElementById('full-details-container');
+            const toggleDetailsBtn = document.getElementById('toggle-details-btn');
+
+            // ================================================================
+            // 3. DYNAMIC CONTENT RENDERING FUNCTIONS
+            // ================================================================
+
+            /**
+             * [cite_start]Renders the initial welcome message in the content display area. [cite: 24]
+             */
+            function displayInitialContent() {
+                contentTarget.innerHTML = `
+                    <div class="text-center p-8">
+                        <h3 class="text-xl font-bold mb-2">Welcome to the RPM Program Guide</h3>
+                        <p style="color: var(--text-secondary);">Select a week or a specific day from the grid above to view the workout details.</p>
+                        [cite_start]<p class="mt-4 text-sm" style="color: var(--text-secondary);">This program emphasizes an "Every Minute on the Minute" (EMOM) style to build work capacity, burn fat, and improve technique. [cite: 38]</p>
+                    </div>
+                `;
+            }
+
+            /**
+             * [cite_start]Renders the workout details for a single, specific day. [cite: 22]
+             * @param {number} weekIndex - The index of the week (0-8).
+             * @param {number} dayIndex - The index of the day (0-3).
+             */
+            function displayDayContent(weekIndex, dayIndex) {
+                const week = programConfig.weeks[weekIndex];
+                const day = week.days[dayIndex];
+                const wavePercentages = week.wavePercentages;
+
+                let contentHTML = `
+                    <div class="p-2">
+                        <h3 class="text-2xl font-bold mb-1">${week.name} - ${day.dayName}</h3>
+                        <p class="text-sm mb-4 font-medium" style="color: var(--text-secondary);">
+                            <span class="inline-block mr-3"><span class="font-semibold" style="color: var(--accent-red);">H:</span> ${wavePercentages.heavy}</span>
+                            <span class="inline-block mr-3"><span class="font-semibold" style="color: var(--accent-blue);">M:</span> ${wavePercentages.medium}</span>
+                            <span class="inline-block"><span class="font-semibold" style="color: var(--accent-yellow);">L:</span> ${wavePercentages.light}</span>
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${day.blocks.map((block, index) => `
+                                <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color);" class="rounded-lg p-4">
+                                    <p class="font-bold text-sm mb-1" style="color: var(--text-secondary);">BLOCK ${index + 1}: ${block.hlm}</p>
+                                    <h4 class="text-lg font-semibold mb-2">${block.exercise}</h4>
+                                    <div class="text-sm space-y-1" style="color: var(--text-secondary);">
+                                        <p><strong style="color: var(--text-primary);">Percentage:</strong> ${block.pct}</p>
+                                        <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
+                                        ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                contentTarget.innerHTML = contentHTML;
+            }
+
+            /**
+             * [cite_start]Renders the workout details for all four days of a specific week. [cite: 23]
+             * @param {number} weekIndex - The index of the week (0-8).
+             */
+            function displayWeekContent(weekIndex) {
+                const week = programConfig.weeks[weekIndex];
+                const wavePercentages = week.wavePercentages;
+
+                let contentHTML = `
+                    <div class="p-2">
+                        <h3 class="text-2xl font-bold mb-1">${week.name} - Full Week Overview</h3>
+                         <p class="text-sm mb-4 font-medium" style="color: var(--text-secondary);">
+                            <span class="inline-block mr-3"><span class="font-semibold" style="color: var(--accent-red);">H:</span> ${wavePercentages.heavy}</span>
+                            <span class="inline-block mr-3"><span class="font-semibold" style="color: var(--accent-blue);">M:</span> ${wavePercentages.medium}</span>
+                            <span class="inline-block"><span class="font-semibold" style="color: var(--accent-yellow);">L:</span> ${wavePercentages.light}</span>
+                        </p>
+                        <div class="space-y-6">
+                            ${week.days.map(day => `
+                                <div style="border-left: 3px solid var(--border-color); padding-left: 1rem;">
+                                 <h4 class="text-xl font-bold mb-2">${day.dayName}</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        ${day.blocks.map((block, index) => `
+                                            <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color);" class="rounded-lg p-4">
+                                                <p class="font-bold text-sm mb-1" style="color: var(--text-secondary);">BLOCK ${index + 1}: ${block.hlm}</p>
+                                                <h5 class="text-md font-semibold mb-2">${block.exercise}</h5>
+                                                <div class="text-sm space-y-1" style="color: var(--text-secondary);">
+                                                    <p><strong style="color: var(--text-primary);">Pct:</strong> ${block.pct}</p>
+                                                    <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
+                                                    ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                contentTarget.innerHTML = contentHTML;
+            }
+            
+            // ================================================================
+            // 4. DYNAMIC GRID GENERATION
+            // ================================================================
+
+            /**
+             * [cite_start]Dynamically builds the entire program grid from the programConfig object. [cite: 21]
+             * It creates header rows and a cell for each day of each week, embedding
+             * data attributes for later use in event handling.
+             */
+            function buildGrid() {
+                // Set up the grid column structure using Tailwind CSS classes.
+                gridContainer.style.gridTemplateColumns = '80px repeat(4, 1fr)';
+
+                // Create and append the column header row.
+                const headerRow = document.createElement('div');
+                headerRow.className = 'contents'; // Make this div act as a passthrough for grid layout
+                let headerHTML = `<div class="font-bold p-2 text-center text-sm" style="color: var(--text-secondary);">Week</div>`;
+                programConfig.daysOfWeek.forEach(day => {
+                    headerHTML += `<div class="font-bold p-2 text-center text-sm" style="color: var(--text-secondary);">${day}</div>`;
+                });
+                headerRow.innerHTML = headerHTML;
+                gridContainer.appendChild(headerRow);
+
+                // Create and append a row for each week in the program.
+                programConfig.weeks.forEach((week, weekIndex) => {
+                    const weekRow = document.createElement('div');
+                    weekRow.className = 'contents'; // This makes each row a "sub-grid"
+
+                    // Create the row header cell (e.g., "Week 1")
+                    let rowHTML = `
+                        <div class="grid-cell font-bold p-2 text-center flex items-center justify-center rounded-md cursor-pointer" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);" data-week-header="${weekIndex}">
+                           ${week.name}
+                        </div>`;
+
+                    // Create each of the 4 day cells for the week.
+                    week.days.forEach((day, dayIndex) => {
+                        rowHTML += `
+                            <div class="grid-cell p-4 text-center rounded-md flex items-center justify-center" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);" data-week="${weekIndex}" data-day="${dayIndex}">
+                                </div>`;
+                    });
+
+                    weekRow.innerHTML = rowHTML;
+                    gridContainer.appendChild(weekRow);
+                });
+            }
+
+            // ================================================================
+            // 5. EVENT HANDLING
+            // ================================================================
+
+            /**
+             * [cite_start]Clears all hover-related CSS classes from the grid. [cite: 27]
+             * This ensures a clean state when the mouse leaves the grid area.
+             */
+            function clearAllHovers() {
+                document.querySelectorAll('.cell-hover, .row-hover, .col-hover').forEach(el => {
+                    el.classList.remove('cell-hover', 'row-hover', 'col-hover');
+                });
+            }
+
+            /**
+             * [cite_start]Clears all selection-related CSS classes from the grid. [cite: 28]
+             * This ensures only one item can be selected at a time.
+             */
+            function clearAllSelections() {
+                document.querySelectorAll('.selected').forEach(el => {
+                    el.classList.remove('selected');
+                });
+            }
+
+            [cite_start]// Use event delegation on the grid container for efficiency. [cite: 25]
+            // This means one set of listeners on the parent handles events for all children.
+            
+            [cite_start]// Mouseover Event: Handles all hover effects. [cite: 26]
+            gridContainer.addEventListener('mouseover', (e) => {
+                const target = e.target.closest('[data-week]');
+                if (!target) return; // Exit if not hovering over a day cell
+
+                [cite_start]clearAllHovers(); // Clear previous hovers first [cite: 28]
+
+                const weekIndex = target.dataset.week;
+                const dayIndex = target.dataset.day;
+
+                // Apply cell hover
+                target.classList.add('cell-hover');
+
+                // Apply row hover
+                document.querySelectorAll(`[data-week="${weekIndex}"], [data-week-header="${weekIndex}"]`).forEach(el => el.classList.add('row-hover'));
+                
+                // Apply column hover
+                document.querySelectorAll(`[data-day="${dayIndex}"]`).forEach(el => el.classList.add('col-hover'));
+            });
+
+            // Mouseout Event: Clears all hover effects when the mouse leaves the grid.
+            gridContainer.addEventListener('mouseout', clearAllHovers);
+
+            [cite_start]// Click Event: Handles selection and content rendering. [cite: 27]
+            gridContainer.addEventListener('click', (e) => {
+                const cellTarget = e.target.closest('[data-week]');
+                const headerTarget = e.target.closest('[data-week-header]');
+                
+                [cite_start]clearAllSelections(); // Clear previous selections first [cite: 28]
+
+                if (headerTarget) { // User clicked a week header
+                    headerTarget.classList.add('selected');
+                    displayWeekContent(headerTarget.dataset.weekHeader);
+                } else if (cellTarget) { // User clicked a day cell
+                    cellTarget.classList.add('selected');
+                    displayDayContent(cellTarget.dataset.week, cellTarget.dataset.day);
+                }
+            });
+
+            // Event Listener for the "Read More/Less" button.
+            toggleDetailsBtn.addEventListener('click', () => {
+                const isHidden = fullDetailsContainerEl.classList.contains('hidden');
+                fullDetailsContainerEl.classList.toggle('hidden');
+                toggleDetailsBtn.textContent = isHidden ? 'Hide Details' : 'Read Full Program Details';
+            });
+            
+
+            // ================================================================
+            // 6. INITIALIZATION
+            // ================================================================
+            
+            // This function call kicks everything off when the page loads.
+            function init() {
+                // Populate the static overview content
+                conciseOverviewEl.innerHTML = programConfig.conciseOverview; [cite_start]// [cite: 13]
+                fullDetailsContainerEl.innerHTML = programConfig.fullProgramDetails; [cite_start]// [cite: 14]
+
+                // Build the interactive grid
+                buildGrid(); [cite_start]// [cite: 21]
+
+                // Display the initial welcome message in the content area
+                displayInitialContent(); [cite_start]// [cite: 24]
+            }
+
+            // Run the app!
+            init();
+
+        }); // End of DOMContentLoaded
+    </script>
+
+</body>
+</html>
