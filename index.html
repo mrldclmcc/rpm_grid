@@ -131,6 +131,30 @@
              <div id="program-grid" class="grid-container grid gap-1 select-none">
                 </div>
         </section>
+		
+        <!-- === USER MAX INPUTS === -->
+        <section id="max-inputs" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Enter Your Maxes</h2>
+            <div id="max-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Deadlift (lbs)</label>
+                    <input type="number" id="max-dl" min="0" step="5" placeholder="300" class="w-full p-2 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Squat (lbs)</label>
+                    <input type="number" id="max-sq" min="0" step="5" placeholder="250" class="w-full p-2 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Strict Press (lbs)</label>
+                    <input type="number" id="max-sp" min="0" step="5" placeholder="150" class="w-full p-2 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Bench Press (lbs)</label>
+                    <input type="number" id="max-bp" min="0" step="5" placeholder="200" class="w-full p-2 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+                </div>
+            </div>
+        </section>		
+		
 
         <section id="content-display">
              <h2 class="text-2xl font-bold mb-4">Workout Details</h2>
@@ -319,7 +343,10 @@
                                     <p class="font-bold text-sm mb-1" style="color: var(--text-secondary);">BLOCK ${index + 1}: ${block.hlm}</p>
                                     <h4 class="text-lg font-semibold mb-2">${block.exercise}</h4>
                                     <div class="text-sm space-y-1" style="color: var(--text-secondary);">
-                                        <p><strong style="color: var(--text-primary);">Percentage:</strong> ${block.pct}</p>
+                                        <p><strong style="color: var(--text-primary);">Percentage:</strong> ${block.pct} ${(() => {
+                                                         const w = calcWeight(block.exercise, block.pct);
+                                                         return w ? `<br><strong>Weight:</strong> ${w}` : '';
+                                                     })()}</p>
                                         <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
                                         ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
                                     </div>
@@ -357,7 +384,10 @@
                                                 <p class="font-bold text-sm mb-1" style="color: var(--text-secondary);">BLOCK ${index + 1}: ${block.hlm}</p>
                                                 <h5 class="text-md font-semibold mb-2">${block.exercise}</h5>
                                                 <div class="text-sm space-y-1" style="color: var(--text-secondary);">
-                                                    <p><strong style="color: var(--text-primary);">Pct:</strong> ${block.pct}</p>
+                                                    <p><strong style="color: var(--text-primary);">Pct:</strong> ${block.pct} ${(() => {
+                                                         const w = calcWeight(block.exercise, block.pct);
+                                                         return w ? `<br><strong>Weight:</strong> ${w}` : '';
+                                                     })()}</p>
                                                     <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
                                                     ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
                                                 </div>
@@ -371,6 +401,50 @@
                 `;
                 contentTarget.innerHTML = contentHTML;
             }
+			
+/****************************************************************
+ *  MAX-CALC HELPERS
+ ****************************************************************/
+const exerciseToKey = {
+    'Conventional Deadlifts':      'dl',
+    'Pause Deadlifts (2" Off Ground)': 'dl',
+    'Deficit Deadlifts':           'dl',
+    'Block Pulls or Rack Deadlifts': 'dl',
+    'Snatch Grip Deadlifts':       'dl',
+    'Stiff Leg or Romanian DLs':   'dl',
+    'Squats (High Bar/Low Bar)':   'sq',
+    'Pause Squats':                'sq',
+    'Pin Squat (Pin at bottom)':   'sq',
+    'Box Squats':                  'sq',
+    'Front Squats or Zercher':     'sq',
+    'Bulgarian Split Squats':      'sq',
+    'Strict Press':                'sp',
+    'Push Press':                  'sp',
+    '"Z" Press':                   'sp',
+    'Bench Press':                 'bp',
+    'Pause Bench Press':           'bp',
+    'Close Grip Bench Press':      'bp',
+    'Floor Press':                 'bp',
+    'Pin Bench Press (Sticking Point)': 'bp',
+    'Push Jerk or Split Jerk':     'sp',
+    'JM Press or Larson Press':    'bp'
+};
+
+function round5(n) { return 5 * Math.round(n / 5); }
+
+function calcWeight(exercise, pctRange) {
+    const key = exerciseToKey[exercise];
+    if (!key) return null;
+    const max = parseFloat(document.getElementById(`max-${key}`).value) || 0;
+    if (!max) return null;
+
+    // pctRange will be like "65-70%" or "70-75%"
+    const [lowPct, highPct] = pctRange.match(/\d+/g).map(Number);
+    const low = round5(max * lowPct / 100);
+    const high = round5(max * highPct / 100);
+    return `${low}-${high} lbs`;
+}
+
             
             // ================================================================
             // 4. DYNAMIC GRID GENERATION
@@ -512,6 +586,18 @@
 
             // Run the app!
             init();
+			
+			['max-dl', 'max-sq', 'max-sp', 'max-bp'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+        const selectedDay = document.querySelector('.selected[data-week]');
+        const selectedWeek = document.querySelector('.selected-row [data-week-header]');
+        if (selectedDay) {
+            displayDayContent(selectedDay.dataset.week, selectedDay.dataset.day);
+        } else if (selectedWeek) {
+            displayWeekContent(selectedWeek.dataset.weekHeader);
+        }
+    });
+});
 
         }); // End of DOMContentLoaded
     </script>
