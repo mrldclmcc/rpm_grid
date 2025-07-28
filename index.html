@@ -103,6 +103,18 @@
         .grid-cell {
             transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
+        
+        /* Plate calculator button */
+        .plate-btn {
+            display: inline-block;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 4px;
+            transition: transform 0.2s;
+        }
+        .plate-btn:hover {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 
@@ -166,6 +178,19 @@
     <footer style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-color);" class="text-center p-4 mt-8">
         <p class="text-sm" style="color: var(--text-secondary);">Interactive guide generated for the RPM Program.</p>
     </footer>
+    
+    <!-- Plate-Calculator Modal -->
+    <div id="plate-modal"
+         class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-xs w-full text-center" style="background-color: var(--bg-secondary); color: var(--text-primary);">
+        <h3 class="text-lg font-bold mb-2" id="plate-title">Barbell Load (lbs)</h3>
+        <p class="text-sm" id="plate-result" style="color: var(--text-secondary);">—</p>
+        <button id="plate-close" class="mt-4 px-4 py-1 rounded text-sm"
+                style="background-color: var(--accent-blue); color: var(--selected-text);">
+          Close
+        </button>
+      </div>
+    </div>
 
     <script>
         // Wait for the entire HTML document to be parsed before running any JavaScript.
@@ -345,7 +370,11 @@
                                     <div class="text-sm space-y-1" style="color: var(--text-secondary);">
                                         <p><strong style="color: var(--text-primary);">Percentage:</strong> ${block.pct} ${(() => {
                                                          const w = calcWeight(block.exercise, block.pct);
-                                                         return w ? `<br><strong>Weight:</strong> ${w}` : '';
+                                                         if (!w) return '';
+                                                         const [low, high] = w.match(/\d+/g).map(Number);
+                                                         return `<br><strong>Weight:</strong> ${w} 
+                                                                 <button class="plate-btn text-sm ml-2"
+                                                                         onclick="openPlateModal(${low})">🧮</button>`;
                                                      })()}</p>
                                         <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
                                         ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
@@ -386,7 +415,11 @@
                                                 <div class="text-sm space-y-1" style="color: var(--text-secondary);">
                                                     <p><strong style="color: var(--text-primary);">Pct:</strong> ${block.pct} ${(() => {
                                                          const w = calcWeight(block.exercise, block.pct);
-                                                         return w ? `<br><strong>Weight:</strong> ${w}` : '';
+                                                         if (!w) return '';
+                                                         const [low, high] = w.match(/\d+/g).map(Number);
+                                                         return `<br><strong>Weight:</strong> ${w} 
+                                                                 <button class="plate-btn text-sm ml-2"
+                                                                         onclick="openPlateModal(${low})">🧮</button>`;
                                                      })()}</p>
                                                     <p><strong style="color: var(--text-primary);">Reps:</strong> ${block.reps}</p>
                                                     ${block.details ? `<p class="mt-2 text-xs italic">${block.details}</p>` : ''}
@@ -444,7 +477,50 @@ function calcWeight(exercise, pctRange) {
     const high = round5(max * highPct / 100);
     return `${low}-${high} lbs`;
 }
+            
+/****************************************************************
+ *  PLATE CALCULATOR
+ ****************************************************************/
+const BAR_LB = 45;
+const PLATES_LB = [45, 35, 25, 10, 5, 2.5];  // per-side
 
+function buildPlateString(total) {
+  // Round to nearest 5 lb
+  total = 5 * Math.round(total / 5);
+  
+  let left  = (total - BAR_LB) / 2;
+  if (left <= 0) return `${BAR_LB} lb bar only`;
+
+  const plates = [];
+  for (const p of PLATES_LB) {
+    while (left >= p - 0.01) {          // tiny epsilon for float math
+      plates.push(p);
+      left -= p;
+    }
+  }
+  const rounded = plates.reduce((a,b)=>a+b, 0) * 2 + BAR_LB;
+  return `${total} lb → ${plates.join(' + ') || '—'} each side (≈ ${rounded} lb)`;
+}
+
+function openPlateModal(total) {
+  document.getElementById('plate-result').textContent = buildPlateString(total);
+  document.getElementById('plate-modal').classList.remove('hidden');
+  document.getElementById('plate-modal').classList.add('flex');
+}
+
+function closePlateModal() {
+  document.getElementById('plate-modal').classList.add('hidden');
+  document.getElementById('plate-modal').classList.remove('flex');
+}
+
+// Add event listeners for plate calculator
+document.getElementById('plate-close').addEventListener('click', closePlateModal);
+document.getElementById('plate-modal').addEventListener('click', e=>{
+  if (e.target.id==='plate-modal') closePlateModal();
+});
+
+// Expose to global scope for inline onclick
+window.openPlateModal = openPlateModal;
             
             // ================================================================
             // 4. DYNAMIC GRID GENERATION
