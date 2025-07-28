@@ -31,6 +31,7 @@
             --accent-blue: #0058A8;  /* Calder Blue */
             --accent-yellow: #F7B800;/* Calder Yellow */
             --selected-bg: var(--accent-blue);
+            --selected-row-bg: #dbeafe;   /* Tailwind blue-50 in light mode */
             --selected-text: #FFFFFF;
             --cell-hover-bg: var(--accent-red);
             --cell-hover-text: #FFFFFF;
@@ -49,6 +50,7 @@
                 --text-secondary: #AAAAAA;
                 --border-color: #333333;
                 --selected-bg: var(--accent-blue);
+                --selected-row-bg: #1e3a8a;  /* Tailwind blue-900 in dark mode */
                 --selected-text: #FFFFFF;
                 --cell-hover-bg: var(--accent-red);
                 --cell-hover-text: #FFFFFF;
@@ -89,10 +91,12 @@
         }
 
         /* Applied to a cell or row header when it is clicked/selected */
-        .selected {
-            background-color: var(--selected-bg) !important;
+        .selected,
+        .selected-row > [data-week-header],
+        .selected-row > [data-week] {
+            background-color: var(--selected-row-bg) !important;
             color: var(--selected-text) !important;
-            box-shadow: 0 0 0 2px var(--selected-bg);
+            box-shadow: none;
         }
         
         /* Utility for smooth transitions on grid cells */
@@ -433,10 +437,10 @@
              * This ensures only one item can be selected at a time.
              */
             function clearAllSelections() {
-                document.querySelectorAll('.selected').forEach(el => {
-                    el.classList.remove('selected');
-                });
-            }
+    document.querySelectorAll('.selected, .selected-row').forEach(el => {
+        el.classList.remove('selected', 'selected-row');
+    });
+}
 
             // Use event delegation on the grid container for efficiency.
             // This means one set of listeners on the parent handles events for all children.
@@ -472,7 +476,8 @@
                 clearAllSelections(); // Clear previous selections first
 
                 if (headerTarget) { // User clicked a week header
-                    headerTarget.classList.add('selected');
+                    const row = headerTarget.closest('.contents'); // the week row
+                    row.classList.add('selected-row');
                     displayWeekContent(headerTarget.dataset.weekHeader);
                 } else if (cellTarget) { // User clicked a day cell
                     cellTarget.classList.add('selected');
