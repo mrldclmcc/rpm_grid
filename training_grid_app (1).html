@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Program Navigator</title>
+    
+    <style>
+        /* CSS Custom Properties for Dark Theme */
+        :root {
+            --color-bg: #0f0f0f;
+            --color-bg-secondary: #1a1a1a;
+            --color-bg-tertiary: #2a2a2a;
+            --color-text: #e0e0e0;
+            --color-text-secondary: #b0b0b0;
+            --color-primary: #3b82f6;
+            --color-primary-hover: #2563eb;
+            --color-accent: #10b981;
+            --color-border: #404040;
+            --color-error: #ef4444;
+            --border-radius: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Grid Container */
+        .grid-container {
+            background-color: var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--color-border);
+        }
+
+        .grid-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--color-primary);
+        }
+
+        /* Dynamic Grid Styles */
+        .parts-cycles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .weeks-days-grid {
+            display: grid;
+            grid-template-columns: auto repeat(7, 1fr);
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .week-label {
+            font-weight: 600;
+            padding: 1rem;
+            background-color: var(--color-bg-tertiary);
+            border-radius: var(--border-radius);
+            text-align: center;
+            color: var(--color-accent);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .week-label:hover {
+            background-color: var(--color-accent);
+            color: var(--color-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .day-header {
+            font-weight: 600;
+            padding: 0.75rem;
+            background-color: var(--color-bg-tertiary);
+            border-radius: var(--border-radius);
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Grid Cell Styles */
+        .grid-cell {
+            background-color: var(--color-bg-tertiary);
+            border: 2px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .grid-cell:hover {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .grid-cell.selected {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--color-bg);
+        }
+
+        .part-cycle-cell {
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .part-cycle-cell .part-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .part-cycle-cell .cycle-name {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Content Area */
+        .content-container {
+            background-color: var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            border: 1px solid var(--color-border);
+            min-height: 400px;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Markdown Content Styles */
+        .content-area h1,
+        .content-area h2,
+        .content-area h3,
+        .content-area h4,
+        .content-area h5,
+        .content-area h6 {
+            color: var(--color-accent);
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .content-area h1 { font-size: 2rem; }
+        .content-area h2 { font-size: 1.5rem; }
+        .content-area h3 { font-size: 1.25rem; }
+
+        .content-area p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .content-area ul,
+        .content-area ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .content-area li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content-area a {
+            color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .content-area a:hover {
+            border-bottom-color: var(--color-primary);
+        }
+
+        .content-area strong {
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        .content-area em {
+            font-style: italic;
+            color: var(--color-text-secondary);
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+        }
+
+        .error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            color: var(--color-error);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        /* Back Button */
+        .back-button {
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text);
+            border: 2px solid var(--color-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .weeks-days-grid {
+                grid-template-columns: auto repeat(7, minmax(40px, 1fr));
+                font-size: 0.8rem;
+            }
+
+            .day-header,
+            .week-label {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.8rem;
+            }
+
+            .grid-cell {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>Training Program Navigator</h1>
+            <p>Select your training part and cycle to view detailed workout schedules</p>
+        </header>
+
+        <!-- Dynamic Grid Container -->
+        <div class="grid-container">
+            <div id="grid-title" class="grid-title">Select Part & Cycle</div>
+            <div id="dynamic-grid"></div>
+        </div>
+
+        <!-- Content Display Area -->
+        <div class="content-container">
+            <div id="content-title" class="content-title">Workout Details</div>
+            <div id="content-area" class="content-area">
+                <p class="text-center" style="color: var(--color-text-secondary); font-style: italic;">
+                    Select a training day from the grid above to view workout details.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://script.google.com/macros/s/[DEPLOYMENT_ID]/exec';
+        
+        // Application State
+        let currentState = {
+            view: 'initial', // 'initial' or 'expanded'
+            selectedPart: null,
+            selectedCycle: null
+        };
+
+        // Static Data Structure for Parts and Cycles
+        const PARTS_CYCLES_DATA = [
+            { part: "Part 1", cycles: ["Cycle 1", "Cycle 2", "Cycle 3"] },
+            { part: "Part 2", cycles: ["Cycle 1", "Cycle 2", "Cycle 3"] },
+            { part: "Part 3", cycles: ["Cycle 1", "Cycle 2", "Cycle 3"] },
+            { part: "Part 4", cycles: ["Cycle 1", "Cycle 2", "Cycle 3"] }
+        ];
+
+        const WEEKS = ["Week 1", "Week 2", "Week 3", "Week 4"];
+        const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+        // Markdown Parser Function
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            let html = text;
+            
+            // Headers (### ## #)
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Bold and Italic
+            html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Line breaks and paragraphs
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            
+            // Wrap in paragraphs if not starting with a header
+            if (!html.match(/^<h[1-6]>/)) {
+                html = '<p>' + html + '</p>';
+            }
+            
+            // Clean up empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p><br><\/p>/g, '');
+            
+            return html;
+        }
+
+        // Render Initial Grid (Parts and Cycles)
+        function renderInitialGrid() {
+            const gridContainer = document.getElementById('dynamic-grid');
+            const gridTitle = document.getElementById('grid-title');
+            
+            gridTitle.textContent = 'Select Part & Cycle';
+            
+            let gridHTML = '<div class="parts-cycles-grid">';
+            
+            PARTS_CYCLES_DATA.forEach(partData => {
+                partData.cycles.forEach(cycle => {
+                    gridHTML += `
+                        <div class="grid-cell part-cycle-cell" 
+                             onclick="handlePartCycleClick('${partData.part}', '${cycle}')">
+                            <div class="part-name">${partData.part}</div>
+                            <div class="cycle-name">${cycle}</div>
+                        </div>
+                    `;
+                });
+            });
+            
+            gridHTML += '</div>';
+            gridContainer.innerHTML = gridHTML;
+            
+            // Update state
+            currentState.view = 'initial';
+            currentState.selectedPart = null;
+            currentState.selectedCycle = null;
+        }
+
+        // Handle Part/Cycle Selection
+        function handlePartCycleClick(part, cycle) {
+            currentState.selectedPart = part;
+            currentState.selectedCycle = cycle;
+            renderExpandedGrid(part, cycle);
+        }
+
+        // Render Expanded Grid (Weeks and Days)
+        function renderExpandedGrid(part, cycle) {
+            const gridContainer = document.getElementById('dynamic-grid');
+            const gridTitle = document.getElementById('grid-title');
+            
+            gridTitle.textContent = `${part} - ${cycle}`;
+            
+            let gridHTML = `
+                <button class="back-button" onclick="renderInitialGrid()">
+                    ← Back to Part & Cycle Selection
+                </button>
+                <div class="weeks-days-grid">
+                    <div></div>
+            `;
+            
+            // Add day headers
+            DAYS.forEach(day => {
+                gridHTML += `<div class="day-header">${day.substring(0, 3)}</div>`;
+            });
+            
+            // Add week rows
+            WEEKS.forEach(week => {
+                gridHTML += `<div class="week-label" onclick="fetchFullWeekWorkout('${part}', '${cycle}', '${week}')">${week}</div>`;
+                DAYS.forEach(day => {
+                    gridHTML += `
+                        <div class="grid-cell" 
+                             onclick="fetchWorkoutDetails('${part}', '${cycle}', '${week}', '${day}')">
+                            ${day.substring(0, 3)}
+                        </div>
+                    `;
+                });
+            });
+            
+            gridHTML += '</div>';
+            gridContainer.innerHTML = gridHTML;
+            
+            // Update state
+            currentState.view = 'expanded';
+        }
+
+        // Fetch Full Week Workout Details
+        async function fetchFullWeekWorkout(part, cycle, week) {
+            const contentArea = document.getElementById('content-area');
+            const contentTitle = document.getElementById('content-title');
+            
+            // Show loading state
+            contentArea.innerHTML = '<div class="loading">Loading full week workout...</div>';
+            contentTitle.textContent = `${part} - ${cycle} - ${week} (Full Week)`;
+            
+            try {
+                const weekWorkouts = [];
+                const fetchPromises = [];
+                
+                // Fetch all days for the week concurrently
+                DAYS.forEach(day => {
+                    const url = `${API_BASE_URL}?part=${encodeURIComponent(part)}&cycle=${encodeURIComponent(cycle)}&week=${encodeURIComponent(week)}&day=${encodeURIComponent(day)}`;
+                    fetchPromises.push(
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => ({
+                                day: day,
+                                content: data.result || 'No workout data available.'
+                            }))
+                            .catch(error => ({
+                                day: day,
+                                content: `Error loading ${day}: ${error.message}`,
+                                isError: true
+                            }))
+                    );
+                });
+                
+                const results = await Promise.all(fetchPromises);
+                
+                // Build the full week display
+                let fullWeekHTML = '';
+                results.forEach(result => {
+                    fullWeekHTML += `
+                        <div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--color-border);">
+                            <h3 style="color: var(--color-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="background-color: var(--color-accent); color: var(--color-bg); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">
+                                    ${result.day}
+                                </span>
+                            </h3>
+                            <div ${result.isError ? 'class="error" style="margin: 0;"' : ''}>
+                                ${result.isError ? result.content : parseMarkdown(result.content)}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Remove the last border
+                fullWeekHTML = fullWeekHTML.replace(/border-bottom: 1px solid var\(--color-border\);(?![\s\S]*border-bottom)/, '');
+                
+                contentArea.innerHTML = fullWeekHTML;
+                
+            } catch (error) {
+                console.error('Error fetching full week workout:', error);
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading full week workout</strong><br>
+                        ${error.message || 'Please check your internet connection and try again.'}
+                    </div>
+                `;
+            }
+        }
+
+        // Fetch Workout Details from API
+        async function fetchWorkoutDetails(part, cycle, week, day) {
+            const contentArea = document.getElementById('content-area');
+            const contentTitle = document.getElementById('content-title');
+            
+            // Show loading state
+            contentArea.innerHTML = '<div class="loading">Loading workout details...</div>';
+            contentTitle.textContent = `${part} - ${cycle} - ${week} - ${day}`;
+            
+            try {
+                // Construct API URL with parameters
+                const url = `${API_BASE_URL}?part=${encodeURIComponent(part)}&cycle=${encodeURIComponent(cycle)}&week=${encodeURIComponent(week)}&day=${encodeURIComponent(day)}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Parse markdown and display content
+                const htmlContent = parseMarkdown(data.result || 'No workout data available for this day.');
+                contentArea.innerHTML = htmlContent;
+                
+            } catch (error) {
+                console.error('Error fetching workout details:', error);
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading workout details</strong><br>
+                        ${error.message || 'Please check your internet connection and try again.'}
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize Application
+        function initializeApp() {
+            renderInitialGrid();
+            
+            // Update content area title
+            document.getElementById('content-title').textContent = 'Workout Details';
+        }
+
+        // Start the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
