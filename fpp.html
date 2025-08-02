@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Fighter Pull-up Program</title>
+<style>
+    /* --- Reset & Base --- */
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+    body{background:#f5f5f7;color:#111;padding:1rem;line-height:1.45}
+    h1{font-size:1.5rem;margin:.5rem 0 .75rem;text-align:center}
+    label,button,input{font-size:1rem}
+    /* --- Card --- */
+    .card{background:#fff;border-radius:.75rem;box-shadow:0 2px 6px rgba(0,0,0,.08);padding:1rem;margin-bottom:1rem}
+    /* --- Form --- */
+    #form{display:flex;gap:.5rem;align-items:center}
+    #form input{flex:1;min-width:0;padding:.65rem;border:1px solid #ccc;border-radius:.5rem}
+    #form button{padding:.65rem 1rem;border:none;background:#007aff;color:#fff;border-radius:.5rem;font-weight:600}
+    /* --- Program --- */
+    #program{display:none}
+    .day{display:flex;flex-wrap:wrap;gap:.5rem;margin:.25rem 0}
+    .set{background:#eee;border-radius:.5rem;padding:.4rem .6rem;font-family:monospace;font-weight:600;min-width:2rem;text-align:center}
+    /* --- Footer --- */
+    footer{margin-top:2rem;font-size:.75rem;color:#666;text-align:center}
+</style>
+</head>
+<body>
+
+<h1>Fighter Pull-up Program</h1>
+
+<div class="card">
+    <label for="rm">Max strict pull-ups</label>
+    <form id="form" onsubmit="build(event)">
+        <input id="rm" type="number" min="1" max="50" required placeholder="e.g. 5"/>
+        <button type="submit">Generate</button>
+    </form>
+</div>
+
+<div id="program" class="card">
+    <h2 id="title"></h2>
+    <div id="days"></div>
+</div>
+
+<footer>
+    Works offline • Pavel Tsatsouline’s classic plan • Re-enter a new RM anytime
+</footer>
+
+<script>
+function build(e){
+    e.preventDefault();
+    const rm = +document.getElementById('rm').value;
+    if(!rm) return;
+
+    let sets = [];
+    if(rm <= 3){               // 4 sets if RM ≤ 3
+        for(let i = rm; i >= 1; i--) sets.push(i);
+    }else{                     // 5 sets otherwise
+        for(let i = rm; i >= 1; i--) sets.push(i);
+        sets = sets.slice(0,5);
+    }
+
+    const days = [];
+    // 25 training days (5 cycles of 5 days, rest every 6th)
+    for(let day = 0; day < 25; day++){
+        const d = [];
+        for(let s = 0; s < sets.length; s++){
+            let reps = sets[s] + Math.floor((day + sets.length - 1 - s) / sets.length);
+            // Ensure no negative rep and reasonable cap
+            reps = Math.max(reps, 1);
+            d.push(reps);
+        }
+        days.push(d);
+    }
+
+    // Render
+    const daysDiv = document.getElementById('days');
+    daysDiv.innerHTML = '';
+    days.forEach((daySets, idx) => {
+        const div = document.createElement('div');
+        div.className = 'day';
+        div.innerHTML = `<strong>Day ${idx + 1}${(idx+1)%6===0 ? ' (rest)' : ''}:</strong> ` +
+                        daySets.map(r => `<span class="set">${r}</span>`).join('');
+        daysDiv.appendChild(div);
+    });
+
+    document.getElementById('title').textContent = `Program for ${rm}-RM`;
+    document.getElementById('program').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
