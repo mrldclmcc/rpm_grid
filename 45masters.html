@@ -300,6 +300,14 @@
             margin-bottom: var(--spacing-xs);
         }
 
+        /* Button Group for layout */
+        .button-group {
+            display: flex;
+            justify-content: center; /* Center the buttons */
+            gap: var(--spacing-md); /* Space between buttons */
+            margin-top: var(--spacing-lg);
+        }
+
         /* Back to Home Button */
         .back-to-home-button {
             background-color: var(--color-accent);
@@ -310,7 +318,6 @@
             cursor: pointer;
             font-size: var(--font-size-md);
             font-weight: 600;
-            margin-top: var(--spacing-lg);
             transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -421,7 +428,7 @@
                 <ul>
                     <li>Each session is designed to be concise, lasting no longer than **30-40 minutes**. This brevity helps prevent overtraining and promotes consistent adherence.</li>
                     <li>For maximum benefit, it's recommended to allow **24-48 hours between barbell sessions**. However, recognizing the recovery needs of the target population, the program advises taking "as long as needed between workouts."</li>
-                    <li>You have the flexibility to train daily with lighter weights or to stretch the 5 sessions over a 10-day split if you prefer to lift heavier.</li>
+                    <li>You have the flexibility to train daily with lighter weights or to stretch the 5 sessions out over a 10-day split if you prefer to lift heavier.</li>
                 </ul>
 
                 <h3>Program Organization (45 Sessions / ~9 Weeks)</h3>
@@ -459,7 +466,10 @@
             <div id="workout-detail-container" class="workout-detail-container">
                 <!-- Workout details will be inserted here by JS -->
             </div>
-            <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+            <div class="button-group">
+                <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+                <button id="next-day-button" class="back-to-home-button u-display-none">Go to Next Day &rarr;</button>
+            </div>
         </section>
 
         <section id="diet-screen" class="container detail-screen u-display-none">
@@ -907,7 +917,7 @@
                             },
                             {
                                 type: "PULL-UP BLOCK",
-                                content: "EMOM for 10 minutes, complete <strong>2-4 Wide Grip Pull-Ups</strong> (Assisted Optional) or 8-10 Inverted Rows/Lat Pull-Downs. Take the remainder of the minute to rest or Add an Ab/Oblique Exercise in the Remainder of the Minute."
+                                content: "EMOM for 10 minutes, complete <strong>2-4 Wide Grip Pull-Ups</strong> (Assisted Optional) or 8-10 Inverted Rows/Lat Pull-Downs. Take the remainder of the minute to rest or Add an Ab/Oblique Exercise during the Remainder of the Minute."
                             },
                             {
                                 type: "CORE BLOCK",
@@ -1170,7 +1180,7 @@
                             },
                             {
                                 type: "PULL-UP BLOCK",
-                                content: "EMOM for 10 minutes, complete <strong>2-4 Wide Grip Pull-Ups</strong> (Assisted Optional) or 8-10 Inverted Rows/Lat Pull-Downs. Take the remainder of the minute to rest or Add an Ab/Oblique Exercise in the Remainder of the Minute."
+                                content: "EMOM for 10 minutes, complete <strong>2-4 Wide Grip Pull-Ups</strong> (Assisted Optional) or 8-10 Inverted Rows/Lat Pull-Downs. Take the remainder of the minute to rest or Add an Ab/Oblique Exercise during the Remainder of the Minute."
                             },
                             {
                                 type: "CORE BLOCK",
@@ -1396,11 +1406,15 @@
         const dietScreen = document.getElementById('diet-screen');
         const selfRegulationScreen = document.getElementById('self-regulation-screen');
         const progressiveOverloadScreen = document.getElementById('progressive-overload-screen');
-        const dayDetailScreen = document.getElementById('day-detail-screen'); // Renamed from waveBlockDayScreen
+        const dayDetailScreen = document.getElementById('day-detail-screen'); 
 
-        const dayGridContainer = document.getElementById('day-grid'); // New container for the 5x9 grid
+        const dayGridContainer = document.getElementById('day-grid'); 
         const workoutDetailContainer = document.getElementById('workout-detail-container');
-        const dayDetailTitle = document.getElementById('day-detail-title'); // Renamed from waveBlockDayTitle
+        const dayDetailTitle = document.getElementById('day-detail-title'); 
+        const nextDayButton = document.getElementById('next-day-button'); // Get the new next day button
+
+        // Global array to store all days in order
+        const allDaysOrdered = [];
 
         // Function to show a screen and hide others
         function showScreen(screenId) {
@@ -1415,7 +1429,7 @@
         }
 
         // Function to render workout details for a given wave, block, and day
-        function renderWorkoutDetail(waveKey, block, day) {
+        function renderWorkoutDetail(waveKey, block, day, currentDayIndex) {
             workoutDetailContainer.innerHTML = '';
             const workout = programData[waveKey][block][day];
 
@@ -1442,13 +1456,33 @@
             });
 
             dayDetailTitle.textContent = `${waveKey} / ${block} / ${day}`;
-            showScreen('day-detail-screen'); // Show the single detail screen
+            showScreen('day-detail-screen'); 
+
+            // Logic for "Go to Next Day" button
+            // Remove any existing event listener to prevent multiple bindings
+            if (nextDayButton._eventListener) {
+                nextDayButton.removeEventListener('click', nextDayButton._eventListener);
+            }
+
+            if (currentDayIndex < 45) {
+                nextDayButton.classList.remove('u-display-none');
+                // Get the next day's data (array is 0-indexed, currentDayIndex is 1-indexed)
+                const nextDayData = allDaysOrdered[currentDayIndex]; 
+                const nextDayListener = () => {
+                    renderWorkoutDetail(nextDayData.wave, nextDayData.block, nextDayData.day, nextDayData.dayIndex);
+                };
+                nextDayButton.addEventListener('click', nextDayListener);
+                nextDayButton._eventListener = nextDayListener; // Store listener reference
+            } else {
+                nextDayButton.classList.add('u-display-none');
+            }
         }
 
         // Function to generate the 5x9 day grid
         function generateDayGrid() {
-            dayGridContainer.innerHTML = ''; // Clear existing content
+            dayGridContainer.innerHTML = ''; 
             let dayCounter = 1;
+            allDaysOrdered.length = 0; // Clear the array before repopulating
 
             Object.keys(programData).forEach(waveKey => {
                 let waveClass = '';
@@ -1463,13 +1497,18 @@
                 Object.keys(programData[waveKey]).forEach(block => {
                     Object.keys(programData[waveKey][block]).forEach(day => {
                         const card = document.createElement('div');
-                        card.classList.add('day-card', waveClass); // Add wave-specific background class
+                        card.classList.add('day-card', waveClass); 
                         card.textContent = `Day ${dayCounter}`;
                         card.dataset.wave = waveKey;
                         card.dataset.block = block;
                         card.dataset.day = day;
+                        card.dataset.dayIndex = dayCounter; // Store the chronological day number
+
+                        // Store the day's full path and index in the global ordered array
+                        allDaysOrdered.push({ wave: waveKey, block: block, day: day, dayIndex: dayCounter });
+
                         card.addEventListener('click', () => {
-                            renderWorkoutDetail(card.dataset.wave, card.dataset.block, card.dataset.day);
+                            renderWorkoutDetail(card.dataset.wave, card.dataset.block, card.dataset.day, parseInt(card.dataset.dayIndex));
                         });
                         dayGridContainer.appendChild(card);
                         dayCounter++;
@@ -1486,13 +1525,12 @@
                 if (targetScreen === 'program-overview') {
                     showScreen('program-overview-screen');
                 } else if (targetScreen === 'diet') {
-                    showScreen('diet-screen'); // Keep diet screen logic for now, though card is removed
+                    showScreen('diet-screen'); 
                 } else if (targetScreen === 'self-regulation') {
                     showScreen('self-regulation-screen');
                 } else if (targetScreen === 'progressive-overload') {
                     showScreen('progressive-overload-screen');
                 }
-                // No specific 'wave-selection' target anymore from home cards, as the grid handles it.
             });
         });
 
@@ -1502,7 +1540,6 @@
                 const navigationContext = event.currentTarget.dataset.navigationContext;
 
                 if (navigationContext === 'day-detail' || navigationContext === 'static-detail') {
-                    // For any detail screen, simply go back to the home screen
                     showScreen('home-screen');
                 }
             });
@@ -1510,9 +1547,12 @@
 
         // Event Listeners for "Back to Home" buttons within detail screens
         document.querySelectorAll('.back-to-home-button').forEach(button => {
-            button.addEventListener('click', () => {
-                showScreen('home-screen');
-            });
+            // Ensure this listener is only for the "Back to Home" buttons
+            if (button.id !== 'next-day-button') { 
+                button.addEventListener('click', () => {
+                    showScreen('home-screen');
+                });
+            }
         });
 
         // Initial setup: Generate the day grid and show the home screen
