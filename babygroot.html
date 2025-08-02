@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Groot Program Viewer</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --accent-color: #ff6e40;
+            --secondary-text-color: #b0b0b0;
+            --border-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-top: 16px;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-bg-color);
+            padding: 8px 0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-text-color);
+            font-size: 1rem;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .workout-nav {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px 0;
+            margin-bottom: 16px;
+        }
+        
+        .workout-nav-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            flex-shrink: 0;
+            width: calc(100% / 6 - 8px); /* Adjust width for 6 items with a gap */
+            height: 60px;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--secondary-text-color);
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .workout-nav-btn .top-row {
+            font-size: 0.75rem;
+            line-height: 1;
+        }
+
+        .workout-nav-btn .bottom-row {
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1;
+            color: var(--text-color);
+        }
+
+        .workout-nav-btn.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .workout-nav-btn.active .top-row,
+        .workout-nav-btn.active .bottom-row {
+            color: var(--text-color);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card.clickable {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card.clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .card p {
+            color: var(--secondary-text-color);
+            font-size: 0.9rem;
+            margin: 4px 0;
+        }
+
+        .card p strong {
+            color: var(--text-color);
+        }
+
+        .exercise-details p {
+            margin-bottom: 8px;
+        }
+
+        .exercise-details p.description {
+            font-style: italic;
+            border-left: 2px solid var(--accent-color);
+            padding-left: 10px;
+            margin: 16px 0;
+        }
+
+        .exercise-details p.tip-title {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-top: 16px;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .exercise-details ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 8px;
+        }
+
+        .exercise-details ul li {
+            position: relative;
+            padding-left: 20px;
+            color: var(--secondary-text-color);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .exercise-details ul li::before {
+            content: '•';
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+        
+        #video-link {
+            display: block;
+            margin-top: 16px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #back-button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1rem;
+            padding: 8px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        #back-button svg {
+            margin-right: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Baby Groot Program Viewer</h1>
+        <nav class="main-nav">
+            <button class="nav-btn active" data-target="overview-screen">Overview</button>
+            <button class="nav-btn" data-target="workouts-screen">Workouts</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview-screen" class="screen active">
+            <div class="card">
+                <h2>Program Philosophy: The Novice's Path</h2>
+                <p>
+                    The "Baby Groot" program is a 12-week hypertrophy routine designed by John Meadows specifically for new lifters (with 1 year or less of experience). The goal is to build a solid foundation by focusing on frequency, progressive overload, and proper mind-muscle connection.
+                </p>
+                <p>
+                    Unlike many programs that train a muscle once a week, this split hits each muscle group 2-3 times per week to maximize growth. The key is to train hard but smart. Meadows believes that training a muscle every 2-3 days is optimal to stimulate muscle protein synthesis and avoid losing out on gains.
+                </p>
+            </div>
+            
+            <div class="card">
+                <h3>The 12-Week Progression</h3>
+                <p>The program follows a 3-day split, alternating weekly between a primary "A" set of workouts and a "B" set. This ensures you are constantly challenging your muscles from different angles and with different movements.</p>
+                <ul>
+                    <li><strong>Weeks 1, 3, 5, 7, 9, 11:</strong> Perform workouts "Upper A," "Lower A," "Full A".</li>
+                    <li><strong>Weeks 2, 4, 6, 8, 10, 12:</strong> Perform workouts "Upper B," "Lower B," "Full B".</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Progression Goals</h3>
+                <p>This is the most important part of the program. You must strive to get stronger or do more reps over time. Do not just go through the motions.</p>
+                <ul>
+                    <li><strong>Compound Lifts:</strong> Aim to add <strong>30-60 lbs</strong> to your starting weights (e.g., Squat, Deadlift, Bench Press) by the end of 12 weeks.</li>
+                    <li><strong>Isolation Lifts:</strong> Aim to add <strong>6 additional reps</strong> to your starting rep range (e.g., Curls, Tricep Extensions) by the end of 12 weeks.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Understanding RPE</h3>
+                <p>RPE stands for **Rate of Perceived Exertion**. It's a way to measure how hard you're working. Meadows designed this program with RPE in mind to prevent overtraining and ensure you're lifting with intent. For a beginner, it is not necessary to go to failure.</p>
+                <p><strong>RPE 8:</strong> You could do 2-3 more reps. This is the sweet spot for most sets, stimulating growth without burning you out. Meadows recommends an RPE of 8 for your compound lifts.</p>
+                <p><strong>RPE 8.5:</strong> You have 2 more reps left in the tank. Meadows recommends this RPE for isolation exercises, as they tend to allow for less form breakdown and are thus safer to push a little harder.</p>
+            </div>
+            
+            <div class="card">
+                <h3>Diet, Nutrition, and Rest</h3>
+                <p>For optimal results and recovery, it's crucial to focus on diet and rest. The program emphasizes the concept of Net Protein Balance, which is a scale between Muscle Protein Synthesis (building muscle) and Muscle Protein Breakdown (breaking down muscle).</p>
+                <ul>
+                    <li><strong>Diet and Nutrition:</strong> To stimulate Muscle Protein Synthesis, consume a diet with adequate calories and protein. Eating enough carbohydrates can help manage Muscle Protein Breakdown. The goal is to maintain a positive net protein balance.</li>
+                    <li><strong>Rest and Recovery:</strong> You must be recovered to train effectively. The program suggests training a muscle group 2-3 times per week, as Muscle Protein Synthesis is stimulated for about 48 hours after a workout. If you are still feeling sore, your muscle fibers have not fully recovered, and you should not train that muscle group to avoid overtraining. The program is designed with a lower number of sets and moderate intensity to help maximize this recovery.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="workouts-screen" class="screen">
+            <nav class="workout-nav">
+                <button class="workout-nav-btn active" data-workout="Upper A">
+                    <span class="top-row">Upper</span>
+                    <span class="bottom-row">A</span>
+                </button>
+                <button class="workout-nav-btn" data-workout="Lower A">
+                    <span class="top-row">Lower</span>
+                    <span class="bottom-row">A</span>
+                </button>
+                <button class="workout-nav-btn" data-workout="Full A">
+                    <span class="top-row">Full</span>
+                    <span class="bottom-row">A</span>
+                </button>
+                <button class="workout-nav-btn" data-workout="Upper B">
+                    <span class="top-row">Upper</span>
+                    <span class="bottom-row">B</span>
+                </button>
+                <button class="workout-nav-btn" data-workout="Lower B">
+                    <span class="top-row">Lower</span>
+                    <span class="bottom-row">B</span>
+                </button>
+                <button class="workout-nav-btn" data-workout="Full B">
+                    <span class="top-row">Full</span>
+                    <span class="bottom-row">B</span>
+                </button>
+            </nav>
+            <div id="workout-content"></div>
+        </section>
+
+        <section id="exercise-screen" class="screen">
+            <button id="back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Workouts
+            </button>
+            <div id="exercise-content"></div>
+        </section>
+    </main>
+
+    <script>
+        const workouts = {
+            'Upper A': {
+                name: 'Upper Body A',
+                exercises: [
+                    { name: 'Incline Dumbbell Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'Meadows calls this "probably my favorite upper body exercise" and notes that it is "great for your chest, shoulders, and even hits a little triceps". He prefers a low angle, but suggests using a regular incline if a low-angle bench is not available. The focus is on chest activation and avoiding shoulder stress.', tips: ['Focus on the stretch at the bottom and pressing with your upper chest.', 'Maintain a slight arch in your lower back.', 'Aim for an RPE of 8-9 on your last set.'] },
+                    { name: 'Chest-Supported Row', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'Meadows often used chest-supported movements to remove the lower back from the equation, allowing you to isolate the lats and upper back more effectively. For this exercise, he says to "Find a machine that supports your chest" and to use a "neutral grip if possible, meaning palms facing each other".', tips: ['Squeeze your shoulder blades together hard at the top of the movement.', 'Let the weight fully stretch your lats at the bottom.', 'Keep your head neutral to avoid neck strain.'] },
+                    { name: 'Seated Dumbbell Overhead Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'This is a powerful compound movement for building deltoid mass. Meadows often cued lifters to keep their elbows slightly in front of their body to put more emphasis on the front delts and improve shoulder health. Brace your core to maintain stability and prevent injury.', tips: ['Don\'t lock out at the top. Keep constant tension.', 'Brace your core tightly throughout the lift.', 'Keep elbows slightly in front of your body.'] },
+                    { name: 'Cable Lat Pulldown', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'The lat pulldown is crucial for developing back width. For form, the PDF mentions to use a "slightly wider than shoulder width grip". Meadows taught to pull with your elbows, not your hands, to ensure the lats are doing the majority of the work. Initiate the movement by depressing your shoulders and getting a powerful lat contraction.', tips: ['Pull with your elbows, not your hands.', 'Focus on the lats contracting to pull the bar down.', 'Initiate the movement by depressing your shoulders.'] },
+                    { name: 'Dumbbell Bicep Curl', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'For bicep curls, Meadows always emphasized a strong mind-muscle connection. In the program, he advises to "Lower the bar with a 3 second count, pin your elbows against your sides, and curl strict". Don\'t rely on momentum; make the muscle do all the work.', tips: ['Squeeze your bicep hard at the top of the movement.', 'Control the weight on the way down.', 'Avoid using momentum from your hips.'] },
+                    { name: 'Rope Tricep Pushdown', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is an excellent isolation exercise for the triceps. Meadows calls a variation of this a "spongy grip" pushdown and says they are "extremely good for overall triceps development". The key is to keep your elbows tucked into your sides and your torso slightly tilted forward. Focus on a full extension and a hard tricep squeeze at the bottom of the movement.', tips: ['Keep your elbows tucked into your sides.', 'Squeeze your triceps at the bottom of the movement.', 'Avoid leaning forward too much.'] }
+                ]
+            },
+            'Lower A': {
+                name: 'Lower Body A',
+                exercises: [
+                    { name: 'Barbell Squat', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'The squat is a foundational compound movement. This program focuses on building a strong movement pattern with perfect form before moving on to higher volume or intensity. Focus on keeping your chest up and driving through your heels.', tips: ['Maintain a neutral spine and keep your chest up.', 'Go as deep as your mobility allows without losing form.', 'Drive through your mid-foot/heels on the way up.'] },
+                    { name: 'Leg Press', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'The Leg Press is a great way to safely add volume to your legs. Meadows reminds you to follow the RPE and "leave reps in the tank as specified". The focus here is a deep stretch at the bottom and a controlled contraction at the top. This removes the stabilizer demand of a squat to really hammer the quads.', tips: ['Go as deep as you can with your lower back flat against the pad.', 'Avoid locking out your knees at the top of the movement.', 'Focus on a smooth, controlled tempo.'] },
+                    { name: 'Dumbbell Romanian Deadlift', sets: '3', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is an effective exercise for targeting the hamstrings and glutes. Meadows says to "do these nice and slow, and use the form as described in the video". Keep your back straight, hinge at the hips, and feel the stretch in your hamstrings. This is not about the weight, but about the quality of the contraction and stretch.', tips: ['Keep a slight bend in your knees.', 'Focus on hinging at the hips, not bending your back.', 'Feel the stretch in your hamstrings before coming back up.'] },
+                    { name: 'Leg Extension', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'A great isolation exercise for the quads. Focus on a full contraction at the top of the movement and a slow, controlled negative on the way down. This helps to establish a strong mind-muscle connection with the quadriceps.', tips: ['Squeeze your quads hard at the top for a peak contraction.', 'Control the weight on the way down.', 'Don\'t use momentum to swing the weight up.'] },
+                    { name: 'Lying Leg Curl', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is the perfect way to finish off the hamstrings. Emphasize a hard squeeze at the top of the movement and control the weight back to the starting position. Keep your hips pinned to the pad to isolate the hamstrings and avoid using your glutes or lower back.', tips: ['Squeeze your hamstrings at the top of the movement.', 'Keep your hips pressed firmly into the pad.', 'Control the weight on the eccentric (lowering) portion.'] },
+                    { name: 'Calf Raise', sets: '3', reps: '15-20', rest: '60 secs', videoUrl: '#', description: 'Calf training requires dedication and a strong focus on the stretch and contraction. Perform these with a full range of motion, getting a deep stretch at the bottom and a hard contraction at the top. Meadows believes that volume is key for calves, so hit them with plenty of reps.', tips: ['Go for a full stretch at the bottom of the movement.', 'Hold the peak contraction at the top for a second or two.', 'Don\'t bounce or use momentum.'] }
+                ]
+            },
+            'Full A': {
+                name: 'Full Body A',
+                exercises: [
+                    { name: 'Flat Barbell Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'This is a cornerstone of any chest routine. Meadows recommends a video for a proper setup. The key is to maintain a strong arch in your back, retract your shoulder blades, and drive the bar up with your chest, not your shoulders. A controlled tempo is crucial for a beginner to master the movement pattern.', tips: ['Retract your shoulder blades and create a slight arch in your back.', 'Control the weight on the way down to a pause on your chest.', 'Drive the bar up explosively.'] },
+                    { name: 'Weighted Pull-ups', sets: '3', reps: '6-10', rest: '2-3 mins', videoUrl: '#', description: 'Pull-ups are a fantastic exercise for building back width. The program suggests using a machine that assists you or a band if you cannot perform them unassisted. The goal is to pull your chest to the bar and focus on a powerful lat contraction.', tips: ['Pull with your back muscles, not your arms.', 'Think about pulling your elbows to your hips.', 'Control the negative (lowering) portion of the lift.'] },
+                    { name: 'Barbell Squat', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'The squat is a foundational compound movement. This program focuses on building a strong movement pattern with perfect form before moving on to higher volume or intensity. Focus on keeping your chest up and driving through your heels.', tips: ['Maintain a neutral spine and keep your chest up.', 'Go as deep as your mobility allows without losing form.', 'Drive through your mid-foot/heels on the way up.'] },
+                    { name: 'Incline Dumbbell Row', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'This is an excellent exercise for targeting the upper back. The PDF notes that Meadows prefers kettlebells but dumbbells are perfectly fine. The incline bench removes the lower back from the movement, allowing you to focus on squeezing the muscles of the upper back and lats. Squeeze your shoulder blades together at the top of each rep.', tips: ['Keep your chest on the bench throughout the movement.', 'Squeeze your shoulder blades together at the top.', 'Use a controlled tempo on both the concentric and eccentric phases.'] },
+                    { name: 'Side Lateral Raise', sets: '3', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'A great isolation exercise for building wide shoulders. Meadows uses a variation called "Dumbbell side lateral Y raise", noting that your hands should come up to the "10 and 2 o’clock position, not straight out in front or straight out to the side". He notes that you will know when you nail it.', tips: ['Lean slightly forward to target the side delts.', 'Raise the dumbbells with your elbows leading.', 'Don\'t use momentum to swing the weight up.'] },
+                    { name: 'Cable Crunches', sets: '3', reps: '15-20', rest: '60 secs', videoUrl: '#', description: 'This is a great exercise for building core strength and definition. Meadows says to "check out the form I prefer in the video" for sit-ups and that these are his favorite. The key is to use a slow and controlled tempo and a full range of motion. Focus on contracting your abs and not using your hips to move the weight.', tips: ['Keep your hips stationary and crunch with your abs.', 'Use a controlled tempo, especially on the eccentric phase.', 'Squeeze your abs at the bottom of the movement.'] }
+                ]
+            },
+            'Upper B': {
+                name: 'Upper Body B',
+                exercises: [
+                    { name: 'Incline Barbell Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'This is a cornerstone of any chest routine. Meadows calls this "probably my favorite upper body exercise" and notes that it is "great for your chest, shoulders, and even hits a little triceps". He prefers a low angle, but suggests using a regular incline if a low-angle bench is not available. The focus is on chest activation and avoiding shoulder stress.', tips: ['Retract your shoulder blades and create a slight arch in your back.', 'Control the weight on the way down to a pause on your chest.', 'Drive the bar up explosively.'] },
+                    { name: 'Cable Lat Pulldown', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'The lat pulldown is crucial for developing back width. For form, the PDF mentions to use a "slightly wider than shoulder width grip". Meadows taught to pull with your elbows, not your hands, to ensure the lats are doing the majority of the work. Initiate the movement by depressing your shoulders and getting a powerful lat contraction.', tips: ['Pull with your elbows, not your hands.', 'Focus on the lats contracting to pull the bar down.', 'Initiate the movement by depressing your shoulders.'] },
+                    { name: 'Seated Dumbbell Overhead Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'This is a powerful compound movement for building deltoid mass. Meadows often cued lifters to keep their elbows slightly in front of their body to put more emphasis on the front delts and improve shoulder health. Brace your core to maintain stability and prevent injury.', tips: ['Don\'t lock out at the top. Keep constant tension.', 'Brace your core tightly throughout the lift.', 'Keep elbows slightly in front of your body.'] },
+                    { name: 'Incline Dumbbell Row', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'This is an excellent exercise for targeting the upper back. The PDF notes that Meadows prefers kettlebells but dumbbells are perfectly fine. The incline bench removes the lower back from the movement, allowing you to focus on squeezing the muscles of the upper back and lats. Squeeze your shoulder blades together at the top of each rep.', tips: ['Keep your chest on the bench throughout the movement.', 'Squeeze your shoulder blades together at the top.', 'Use a controlled tempo on both the concentric and eccentric phases.'] },
+                    { name: 'Dumbbell Bicep Curl', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'For bicep curls, Meadows always emphasized a strong mind-muscle connection. In the program, he advises to "Lower the bar with a 3 second count, pin your elbows against your sides, and curl strict". Don\'t rely on momentum; make the muscle do all the work.', tips: ['Squeeze your bicep hard at the top of the movement.', 'Control the weight on the way down.', 'Avoid using momentum from your hips.'] },
+                    { name: 'Rope Tricep Pushdown', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is an excellent isolation exercise for the triceps. Meadows calls a variation of this a "spongy grip" pushdown and says they are "extremely good for overall triceps development". The key is to keep your elbows tucked into your sides and your torso slightly tilted forward. Focus on a full extension and a hard tricep squeeze at the bottom of the movement.', tips: ['Keep your elbows tucked into your sides.', 'Squeeze your triceps at the bottom of the movement.', 'Avoid leaning forward too much.'] }
+                ]
+            },
+            'Lower B': {
+                name: 'Lower Body B',
+                exercises: [
+                    { name: 'Leg Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'The Leg Press is a great way to safely add volume to your legs. Meadows reminds you to follow the RPE and "leave reps in the tank as specified". The focus here is a deep stretch at the bottom and a controlled contraction at the top. This removes the stabilizer demand of a squat to really hammer the quads.', tips: ['Go as deep as you can with your lower back flat against the pad.', 'Avoid locking out your knees at the top of the movement.', 'Focus on a smooth, controlled tempo.'] },
+                    { name: 'Barbell Squat', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'The squat is a foundational compound movement. This program focuses on building a strong movement pattern with perfect form before moving on to higher volume or intensity. Focus on keeping your chest up and driving through your heels.', tips: ['Maintain a neutral spine and keep your chest up.', 'Go as deep as your mobility allows without losing form.', 'Drive through your mid-foot/heels on the way up.'] },
+                    { name: 'Lying Leg Curl', sets: '3', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is the perfect way to finish off the hamstrings. Emphasize a hard squeeze at the top of the movement and control the weight back to the starting position. Keep your hips pinned to the pad to isolate the hamstrings and avoid using your glutes or lower back.', tips: ['Squeeze your hamstrings at the top of the movement.', 'Keep your hips pressed firmly into the pad.', 'Control the weight on the eccentric (lowering) portion.'] },
+                    { name: 'Leg Extension', sets: '3', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'A great isolation exercise for the quads. Focus on a full contraction at the top of the movement and a slow, controlled negative on the way down. This helps to establish a strong mind-muscle connection with the quadriceps.', tips: ['Squeeze your quads hard at the top for a peak contraction.', 'Control the weight on the way down.', 'Don\'t use momentum to swing the weight up.'] },
+                    { name: 'Dumbbell Romanian Deadlift', sets: '2', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'This is an effective exercise for targeting the hamstrings and glutes. Meadows says to "do these nice and slow, and use the form as described in the video". Keep your back straight, hinge at the hips, and feel the stretch in your hamstrings. This is not about the weight, but about the quality of the contraction and stretch.', tips: ['Keep a slight bend in your knees.', 'Focus on hinging at the hips, not bending your back.', 'Feel the stretch in your hamstrings before coming back up.'] },
+                    { name: 'Calf Raise', sets: '3', reps: '15-20', rest: '60 secs', videoUrl: '#', description: 'Calf training requires dedication and a strong focus on the stretch and contraction. Perform these with a full range of motion, getting a deep stretch at the bottom and a hard contraction at the top. Meadows believes that volume is key for calves, so hit them with plenty of reps.', tips: ['Go for a full stretch at the bottom of the movement.', 'Hold the peak contraction at the top for a second or two.', 'Don\'t bounce or use momentum.'] }
+                ]
+            },
+            'Full B': {
+                name: 'Full Body B',
+                exercises: [
+                    { name: 'Flat Barbell Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'This is a cornerstone of any chest routine. Meadows recommends a video for a proper setup. The key is to maintain a strong arch in your back, retract your shoulder blades, and drive the bar up with your chest, not your shoulders. A controlled tempo is crucial for a beginner to master the movement pattern.', tips: ['Retract your shoulder blades and create a slight arch in your back.', 'Control the weight on the way down to a pause on your chest.', 'Drive the bar up explosively.'] },
+                    { name: 'Weighted Pull-ups', sets: '3', reps: '6-10', rest: '2-3 mins', videoUrl: '#', description: 'Pull-ups are a fantastic exercise for building back width. The program suggests using a machine that assists you or a band if you cannot perform them unassisted. The goal is to pull your chest to the bar and focus on a powerful lat contraction.', tips: ['Pull with your back muscles, not your arms.', 'Think about pulling your elbows to your hips.', 'Control the negative (lowering) portion of the lift.'] },
+                    { name: 'Floor Press', sets: '3', reps: '5-8', rest: '2-3 mins', videoUrl: '#', description: 'Meadows "really like[s] doing these for both chest and triceps". The floor press reduces the range of motion, which is great for protecting the shoulders and allowing you to focus on the lockout phase of the press. This is a great alternative to a regular bench press.', tips: ['Keep your elbows tucked in at a 45-degree angle.', 'Drive your upper back into the floor for stability.', 'Focus on a hard tricep contraction at the top.'] },
+                    { name: 'Chest-Supported Row', sets: '3', reps: '8-12', rest: '60-90 secs', videoUrl: '#', description: 'Meadows often used chest-supported movements to remove the lower back from the equation, allowing you to isolate the lats and upper back more effectively. For this exercise, he says to "Find a machine that supports your chest" and to use a "neutral grip if possible, meaning palms facing each other".', tips: ['Squeeze your shoulder blades together hard at the top of the movement.', 'Let the weight fully stretch your lats at the bottom.', 'Keep your head neutral to avoid neck strain.'] },
+                    { name: 'Side Lateral Raise', sets: '3', reps: '10-15', rest: '60-90 secs', videoUrl: '#', description: 'A great isolation exercise for building wide shoulders. Meadows uses a variation called "Dumbbell side lateral Y raise", noting that your hands should come up to the "10 and 2 o’clock position, not straight out in front or straight out to the side". He notes that you will know when you nail it.', tips: ['Lean slightly forward to target the side delts.', 'Raise the dumbbells with your elbows leading.', 'Don\'t use momentum to swing the weight up.'] },
+                    { name: 'Cable Crunches', sets: '3', reps: '15-20', rest: '60 secs', videoUrl: '#', description: 'This is a great exercise for building core strength and definition. Meadows says to "check out the form I prefer in the video" for sit-ups and that these are his favorite. The key is to use a slow and controlled tempo and a full range of motion. Focus on contracting your abs and not using your hips to move the weight.', tips: ['Keep your hips stationary and crunch with your abs.', 'Use a controlled tempo, especially on the eccentric phase.', 'Squeeze your abs at the bottom of the movement.'] }
+                ]
+            }
+        };
+
+        const overviewScreen = document.getElementById('overview-screen');
+        const workoutsScreen = document.getElementById('workouts-screen');
+        const exerciseScreen = document.getElementById('exercise-screen');
+        const mainNavButtons = document.querySelectorAll('.main-nav .nav-btn');
+        const workoutNav = document.querySelector('.workout-nav');
+        const workoutContent = document.getElementById('workout-content');
+        const exerciseContent = document.getElementById('exercise-content');
+        const backButton = document.getElementById('back-button');
+
+        // Function to show a screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Handle main navigation clicks
+        mainNavButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                mainNavButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                showScreen(button.dataset.target);
+
+                if (button.dataset.target === 'workouts-screen') {
+                    // Ensure a workout is selected and displayed when switching to this screen
+                    const activeWorkoutBtn = workoutNav.querySelector('.workout-nav-btn.active');
+                    if (activeWorkoutBtn) {
+                        displayWorkout(activeWorkoutBtn.dataset.workout);
+                    } else {
+                        // Default to the first workout if none is active
+                        const firstWorkoutBtn = workoutNav.querySelector('.workout-nav-btn');
+                        firstWorkoutBtn.classList.add('active');
+                        displayWorkout(firstWorkoutBtn.dataset.workout);
+                    }
+                }
+            });
+        });
+
+        // Handle workout navigation clicks
+        workoutNav.addEventListener('click', (event) => {
+            let targetButton = event.target.closest('.workout-nav-btn');
+            if (targetButton) {
+                document.querySelectorAll('.workout-nav-btn').forEach(btn => btn.classList.remove('active'));
+                targetButton.classList.add('active');
+                displayWorkout(targetButton.dataset.workout);
+            }
+        });
+
+        // Handle back button click
+        backButton.addEventListener('click', () => {
+            showScreen('workouts-screen');
+            const activeWorkoutBtn = workoutNav.querySelector('.workout-nav-btn.active');
+            if (activeWorkoutBtn) {
+                displayWorkout(activeWorkoutBtn.dataset.workout);
+            }
+        });
+
+        // Function to display a workout
+        function displayWorkout(workoutName) {
+            const workoutData = workouts[workoutName];
+            workoutContent.innerHTML = `<h2>${workoutData.name}</h2>`;
+            workoutData.exercises.forEach((exercise, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'clickable');
+                card.innerHTML = `
+                    <h3>${index + 1}. ${exercise.name}</h3>
+                    <p><strong>Sets:</strong> ${exercise.sets}</p>
+                    <p><strong>Reps:</strong> ${exercise.reps}</p>
+                    <p><strong>Rest:</strong> ${exercise.rest}</p>
+                `;
+                card.addEventListener('click', () => displayExerciseDetails(exercise, workoutData.name));
+                workoutContent.appendChild(card);
+            });
+        }
+
+        // Function to display detailed exercise view
+        function displayExerciseDetails(exercise, workoutName) {
+            exerciseContent.innerHTML = `
+                <h2>${exercise.name}</h2>
+                <div class="card exercise-details">
+                    <p><strong>Workout:</strong> ${workoutName}</p>
+                    <p><strong>Sets:</strong> ${exercise.sets}</p>
+                    <p><strong>Reps:</strong> ${exercise.reps}</p>
+                    <p><strong>Rest:</strong> ${exercise.rest}</p>
+                    <p class="description">${exercise.description}</p>
+                    <p class="tip-title">Tips</p>
+                    <ul>
+                        ${exercise.tips.map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            showScreen('exercise-screen');
+        }
+
+        // Initial display
+        showScreen('overview-screen');
+        displayWorkout('Upper A');
+    </script>
+</body>
+</html>
