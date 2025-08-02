@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Progressive Flow Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Style for the active movement in the session list */
+        .active-movement {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+        }
+        .active-movement:hover {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl mx-auto">
+
+        <!-- ======== LEVEL SELECTION VIEW ======== -->
+        <div id="level-selection-view" class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-blue-400">5 Minute Flow</h1>
+            <p class="mt-2 text-lg text-gray-300">Start small. Move every day. Better every day.</p>
+            <div class="mt-8 space-y-4">
+                <button id="level-1-btn" data-level="1" class="level-btn w-full max-w-sm mx-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    Level 1: Foundations
+                </button>
+                <button id="level-2-btn" data-level="2" class="level-btn w-full max-w-sm mx-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    Level 2: Compounds
+                </button>
+                <button id="level-3-btn" data-level="3" class="level-btn w-full max-w-sm mx-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    Level 3: Full Flow
+                </button>
+            </div>
+        </div>
+
+        <!-- ======== ACTIVE FLOW VIEW ======== -->
+        <div id="active-flow-view" class="hidden">
+            <h2 id="active-flow-header" class="text-2xl font-bold text-center mb-4 text-blue-400"></h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Main Display & Timer -->
+                <div class="flex-grow bg-gray-800 p-6 rounded-lg shadow-xl flex flex-col items-center justify-center text-center">
+                    <div id="timer-display" class="text-6xl font-bold mb-4 text-white">05:00</div>
+                    <h3 id="current-movement-name" class="text-3xl font-semibold text-blue-300 mb-2"></h3>
+                    <p id="current-movement-description" class="text-gray-300 max-w-md"></p>
+                </div>
+                <!-- Session List -->
+                <div class="w-full md:w-1/3 bg-gray-800 p-4 rounded-lg shadow-xl">
+                    <h4 class="text-lg font-bold mb-3 text-center">Session Movements</h4>
+                    <ul id="session-list" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- JS will populate this -->
+                    </ul>
+                </div>
+            </div>
+             <!-- Controls -->
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+                <button id="pause-resume-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition">Pause</button>
+                <button id="restart-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition">Restart Flow</button>
+                <button id="generate-new-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition">New Sequence</button>
+                <button id="end-flow-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition">End Flow</button>
+            </div>
+        </div>
+
+        <!-- ======== COMPLETION VIEW ======== -->
+        <div id="completion-view" class="hidden text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-green-400">Flow Complete!</h2>
+            <p class="mt-3 text-lg text-gray-300">Better every day.</p>
+            <p class="mt-6 text-md text-gray-400">Reward yourself with a refreshing glass of water.</p>
+            <div class="mt-8">
+                <button id="flow-again-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    Flow Again
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ======== DATA STRUCTURE ========
+const MOVEMENT_DATA = {
+    jointChecklist: ["wrists", "elbows", "shoulders", "shoulder blades", "neck", "thoracic spine", "lumbar spine", "hips", "knees", "ankles", "toes"],
+    jointIsolations: [
+        { name: "Shoulder Circles", description: "To perform Shoulder Circles, stand tall and extend your arms straight out to your sides or overhead. Begin drawing **large, smooth circles** with your arms, focusing on moving primarily from your **shoulder blades** rather than just bending your elbows. Ensure the movement is **effortless** and controlled, completing circles both **forward and backward**. Pay attention to how the rest of your body moves subtly with your shoulders, aiming for fluidity. You can perform these circles with both arms simultaneously or one arm at a time.", joints: ["shoulders", "shoulder blades"] },
+        { name: "Scapulae Circles", description: "For Scapulae Circles, stand or find a comfortable position. Focus on isolating your shoulder blades (scapulae) through their full range of motion. **Elevate** (shrug up), **retract** (pull back), **depress** (pull down), and **protract** (push forward) your shoulder blades to create a **smooth, continuous circular pattern**. The goal is to develop **scapular control**, ensuring the movement originates from the shoulder blade area and is performed with **strength, speed, and coordination**. Perform in both directions, aiming for effortless movement.", joints: ["shoulder blades"] },
+        { name: "Elbow Circles", description: "To perform Elbow Circles, extend your arm fully. Keeping your upper arm stable, bend your elbow and draw **smooth circles** with your forearm. Focus on moving only from the elbow joint, in both **clockwise and counter-clockwise** directions. You can make circles or figure eights with your wrists and elbows.", joints: ["elbows"] },
+        { name: "Wrist Circles", description: "For Wrist Circles, you can start by **flicking your wrists in and out**, beginning close to your torso and gradually increasing the speed and distance away from your body. Aim for **symmetrical movement** between both hands. You can also interlace your fingers (right thumb on top of left) and try to **slide your forearms against each other** in a swirling motion, performing this in **both directions** for about one minute total (30 seconds each direction). Another option is to draw a circle with your wrists while pressing your wrists together, which can engage your pectoral muscles and build stability. Focus on **smooth, controlled circles**. You can also open and close your fingertips while rotating your neck for an added benefit. These movements are easy and can be done anywhere.", joints: ["wrists"] },
+        { name: "Neck Rotation", description: "To perform Neck Rotation, ensure your **tongue is pressed firmly on the roof of your mouth** and your **jaw is closed**. Actively **disengage your shoulders** from your ears, creating space between them. Allow your **eyes to lead the movement** as you slowly turn your head to **look over one shoulder, then the other**. Practice these rotations at a **wide variety of speeds**, starting very slowly. If you find a stiff spot, you can pause, hold the position, and perform smaller movements or draw small circles in that area to gently work through the restriction. You can begin this exercise in a prone position (lying face down on your elbows) as it makes it easier to disengage the neck and shoulders. Ensure you breathe deeply throughout the exercise.", joints: ["neck"] },
+        { name: "Thoracic Spine Circles", description: "To perform Thoracic Spine Circles, find a comfortable seated or standing position. Focus on isolating the movement to your **upper or mid-back**. Begin to draw **smooth, continuous circles** by combining movements such as **flexion** (rounding forward), **extension** (arching back), **lateral flexion** (bending to the side), and **rotation** (twisting). Aim for **effortless movement**, letting your spine articulate smoothly through the full range of motion. You can perform these circles in both clockwise and counter-clockwise directions. This movement is excellent for releasing tension in the mid-back, which can often be the culprit for tightness in the shoulders, neck, and low back.", joints: ["thoracic spine"] },
+        { name: "Lumbar Spine Circle", description: "For Lumbar Spine Circles, you can perform this from either a **standing or seated position**. The key is to make **small, controlled circles** with your **lower back**, as if you are moving like a 'powered down robot'. The goal is to isolate the movement to the lumbar region, avoiding large, uncontrolled swaying of your entire torso. Focus on smooth, subtle movements in both directions, paying attention to how your lower back articulates.", joints: ["lumbar spine"] },
+        { name: "Hip Rainbows", description: "To execute Hip Rainbows, start in a **quadruped position** on your hands and knees, ensuring your back is flat and neutral. Select one leg. Lift that knee slightly off the ground and begin to draw a **large, smooth rainbow arc** with your foot, moving it from one side of your body to the other. Concentrate on **keeping your core stable** and minimizing any shifting or rotation in your lower back. The movement should primarily originate from your hip joint. Perform several repetitions on one side before switching to the other, ensuring the arc is controlled and fluid.", joints: ["hips"] },
+        { name: "Knee Circles", description: "For Knee Circles, stand with your **feet together** and place your **hands on your knees**. Gently **bend your knees** to a comfortable degree. Now, begin to perform **smooth, continuous circles** with your knees, moving them simultaneously in both **clockwise and counter-clockwise** directions. Focus on the fluidity of the movement through your knee joints, ensuring it feels effortless and controlled.", joints: ["knees"] },
+        { name: "Ankle Circles", description: "To perform Ankle Circles, you can do this from a seated or standing position, or even lying down. Lift one foot slightly off the ground. Begin to draw **smooth, deliberate circles** with your ankle, focusing on moving the foot only from the ankle joint. Perform circles in **both directions** (clockwise and counter-clockwise). Pay attention to any differences in range of motion or smoothness between your left and right ankles, aiming for controlled and fluid movement.", joints: ["ankles"] },
+        { name: "Toebility", description: "To enhance your Toebility, focus on improving the independent movement and sensitivity of your toes. Start by trying to **wiggle and spread your toes independently**. A key drill is to practice **lifting just your big toe** off the ground while keeping your other four toes pressed down, then **reverse that by lifting the other four toes** while keeping your big toe on the ground. You can also incorporate **toe curls**: use your hand to provide gentle resistance as you try to press your toes into your palm, both inward and outward, to strengthen both the flexors and extensors of your toes. The goal is to develop better **control and awareness** in your feet.", joints: ["toes"] }
+    ],
+    compoundMovements: [
+        { name: "Segmental Lunge Complex", description: "The Segmental Lunge Complex is designed to help you move in a variety of athletic ways, challenging the common idea that knees should always point straight forward. It involves lunging in different directions and incorporating upper body movements and pivots. This exercise helps you maintain control and bend at the knee with various foot and ankle positions. The key is to perform each movement with purpose and build up slowly and progressively. This complex is excellent for organizing natural athletic human movements.", joints: ["hips", "knees", "ankles", "thoracic spine"], variations: [{ name: "FORWARD LUNGE: Left Rotation", description: "Step forward with one leg. As you lunge, rotate your torso to the left. Focus on the coordinated movement of your upper and lower body." },{ name: "REVERSE LUNGE: Right Rotation", description: "Step backward with one leg. As you descend into the lunge, rotate your torso to the right. This engages your core and encourages diverse spinal movement." },{ name: "LATERAL LUNGE: Flexion", description: "Step sideways into a lunge, pushing your hips back. Deepen the lunge to focus on hip flexion. You can incorporate arm reaches across your body for added segmental disassociation." }] },
+        { name: "Deep Lunge", description: "The Deep Lunge is a versatile position that Max Shank considers a go-to for addressing both hip and thoracic spine mobility. You can enter this position from standing, by performing a reverse lunge, or by bringing a foot forward from a downward dog position. Once in the deep lunge, you explore various upper and lower body movements, aiming for controlled, dynamic movement.", joints: ["hips", "knees", "thoracic spine", "shoulders"], variations: [{ name: "Shoulder Circle (with tuck)", description: "From the deep lunge, initiate a shoulder circle. As you reach the bottom of the circle, tuck your elbow towards your front knee. This variation combines shoulder mobility with hip and spinal engagement." },{ name: "Knee Extensions + Forward Fold", description: "While in the deep lunge, gently straighten your front leg, folding your torso forward over it. Then, smoothly return to the deep lunge position. This movement stretches the hamstring of the front leg and the hip flexor of the back leg." },{ name: "Tall Rotations", description: "In a deep lunge, keep your torso upright and tall. Rotate your torso towards your front leg, ensuring the movement comes from your spine and hips rather than just your arms. This promotes thoracic mobility." }] },
+        { name: "Squat", description: "The Squat is a fundamental human movement, and in the 5-Minute Flow, it's approached with an emphasis on diverse movements that go beyond traditional straight-forward mechanics. It encourages you to explore various positions and transitions, acknowledging that real-life movement is rarely linear. If a deep squat is challenging, focus on improving ankle and hip mobility consistently to gradually increase your depth.", joints: ["hips", "knees", "ankles", "thoracic spine"], variations: [{ name: "1-arm Overhead reach/twist", description: "From a squat position, reach one arm directly overhead, allowing your torso to twist slightly in the direction of the arm. This integrates spinal rotation and shoulder mobility with the squat." },{ name: "Pry Apart", description: "In a deep squat, place your elbows on the inside of your knees and gently use them to pry your knees further apart. This helps to open the hips and improve adduction and internal rotation." },{ name: "1 Knee Drop", description: "While in a comfortable squat position, gently drop one knee towards the floor, keeping the other foot flat. This encourages hip and ankle mobility on the standing leg and helps improve fluidity in transitions." }] },
+        { name: "Cossack Squat", description: "The Cossack Squat is a dynamic side-to-side squat that emphasizes hip, knee, and ankle mobility. To perform, stand with your feet wide. Shift your weight to one leg, bending that knee deeply while keeping the other leg straight and its foot potentially flat or with the toes pointed up. **Keep your chest upright** as you descend into the squat. As you transition to the other side, maintain a low center of gravity. This movement helps to expand your movement vocabulary and improve your ability to move seamlessly between positions, enhancing your movement literacy.", joints: ["hips", "knees", "ankles"], variations: [{ name: "Arms out", description: "While performing Cossack squats, extend your arms straight forward at shoulder height for **counterbalance and stability**, helping you maintain an upright torso as you shift weight." },{ name: "Forward Bends", description: "In the deep position of a Cossack squat, gently **fold your torso forward over your bent leg**. This variation deepens the stretch in the hamstring and adductor of the bent leg and the inner thigh of the straight leg." }] },
+        { name: "90-90", description: "The 90-90 position is a versatile seated hip mobility drill, also known as a shin box or half sit. To set up, sit on the floor with both knees bent to approximately **90 degrees**, with one hip externally rotated (front leg) and the other internally rotated (back leg). This position is very powerful for your hips, allowing one hip to be in external rotation and flexion, and the other in internal rotation and flexion. It's a foundational position for improving your relationship with the ground and smoothly transitioning between seated and standing postures.", joints: ["hips", "thoracic spine"], variations: [{ name: "Thoracic Rotations", description: "From the 90-90 position, with your torso upright, **rotate your upper back towards your front knee**. Ensure the movement originates from your thoracic spine, aiming to keep your hips relatively stable. This helps unlock spinal mobility." },{ name: "Hip Opener (forward bend)", description: "In the 90-90 position, **fold your torso forward over your front knee**, deepening the stretch in the externally rotated hip. Focus on maintaining a flat back initially, then allow for a gentle rounding as you deepen the stretch. This enhances hip flexion and external rotation." }] },
+        { name: "Dogs", description: "The 'Dogs' category includes classic yoga poses like Upward Dog and Downward Dog, which offer full-body stretches and improve mobility across multiple joints. These positions are excellent for spinal articulation, shoulder stability, and hip and ankle flexibility.", joints: ["shoulders", "thoracic spine", "hips", "ankles"], variations: [{ name: "Upward Dog: Neck Rotations", description: "From an Upward Dog position, where your hips are close to the floor and your chest is lifted, **gently rotate your neck left and right**. Ensure your shoulders are disengaged and pushed away from your ears, and your jaw is closed with your tongue on the roof of your mouth." },{ name: "Downward Dog: Leg Raises", description: "From a Downward Dog position, with hands and feet on the ground forming an inverted V-shape, **lift one leg straight up towards the ceiling**, keeping your hips as level as possible. This stretches the hamstrings and calves of the standing leg and strengthens the glutes of the lifted leg." },{ name: "Downward Dog: Knee Bends", description: "From Downward Dog, **alternate bending one knee then the other**, as if you are 'pedaling' your feet. This helps to deepen the stretch in the calves and hamstrings while warming up the ankles and knees." }] },
+        { name: "Bridging", description: "Bridging movements, such as the Glute Bridge and Thoracic Bridge, are effective for improving **hip extension, spinal mobility, and coordinated core strength**. They help you to get crucial feedback from the ground, which can keep your movements 'honest' and controlled.", joints: ["lumbar spine", "hips", "thoracic spine", "shoulders"], variations: [{ name: "THORACIC BRIDGE: Arm Circles", description: "From a Thoracic Bridge position (where your back is arched off the floor and supported by your feet and one hand), **perform large, smooth circles with your free arm**. This enhances shoulder mobility and integrated core stability." },{ name: "COSSACK BRIDGE: Reach top arm to floor", description: "From a Cossack Bridge (a variation of the thoracic bridge with one leg extended), **reach your top arm towards the floor** in the direction of your extended leg. This encourages a deep spinal twist and further mobilizes the thoracic spine and shoulder." }] }
+    ],
+    transitions: [
+        { from: "Deep Lunge", to: "Cossack Squat", description: "To transition from a deep lunge into a Cossack squat, you can pivot either your **front or back foot**. This transition can be performed while staying low to the ground or by briefly coming up in the middle. Focus on a fluid shift of weight, maintaining an upright chest as you move between the deep lunge's hip opening and the Cossack squat's lateral mobility [Current set]. This expands your 'movement literacy' by exploring new pathways between positions." },
+        { from: "Deep Lunge", to: "Dogs", description: "From a deep lunge, place both hands on the floor to transition into a Downward Dog position. As you lift your hips high, push through your hands to create an inverted V-shape, lengthening your spine and stretching your hamstrings and calves [Current set, 100]. This transition leverages the deep lunge's hip mobility and the Downward Dog's full-body stretch, contributing to spinal articulation and shoulder stability [Current set]." },
+        { from: "Squat", to: "Dogs", description: "From a squat position, place your hands on the floor in front of you and **push your hips back and up towards the ceiling**, moving into a Downward Dog. Focus on lengthening your spine and driving your heels towards the ground to deepen the stretch in your hamstrings and calves [Current set]. This movement is excellent for linking lower body mobility (squat) with spinal and shoulder articulation (Downward Dog) [Current set, 99]." },
+        { from: "Squat", to: "Bridging", description: "From a deep squat, sit back onto the floor and **smoothly roll onto your back**, continuing the momentum to lift your hips into a thoracic bridge. This transition emphasizes coordinated core strength, spinal mobility, and hip extension, allowing you to gain crucial feedback from the ground [Current set, 15]. The ability to move effortlessly and with control between these positions is a hallmark of improved movement quality." },
+        { from: "Cossack Squat", to: "Deep Lunge", description: "To transition from a Cossack squat into a deep lunge, you will typically **pivot your body** from the side-to-side squat position, allowing one leg to extend behind you into the lunge. This movement, often described as expanding your 'movement literacy,' involves a fluid shift of weight and can be performed while staying low to the ground or by briefly rising and descending [91, Previous turn]. The Cossack Squat itself emphasizes hip, knee, and ankle mobility, and the Deep Lunge focuses on hip opening and spinal rotation [Previous turn]." },
+        { from: "90-90", to: "Squat", description: "To transition from the seated 90-90 position to a squat, you will typically use your hands for support initially, pushing off the floor to bring your feet under you and rise into a squat. The 90-90 is a powerful hip mobility drill for both external and internal hip rotation, foundational for improving your relationship with the ground and smooth transitions [18, Previous turn]. This transition highlights your ability to get **up and down off the floor in many ways**, a skill highly correlated with longevity." },
+        { from: "Dogs", to: "Squat", description: "From a Downward Dog position, step or jump your feet forward between your hands to land in a squat. This transition links the full-body stretch and spinal articulation of Downward Dog with the lower body mobility of a squat [Previous turn]. Focus on maintaining control and smooth movement, bringing your hips forward and down as your feet land, demonstrating your body's ability to **integrate mobility and stability** [Previous turn]." },
+        { from: "Dogs", to: "Deep Lunge", description: "From a Downward Dog, step one foot forward between your hands into a deep lunge. This transition seamlessly connects the full-body stretch and spinal lengthening of Downward Dog with the targeted hip and spinal mobility of the deep lunge [Previous turn, 42]. Focus on a controlled step, allowing your hips to sink into the deep lunge while maintaining an upright torso, showcasing your **active flexibility**." },
+        { from: "Bridging", to: "Squat", description: "From a thoracic bridge, transition into a squat by smoothly rolling your body and bringing your feet under you as you lift your torso. This dynamic transition emphasizes **spinal mobility, coordinated core strength, and hip extension**, enabling you to gain crucial feedback from the ground as you move from a supine to an upright position [Previous turn, 15]. The goal is to perform this movement as **effortlessly as possible**, a hallmark of improved movement quality [15, Previous turn]." }
+    ]
+};
+
+        // ======== APPLICATION LOGIC ========
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE VARIABLES ---
+            let currentLevel = 0;
+            let currentSequence = [];
+            let currentMovementIndex = 0;
+            let totalSeconds = 300;
+            let movementSeconds = 0;
+            let timerInterval = null;
+            let isPaused = false;
+
+            // --- DOM ELEMENTS ---
+            const views = {
+                levelSelection: document.getElementById('level-selection-view'),
+                activeFlow: document.getElementById('active-flow-view'),
+                completion: document.getElementById('completion-view')
+            };
+            const levelButtons = document.querySelectorAll('.level-btn');
+            const activeFlowHeader = document.getElementById('active-flow-header');
+            const timerDisplay = document.getElementById('timer-display');
+            const movementName = document.getElementById('current-movement-name');
+            const movementDescription = document.getElementById('current-movement-description');
+            const sessionList = document.getElementById('session-list');
+            const pauseResumeBtn = document.getElementById('pause-resume-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const generateNewBtn = document.getElementById('generate-new-btn');
+            const endFlowBtn = document.getElementById('end-flow-btn');
+            const flowAgainBtn = document.getElementById('flow-again-btn');
+
+            // --- INITIALIZATION ---
+            function init() {
+                levelButtons.forEach(button => button.addEventListener('click', () => startFlow(parseInt(button.dataset.level))));
+                pauseResumeBtn.addEventListener('click', togglePause);
+                restartBtn.addEventListener('click', () => startFlow(currentLevel));
+                generateNewBtn.addEventListener('click', () => startFlow(currentLevel));
+                endFlowBtn.addEventListener('click', () => showView('levelSelection'));
+                flowAgainBtn.addEventListener('click', () => showView('levelSelection'));
+                updateLevelButtons();
+                showView('levelSelection');
+            }
+
+            // --- VIEW MANAGEMENT ---
+            function showView(viewId) {
+                // Stop timer if leaving active flow view
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                Object.values(views).forEach(view => view.classList.add('hidden'));
+                views[viewId].classList.remove('hidden');
+                if (viewId === 'levelSelection') {
+                    updateLevelButtons();
+                }
+            }
+
+            function updateLevelButtons() {
+                const lastCompletedLevel = localStorage.getItem('lastCompletedLevel') || 0;
+                levelButtons.forEach(btn => {
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700', 'border-2', 'border-green-400');
+                    btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+                    if (btn.dataset.level <= lastCompletedLevel) {
+                        btn.classList.add('bg-green-600', 'hover:bg-green-700', 'border-2', 'border-green-400');
+                        btn.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+                    }
+                });
+            }
+
+            // --- SEQUENCE GENERATION ---
+            function generateSequence(level) {
+                let sequence = [];
+                const DURATION = 300;
+
+                if (level === 1) { // Foundations
+                    let availableIsolations = [...MOVEMENT_DATA.jointIsolations];
+                    let coveredJoints = new Set();
+                    let numMovements = 6; // Aim for 6 movements, 50s each
+                    
+                    while(sequence.length < numMovements && availableIsolations.length > 0) {
+                        let randomIndex = Math.floor(Math.random() * availableIsolations.length);
+                        let move = availableIsolations[randomIndex];
+                        let hasNewJoint = move.joints.some(j => !coveredJoints.has(j));
+
+                        if(hasNewJoint) {
+                            sequence.push({ ...move, duration: DURATION / numMovements });
+                            move.joints.forEach(j => coveredJoints.add(j));
+                            availableIsolations.splice(randomIndex, 1);
+                        } else {
+                            // If we can't find a move with a new joint, break to avoid infinite loop
+                            // This can happen if remaining moves only cover already covered joints
+                            if(availableIsolations.every(m => m.joints.every(j => coveredJoints.has(j)))) {
+                                break;
+                            }
+                        }
+                    }
+                     // If not enough moves were found, fill with remaining
+                    while(sequence.length < numMovements && availableIsolations.length > 0) {
+                        sequence.push({ ...availableIsolations.pop(), duration: DURATION / numMovements });
+                    }
+
+                } else if (level === 2) { // Compounds
+                    let availableCompounds = [...MOVEMENT_DATA.compoundMovements];
+                    let totalDuration = 0;
+                    
+                    while(totalDuration < DURATION && availableCompounds.length > 0) {
+                        let randIndex = Math.floor(Math.random() * availableCompounds.length);
+                        let compound = availableCompounds.splice(randIndex, 1)[0];
+                        
+                        // Add main compound movement
+                        const mainDuration = 30;
+                        sequence.push({ name: compound.name, description: compound.description, duration: mainDuration });
+                        totalDuration += mainDuration;
+
+                        // Add 1-2 variations
+                        let variations = [...compound.variations].sort(() => 0.5 - Math.random());
+                        const variationCount = Math.min(variations.length, Math.floor(Math.random() * 2) + 1);
+                        const variationDuration = 30;
+
+                        for(let i=0; i < variationCount; i++) {
+                            if(totalDuration + variationDuration <= DURATION) {
+                                sequence.push({ ...variations[i], duration: variationDuration });
+                                totalDuration += variationDuration;
+                            }
+                        }
+                    }
+
+                } else if (level === 3) { // Full Flow
+                    let availableMovements = [...MOVEMENT_DATA.compoundMovements];
+                    let sequenceDuration = 0;
+                    
+                    // Start with a random compound movement
+                    let currentMovement = availableMovements[Math.floor(Math.random() * availableMovements.length)];
+                    
+                    while(sequenceDuration < DURATION) {
+                        const moveDuration = 45;
+                        sequence.push({ name: currentMovement.name, description: currentMovement.description, duration: moveDuration});
+                        sequenceDuration += moveDuration;
+
+                        // Find a valid transition
+                        let possibleTransitions = MOVEMENT_DATA.transitions.filter(t => t.from === currentMovement.name);
+                        if (possibleTransitions.length > 0) {
+                            const transition = possibleTransitions[Math.floor(Math.random() * possibleTransitions.length)];
+                            const transitionDuration = 15;
+                            sequence.push({ name: `Transition to ${transition.to}`, description: transition.description, duration: transitionDuration });
+                            sequenceDuration += transitionDuration;
+                            
+                            // Set next movement
+                            currentMovement = availableMovements.find(m => m.name === transition.to) || availableMovements[Math.floor(Math.random() * availableMovements.length)];
+                        } else {
+                            // If no transition, pick another random one
+                            currentMovement = availableMovements[Math.floor(Math.random() * availableMovements.length)];
+                        }
+                    }
+                }
+                
+                // Adjust last movement's duration to make total exactly 300s
+                let currentTotal = sequence.reduce((acc, move) => acc + move.duration, 0);
+                let diff = DURATION - currentTotal;
+                if(sequence.length > 0) {
+                    sequence[sequence.length-1].duration += diff;
+                }
+
+                return sequence;
+            }
+
+            // --- FLOW MANAGEMENT ---
+            function startFlow(level) {
+                currentLevel = level;
+                isPaused = false;
+                pauseResumeBtn.textContent = 'Pause';
+                activeFlowHeader.textContent = `Level ${level}: ${level === 1 ? 'Foundations' : level === 2 ? 'Compounds' : 'Full Flow'}`;
+                
+                currentSequence = generateSequence(level);
+                if (currentSequence.length === 0) {
+                    alert("Could not generate a sequence. Please try again.");
+                    return;
+                }
+                
+                currentMovementIndex = 0;
+                totalSeconds = 300;
+                
+                populateSessionList();
+                startTimer();
+                showView('activeFlow');
+            }
+
+            function populateSessionList() {
+                sessionList.innerHTML = '';
+                currentSequence.forEach((move, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = move.name;
+                    li.className = 'p-2 rounded-md cursor-pointer transition hover:bg-gray-600 text-sm';
+                    li.dataset.index = index;
+                    li.addEventListener('click', () => skipToMovement(index));
+                    sessionList.appendChild(li);
+                });
+            }
+            
+            function skipToMovement(index) {
+                // Calculate time elapsed up to the start of the target movement
+                let timeElapsed = currentSequence.slice(0, index).reduce((acc, move) => acc + move.duration, 0);
+                totalSeconds = 300 - Math.floor(timeElapsed);
+                currentMovementIndex = index - 1; // It will be incremented to the correct index in tick()
+                
+                // Clear and restart timer to apply change immediately
+                clearInterval(timerInterval);
+                tick(true); // Force an immediate tick to update display and move to next
+                startTimer();
+            }
+
+            function updateDisplay() {
+                if (currentMovementIndex >= currentSequence.length) return;
+
+                const move = currentSequence[currentMovementIndex];
+                movementName.textContent = move.name;
+                movementDescription.textContent = move.description;
+                timerDisplay.textContent = formatTime(totalSeconds);
+
+                // Highlight active movement in the list
+                document.querySelectorAll('#session-list li').forEach((li, index) => {
+                    li.classList.toggle('active-movement', index === currentMovementIndex);
+                    if (index === currentMovementIndex) {
+                        li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            }
+
+            // --- TIMER LOGIC ---
+            function startTimer() {
+                if (timerInterval) clearInterval(timerInterval);
+                const currentMove = currentSequence[currentMovementIndex];
+                movementSeconds = currentMove.duration;
+                updateDisplay();
+
+                timerInterval = setInterval(() => tick(), 1000);
+            }
+
+            function tick(forceNext = false) {
+                if (isPaused) return;
+
+                totalSeconds--;
+                movementSeconds--;
+
+                if (totalSeconds <= 0) {
+                    flowCompletion();
+                    return;
+                }
+
+                if (movementSeconds <= 0 || forceNext) {
+                    currentMovementIndex++;
+                    if (currentMovementIndex >= currentSequence.length) {
+                        flowCompletion();
+                        return;
+                    }
+                    // Restart the timer for the new movement
+                    startTimer();
+                } else {
+                    updateDisplay();
+                }
+            }
+
+            function togglePause() {
+                isPaused = !isPaused;
+                pauseResumeBtn.textContent = isPaused ? 'Resume' : 'Pause';
+                if (!isPaused) {
+                    // To avoid a double-tick, we don't call startTimer() here.
+                    // The existing interval will just resume.
+                }
+            }
+
+            function flowCompletion() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                localStorage.setItem('lastCompletedLevel', currentLevel);
+                showView('completion');
+            }
+
+            // --- HELPER FUNCTIONS ---
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+
+            // --- START THE APP ---
+            init();
+        });
+    </script>
+</body>
+</html>
