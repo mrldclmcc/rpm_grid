@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Program Navigator</title>
+    <style>
+        /* CSS Custom Properties - Dark Theme */
+        :root {
+            --color-bg: #0f0f0f;
+            --color-surface: #1a1a1a;
+            --color-surface-hover: #252525;
+            --color-surface-active: #2a2a2a;
+            --color-text: #e0e0e0;
+            --color-text-secondary: #a0a0a0;
+            --color-primary: #3b82f6;
+            --color-primary-hover: #2563eb;
+            --color-accent: #10b981;
+            --color-border: #333333;
+            --color-error: #ef4444;
+
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+
+            --font-size-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+            --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+            --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+
+            --border-radius: 0.5rem;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: var(--spacing-lg);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Utility Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mb-xl { margin-bottom: var(--spacing-xl); }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .header h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin: 0 0 var(--spacing-sm) 0;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .nav-back-btn {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: var(--font-size-sm);
+        }
+
+        .nav-back-btn:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+        }
+
+        /* Grid Container */
+        .grid-container {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        /* Initial Part/Cycle Grid */
+        .part-cycle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .part-cycle-cell {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .part-cycle-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .part-cycle-cell:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+
+        .part-cycle-cell:hover::before {
+            left: 100%;
+        }
+
+        .part-cycle-cell:active {
+            background: var(--color-surface-active);
+            transform: translateY(0);
+        }
+
+        .cell-label {
+            display: block;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        .cell-sublabel {
+            display: block;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* Week x Day Table Grid */
+        .week-day-table {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-header {
+            background: var(--color-bg);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .table-header th {
+            padding: var(--spacing-md);
+            text-align: center;
+            font-weight: 600;
+            color: var(--color-primary);
+            border-right: 1px solid var(--color-border);
+            font-size: var(--font-size-base);
+        }
+
+        .table-header th:first-child {
+            background: var(--color-surface);
+            width: 120px;
+        }
+
+        .table-header th:last-child {
+            border-right: none;
+        }
+
+        .table-row {
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .week-label {
+            background: var(--color-bg);
+            padding: var(--spacing-md);
+            text-align: center;
+            font-weight: 600;
+            color: var(--color-accent);
+            border-right: 1px solid var(--color-border);
+            width: 120px;
+            font-size: var(--font-size-base);
+        }
+
+        .day-cell {
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            text-align: center;
+            min-height: 60px;
+            vertical-align: middle;
+        }
+
+        .day-cell:last-child {
+            border-right: none;
+        }
+
+        .day-cell:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+        }
+
+        .day-cell.selected {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .day-cell.selected:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .day-cell.empty {
+            cursor: not-allowed;
+            background: var(--color-bg);
+            color: var(--color-text-secondary);
+        }
+
+        .day-cell.empty:hover {
+            background: var(--color-bg);
+            border-color: var(--color-border);
+        }
+
+        /* Hover effects for rows */
+        .table-row:hover .week-label {
+            background: var(--color-surface-hover);
+            color: var(--color-primary);
+        }
+
+        .table-row:hover .day-cell:not(.empty) {
+            background: var(--color-surface-hover);
+        }
+
+        .table-row:hover .day-cell.selected {
+            background: var(--color-primary);
+        }
+
+        /* Cell content styling */
+        .cell-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            min-height: 200px;
+            display: none;
+        }
+
+        .content-area.visible {
+            display: block;
+        }
+
+        /* Content Styling */
+        .content-area h1, .content-area h2, .content-area h3 {
+            color: var(--color-primary);
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .content-area h1 { font-size: var(--font-size-xl); }
+        .content-area h2 { font-size: var(--font-size-lg); }
+        .content-area h3 { font-size: var(--font-size-base); }
+
+        .content-area p {
+            margin-bottom: var(--spacing-md);
+            line-height: 1.7;
+        }
+
+        .content-area ul, .content-area ol {
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-lg);
+        }
+
+        .content-area li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .content-area a {
+            color: var(--color-accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .content-area a:hover {
+            border-bottom-color: var(--color-accent);
+        }
+
+        .content-area strong {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .content-area em {
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .content-area code {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 0.25rem;
+            padding: 0.125rem 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .error {
+            color: var(--color-error);
+            text-align: center;
+            padding: var(--spacing-lg);
+        }
+
+        /* Loading Animation */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-border);
+            border-top: 2px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .part-cycle-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .part-cycle-cell {
+                padding: var(--spacing-md);
+            }
+
+            .content-area {
+                padding: var(--spacing-lg);
+            }
+
+            .week-day-table {
+                font-size: var(--font-size-sm);
+            }
+
+            .table-header th,
+            .week-label,
+            .day-cell {
+                padding: var(--spacing-sm);
+            }
+
+            .week-label {
+                width: 80px;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: var(--font-size-xl);
+            }
+
+            .nav-breadcrumb {
+                flex-wrap: wrap;
+            }
+
+            .week-day-table {
+                font-size: 0.75rem;
+            }
+
+            .table-header th,
+            .week-label {
+                font-size: 0.75rem;
+            }
+
+            .day-cell {
+                min-height: 40px;
+            }
+
+            .week-label {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <h1>Training Program Navigator</h1>
+        <p>Select your training part and cycle to begin</p>
+    </header>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="nav-breadcrumb" id="breadcrumb" style="display: none;">
+        <button class="nav-back-btn" id="back-btn">← Back to Overview</button>
+        <span id="breadcrumb-text"></span>
+    </nav>
+
+    <!-- Dynamic Grid Container -->
+    <main class="grid-container" id="grid-container">
+        <!-- Grid cells will be dynamically generated here -->
+    </main>
+
+    <!-- Content Display Area -->
+    <section class="content-area" id="content-area">
+        <!-- Workout details will be displayed here -->
+    </section>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyCZaPgpcrcFrk8m91kyVulXoKQgcNRcj9D0yTw9Bfm3qigd0kjULIdeMMl6a1mXW-Qdw/exec';
+
+        // Application State
+        let currentState = {
+            view: 'initial', // 'initial' or 'expanded'
+            selectedPart: null,
+            selectedCycle: null
+        };
+
+        // --------------------------------------------------------------
+        // 1.  FULL  data set extracted from the attached CSV
+        //     (trimmed to the combinations that actually exist)
+        // --------------------------------------------------------------
+        const VALID_COMBOS = [
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 1", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 1", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 1", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 1", day: "Friday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 2", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 2", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 2", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 2", day: "Friday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 3", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 3", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 3", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 1", week: "Week 3", day: "Friday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 1", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 1", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 1", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 1", day: "Friday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 2", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 2", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 2", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 2", day: "Friday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 3", day: "Monday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 3", day: "Tuesday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 3", day: "Thursday" },
+            { part: "Part 1", cycle: "Cycle 2", week: "Week 3", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 1", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 1", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 1", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 2", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 2", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 2", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 3", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 3", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 3", week: "Week 3", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 1", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 1", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 1", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 2", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 2", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 2", day: "Friday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 3", day: "Monday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 3", day: "Wednesday" },
+            { part: "Part 2", cycle: "Cycle 4", week: "Week 3", day: "Friday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 1", day: "Monday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 1", day: "Wednesday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 1", day: "Friday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 2", day: "Monday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 2", day: "Wednesday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 2", day: "Friday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 3", day: "Monday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 3", day: "Wednesday" },
+            { part: "Part 3", cycle: "Cycle 5", week: "Week 3", day: "Friday" }
+        ];
+
+        // Helper to check if a workout exists
+        function exists(part, cycle, week, day) {
+            return VALID_COMBOS.some(c =>
+                c.part === part &&
+                c.cycle === cycle &&
+                c.week === week &&
+                c.day === day
+            );
+        }
+
+        // --------------------------------------------------------------
+        // 2.  DOM  references
+        // --------------------------------------------------------------
+        const gridContainer = document.getElementById('grid-container');
+        const contentArea   = document.getElementById('content-area');
+        const breadcrumb    = document.getElementById('breadcrumb');
+        const breadcrumbText= document.getElementById('breadcrumb-text');
+        const backBtn       = document.getElementById('back-btn');
+
+        // --------------------------------------------------------------
+        // 3.  Markdown parser
+        // --------------------------------------------------------------
+        function parseMarkdown(text) {
+    if (!text) return '';
+
+    // 1. Headers
+    text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+    // 2. Bold / italic
+    text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // 3. Links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    // 4. Inline code
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // 5. Bullet lists (handles leading spaces and nested lines)
+    text = text.replace(/^(\s*)\* (.+)$/gm, (match, spaces, item) => {
+        const indent = spaces.length;
+        return indent === 0 ? `<ul><li>${item}</li></ul>` : `<li>${item}</li>`;
+    });
+
+    // 6. Collapse repeated <ul> tags
+    text = text.replace(/<\/ul>\n<ul>/g, '');
+
+    // 7. Line breaks / paragraphs
+    text = text.replace(/\n\n/g, '</p><p>');
+    text = text.replace(/^\s*[\r\n]/gm, '</p><p>');
+    text = text.replace(/^(?!<[huo])/gm, '<p>');
+    text = text.replace(/(?<!>)$/gm, '</p>');
+
+    // 8. Clean empty paragraphs
+    text = text.replace(/<p><\/p>/g, '');
+    text = text.replace(/<p>\s*<\/p>/g, '');
+
+    return text;
+}
+
+        // --------------------------------------------------------------
+        // 4.  API fetch
+        // --------------------------------------------------------------
+        async function fetchWorkoutDetails(part, cycle, week, day) {
+            const dayIdentifier = `${part}, ${cycle}, ${week}, ${day}`;
+            const url = `${API_BASE_URL}?day=${encodeURIComponent(dayIdentifier)}`;
+
+            contentArea.innerHTML = '<div class="loading"><div class="spinner"></div>Loading workout details...</div>';
+            contentArea.classList.add('visible');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const text = await response.text();
+                contentArea.innerHTML = parseMarkdown(text);
+            } catch (err) {
+                contentArea.innerHTML = `<div class="error"><h3>Error Loading Content</h3><p>${err.message}</p></div>`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 5.  Render grids
+        // --------------------------------------------------------------
+        function renderInitialGrid() {
+            currentState = { view: 'initial', selectedPart: null, selectedCycle: null };
+            breadcrumb.style.display = 'none';
+            contentArea.classList.remove('visible');
+
+            let html = '<div class="part-cycle-grid">';
+            VALID_COMBOS
+                .reduce((acc, c) => {
+                    const key = `${c.part}|${c.cycle}`;
+                    if (!acc.includes(key)) acc.push(key);
+                    return acc;
+                }, [])
+                .forEach(key => {
+                    const [part, cycle] = key.split('|');
+                    html += `
+                        <div class="part-cycle-cell" data-part="${part}" data-cycle="${cycle}">
+                            <span class="cell-label">${part}</span>
+                            <span class="cell-sublabel">${cycle}</span>
+                        </div>`;
+                });
+            html += '</div>';
+            gridContainer.innerHTML = html;
+        }
+
+        function renderExpandedGrid(part, cycle) {
+            currentState = { view: 'expanded', selectedPart: part, selectedCycle: cycle };
+
+            breadcrumb.style.display = 'flex';
+            breadcrumbText.textContent = `${part} → ${cycle}`;
+
+            const weeks = [...new Set(VALID_COMBOS.filter(c => c.part === part && c.cycle === cycle).map(c => c.week))];
+            const days  = [...new Set(VALID_COMBOS.filter(c => c.part === part && c.cycle === cycle).map(c => c.day))];
+
+            let html = `<table class="week-day-table"><thead class="table-header"><tr><th></th>`;
+            days.forEach(d => html += `<th>${d}</th>`);
+            html += '</tr></thead><tbody>';
+
+            weeks.forEach(wk => {
+                html += `<tr class="table-row"><td class="week-label">${wk}</td>`;
+                days.forEach(dy => {
+                    const has = exists(part, cycle, wk, dy);
+                    html += has
+                        ? `<td class="day-cell" data-part="${part}" data-cycle="${cycle}" data-week="${wk}" data-day="${dy}">
+                               <div class="cell-content">●</div>
+                           </td>`
+                        : `<td class="day-cell empty"><div class="cell-content">–</div></td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            gridContainer.innerHTML = html;
+            contentArea.classList.remove('visible');
+        }
+
+        // --------------------------------------------------------------
+        // 6.  Event wiring
+        // --------------------------------------------------------------
+        gridContainer.addEventListener('click', e => {
+            const partCycle = e.target.closest('.part-cycle-cell');
+            if (partCycle) {
+                renderExpandedGrid(partCycle.dataset.part, partCycle.dataset.cycle);
+                return;
+            }
+
+            const dayCell = e.target.closest('.day-cell:not(.empty)');
+            if (!dayCell) return;
+
+            document.querySelectorAll('.day-cell.selected').forEach(c => c.classList.remove('selected'));
+            dayCell.classList.add('selected');
+
+            const { part, cycle, week, day } = dayCell.dataset;
+            breadcrumbText.textContent = `${part} → ${cycle} → ${week}, ${day}`;
+            fetchWorkoutDetails(part, cycle, week, day);
+        });
+
+        backBtn.addEventListener('click', () => renderInitialGrid());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && currentState.view === 'expanded') renderInitialGrid();
+        });
+
+        // --------------------------------------------------------------
+        // 7.  Start
+        // --------------------------------------------------------------
+        renderInitialGrid();
+    </script>
+</body>
+</html>
