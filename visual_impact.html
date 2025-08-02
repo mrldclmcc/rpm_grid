@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Impact Low Volume High Frequency Training</title>
+    <title>Low Volume High Frequency Routine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -238,7 +238,7 @@
 
     <header class="main-header">
         <div class="container text-center">
-            <h1>Visual Impact Low Volume High Frequency Training</h1>
+            <h1>Low Volume High Frequency Routine</h1>
             <p>The Complete Guide to Building a Dense, Toned Physique</p>
         </div>
     </header>
@@ -257,6 +257,9 @@
                 </div>
                 <div class="card" data-target="weeks-9-12">
                     <h3 class="card__title">Weeks 9-12</h3>
+                </div>
+                 <div class="card" data-target="progression">
+                    <h3 class="card__title">Progression & Overload</h3>
                 </div>
                 <div class="card" data-target="diet">
                     <h3 class="card__title">Diet</h3>
@@ -300,6 +303,34 @@
                         <p>By the end of the 12 weeks, you can expect significant improvements in strength, muscle definition, and density. This is not a year-round program; it's a specialized cycle to achieve a new level of conditioning, which can then be maintained with a less demanding routine.</p>
                     `
                 },
+                progression: {
+                    title: 'Progression & Progressive Overload',
+                    body: `
+                        <p>Progression in this routine is different from traditional bodybuilding where the main goal is to constantly increase weight. Here, we focus on improving the efficiency of your Central Nervous System (CNS) and your ability to generate muscular tension.</p>
+                        <h4>Progression on Explosive Days</h4>
+                        <p>The primary goal is not just lifting heavier, but lifting the same weight <strong>faster and with more force</strong>. This is a sign that your CNS is becoming more efficient. You are progressing when:</p>
+                        <ul>
+                            <li>The weight feels noticeably lighter than it did before.</li>
+                            <li>You can move the weight with greater speed and acceleration.</li>
+                        </ul>
+                        <p>Only consider increasing the weight when the current weight feels easy for your target reps. Make <strong>small, infrequent jumps</strong> in weight. Forcing big jumps too soon will lead to fatigue and hinder CNS adaptation. Remember, the goal is a positive feedback loop, not a struggle.</p>
+                        
+                        <h4>Progression on TUT Days</h4>
+                        <p>Progression here is about mastering the skill of <strong>"Irradiation"</strong>—generating maximum tension. The goal is to increase your ability to create a powerful mind-muscle connection.</p>
+                        <ul>
+                            <li>Focus on making even light weights feel heavy by squeezing the target muscle and surrounding muscles as hard as possible throughout the entire lift.</li>
+                            <li>You are progressing when you can generate more tension with the same weight.</li>
+                            <li>Only increase the weight if you can maintain this maximum tension. Prioritize the quality of the contraction over the amount of weight lifted.</li>
+                        </ul>
+
+                        <h4>How to Track Progress</h4>
+                        <p>Since progression isn't just about the numbers on the weights, tracking requires a different approach:</p>
+                        <ul>
+                            <li><strong>Strength:</strong> Pay attention to how the lifts feel. A workout journal can be helpful to note when a weight on an Explosive Day starts to feel lighter or faster. For TUT days, note the quality of the tension you can generate.</li>
+                            <li><strong>Fat Loss:</strong> For tangible results, track your body composition. Weigh yourself at the same time each morning and, if possible, take skinfold measurements with calipers. Aim to hit a new personal low in either weight or skinfold measurement each week. This provides immediate feedback on your progress.</li>
+                        </ul>
+                    `
+                },
                 diet: {
                     title: 'The Hybrid Diet Plan',
                     body: `
@@ -341,25 +372,17 @@
             const workoutData = {
                 explosive: {
                     title: "Explosive Day",
-                    desc: "Goal: Generate a strong CNS surge by lifting explosively. Use low reps (2-5) and low sets (4-5 for large muscles, 3-4 for small). Rest 1-2 minutes between sets. Stick to the same 5 core exercises on these days. <strong>Lift with maximum speed and force, but always stop short of failure.</strong>",
-                    exercises: [
-                        "<strong>Pressing Movement (e.g., Dumbbell Bench Press):</strong> 4 sets of 2-5 reps",
-                        "<strong>Leg Exercise (e.g., Dumbbell Squats):</strong> 4 sets of 2-5 reps",
-                        "<strong>Back Exercise (e.g., One-Arm Dumbbell Rows):</strong> 4 sets of 2-5 reps",
-                        "<strong>Bicep Exercise (e.g., Seated Alternate Dumbbell Curls):</strong> 3 sets of 3-5 reps",
-                        "<strong>Tricep Exercise (e.g., Lying Tricep Extensions):</strong> 3 sets of 3-5 reps"
-                    ]
+                    guidance: "The goal is to generate a strong CNS surge by lifting explosively. You want to apply more force to the weight than it actually weighs, causing it to accelerate. This is about speed and power, not grinding out reps. <strong>Crucially, you must always stop your sets well short of failure.</strong>",
+                    sets_reps: "<ul><li><strong>Large Muscles (Chest, Back, Legs):</strong> 4-5 sets of 2-5 reps.</li><li><strong>Small Muscles (Biceps, Triceps):</strong> 3-4 sets of 3-5 reps.</li></ul><p>The entire set should last 10-15 seconds max.</p>",
+                    weight_selection: "<p>Use work-up sets. Your first sets should feel easy and are used to 'prime' the CNS. Your final set should be with a weight you could lift for 5-6 reps, but you stop at 2-3. This reinforces a positive feedback loop.</p><p><strong>Example Bench Press Work-up (1RM of 225lbs):</strong></p><ul><li>Set 1: 135lbs x 5 (very fast)</li><li>Set 2: 155lbs x 4 (fast)</li><li>Set 3: 185lbs x 3 (powerful)</li><li>Set 4: 205lbs x 2-3 (max force, stop before failure)</li></ul>",
+                    exercise_selection: "<p>It is highly recommended to <strong>stick to the same 5 core exercises</strong> on all Explosive Days. This allows you to accurately gauge your strength and speed improvements over time.</p><h4>Core Exercise Examples:</h4><ul><li><strong>Pressing:</strong> Barbell Bench Press, Dumbbell Bench Press</li><li><strong>Legs:</strong> Barbell Squats, Dumbbell Squats</li><li><strong>Back:</strong> Weighted Pull-ups, One-Arm Dumbbell Rows</li><li><strong>Biceps:</strong> Seated Alternate Dumbbell Curls, Barbell Curls</li><li><strong>Triceps:</strong> Cable Tricep Pushdowns, Lying Tricep Extensions</li></ul>"
                 },
                 tut: {
                     title: "TUT (Time Under Tension) Day",
-                    desc: "Goal: Maximize muscle density and tone with less joint stress. Use slow, deliberate movements and focus on 'Irradiation' (squeezing surrounding muscles). The routine is 3 sets of 3-4 reps, with about 1 minute of rest. You can vary exercises on these days. <strong>Focus on maximum tension, not weight.</strong>",
-                    exercises: [
-                        "<strong>Pressing Movement (e.g., Incline Dumbbell Press):</strong> 3 sets of 3-4 reps",
-                        "<strong>Leg Exercise (e.g., Dumbbell Lunges):</strong> 3 sets of 3-4 reps",
-                        "<strong>Back Exercise (e.g., Cable Rows):</strong> 3 sets of 3-4 reps",
-                        "<strong>Bicep Exercise (e.g., Dumbbell Concentration Curls):</strong> 3 sets of 3-4 reps",
-                        "<strong>Tricep Exercise (e.g., Bodyweight Dips):</strong> 3 sets of 3-4 reps"
-                    ]
+                    guidance: "The goal is to maximize muscle density and improve the mind-muscle link with less joint stress. The key concept is <strong>'Irradiation'</strong>: lifting slowly while purposely squeezing surrounding muscles to amplify nerve impulses to the target muscle. Make light weights feel heavy.",
+                    sets_reps: "<ul><li><strong>All Exercises:</strong> 3 sets of 3-4 reps.</li></ul><p>The focus is on the quality of tension, not the number of reps. A rough tempo is 2-4 seconds to lower and 2-4 seconds to lift.</p>",
+                    weight_selection: "<p>Weight is secondary to tension. Choose a weight that allows you to maintain maximum tension throughout the entire set without breaking form. If your joints feel sore from the previous Explosive Day, go lighter. The goal is therapeutic. You should feel a deep firmness in the muscle after your sets, not a pump.</p>",
+                    exercise_selection: "<p>You have the <strong>flexibility to vary exercises</strong> on TUT days. This prevents overuse injuries and allows you to hit muscles from different angles. Choose exercises that allow for continuous tension.</p><h4>Flexible Exercise Examples:</h4><ul><li><strong>Pressing:</strong> Incline Dumbbell Press, Cable Crossovers, Floor Press</li><li><strong>Legs:</strong> Hack Squat Machine, Leg Press, Dumbbell Lunges</li><li><strong>Back:</strong> Cable Rows, Lat Pulldowns, T-Bar Rows</li><li><strong>Biceps:</strong> Preacher Curls, Concentration Curls, Cable Curls</li><li><strong>Triceps:</strong> Dip Machine, Overhead Cable Extensions, Bodyweight Dips</li></ul>"
                 }
             };
             
@@ -410,18 +433,19 @@
 
             function showDayDetail(day, type, week, phase) {
                 const workout = workoutData[type];
-                let exercisesHtml = '<ul>';
-                workout.exercises.forEach(ex => {
-                    exercisesHtml += `<li>${ex}</li>`;
-                });
-                exercisesHtml += '</ul>';
-
                 modalBody.innerHTML = `
                     <button class="modal__back-btn" data-week="${week}" data-phase="${phase}">&larr; Back to Week ${week}</button>
                     <h2>${workout.title}</h2>
-                    <p>${workout.desc}</p>
-                    <h4>Workout Routine:</h4>
-                    ${exercisesHtml}
+                    <p>${workout.guidance}</p>
+                    
+                    <h4>Sets & Reps</h4>
+                    ${workout.sets_reps}
+
+                    <h4>Weight Selection & Work-up</h4>
+                    ${workout.weight_selection}
+
+                    <h4>Exercise Selection</h4>
+                    ${workout.exercise_selection}
                 `;
             }
 
@@ -442,16 +466,17 @@
                 const targetElement = e.target.closest('.card, .modal__back-btn');
                 if (!targetElement) return;
                 
-                if(targetElement.classList.contains('modal__back-btn')) {
+                if (targetElement.classList.contains('modal__back-btn')) {
                     const target = targetElement.dataset.target;
+                    const week = targetElement.dataset.week;
+                    const phase = targetElement.dataset.phase;
+
                     if (target === 'main') {
                         closeModal();
-                    } else if (target.startsWith('weeks')) {
+                    } else if (target && target.startsWith('weeks')) {
                         modalContent.classList.remove('modal-content--nested');
                         showWeeks(target);
-                    } else { // Back to week detail
-                        const week = targetElement.dataset.week;
-                        const phase = targetElement.dataset.phase;
+                    } else if (week && phase) { // FIX: This specifically handles the back button from the day view
                         showWeekDetail(week, phase);
                     }
                 } else if (targetElement.classList.contains('card')) {
