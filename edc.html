@@ -196,30 +196,453 @@
     </div>
 
     <script>
+        // All program data is now embedded in this script
+        const edcData = {
+          "programOverview": {
+            "title": "Program Overview & Philosophy",
+            "summary": "The core principles and goals of the E.D.C. program.",
+            "details": "The EVERY.DAY.CARRY. (EDC) Program is a comprehensive fitness regimen designed to enhance every aspect of your life by building true functional strength, conditioning, and athleticism. The name has a dual meaning: you will consistently carry heavy, awkward objects, and you will carry the strength gained into your everyday life. This program is for those who want to be strong, athletic, lean, well-conditioned, and injury-resistant. It's not just about lifting in the gym but about applying that strength to real-world challenges, making you an asset rather than a liability. It benefits both the average lifter seeking a new challenge and 'Warrior Athletes' (MMA fighters, military, first responders) who need to manipulate heavy, uncooperative objects or bodies in high-stakes situations. The program builds a bigger 'engine' for whatever your life demands."
+          },
+          "cardioOptions": {
+            "title": "Cardio & Conditioning",
+            "summary": "Guidance on cardio, conditioning, and weighted carries.",
+            "details": "Cardio in the EDC Program is integrated through two main avenues. Firstly, the core weighted carries are incredibly demanding on your heart and lungs. Carrying heavy, awkward objects requires significant oxygen, building immense cardiovascular conditioning and work capacity. This improves foot speed, agility, and balance. Secondly, the program includes optional bodyweight conditioning sessions. These are designed to further challenge your lungs or serve as active recovery without hindering your strength gains. They use high-intensity formats like EMOMs, AMRAPs, and ladders with exercises like burpees, squats, push-ups, sprints, and animal walks. This dual approach ensures you build a powerful cardiovascular system that supports both strength and real-world functional fitness."
+          },
+          "diet": {
+            "title": "Diet & Recovery",
+            "summary": "Nutritional guidelines and recovery strategies for optimal results.",
+            "details": "Proper nutrition and recovery are at least 50% of your results in this demanding program. A poor diet will not provide the fuel needed for these intense sessions, leading to poor results or injury. You don't need to be a 'food Nazi,' but every meal should be a conscious choice that moves you closer to your goals. Think of food as fuel for performance. Recovery is equally critical. You will experience soreness in new ways as you use muscles you may have never trained before. It is vital to get adequate sleep, stay hydrated, and dedicate 30-60 minutes daily to active recovery. This can include stretching, foam rolling, yoga, meditation, or cold plunges. Living like an athlete means prioritizing these practices over distractions like social media. Your choices today determine the person you become."
+          },
+          "progressiveOverload": {
+            "title": "Progressive Overload Scheme",
+            "summary": "Principles of progression for strength and carries.",
+            "details": "Progression is key. For weighted carries, a 1-Rep Max (1RM) is the most weight you can carry for 50 feet without dropping it. While percentage-based training is an option, a linear approach is often better for beginners to carries, as gains come quickly. The program uses HEAVY, MEDIUM, and LIGHT intensities. HEAVY carries are for short distances (~50ft) with loads over 70% of your 1RM. MEDIUM carries are for moderate distances (~100ft) with loads of 55%-70% 1RM. LIGHT carries are for long distances (150ft+) with lighter loads. For strength work, you will work up to a top set for a prescribed rep range each day in a Giant Set format. Always strive to lift as heavy as possible for the given reps without failing. The prescribed rounds are your 'working sets' and do not include warm-ups. Continue adding weight each round until you hit your top set for the day."
+          },
+          "mesocycles": [
+            {
+              "cycle": 1,
+              "weeks": "1-3",
+              "weeklyProgram": [
+                {
+                  "week": 1,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "At the Top of Every Minute for 10 Minutes:", "exercises": [ { "name": "Farmer’s Deadlifts", "details": "3 reps (Just a Deadlift with the implements in your hand)." }, { "name": "Farmer’s Carry", "details": "50ft @ 75% of Your 1RM 50ft Carry without Drops. Take the remainder of the minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "3 reps (Light-ish)." }, { "name": "Conventional or Paused Deadlifts", "details": "6 reps (Pause 2” off the Floor). Goal is 70-80%+ of your 1RM." }, { "name": "RKC Plank", "details": "30 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "Load a bar with 60% of your 1RM Deadlift. Add 2 reps every minute until you can't keep up.", "exercises": [ { "name": "Deadlift Ladder", "details": "Min 1: 2 reps, Min 2: 4 reps, Min 3: 6 reps, etc." } ] }
+                      ],
+                      "optionalConditioning": { "description": "EMOM for 10-15 mins: 5 Burpees, 5 Squats, 5 Push-Ups, 15 Mountain Climbers, 15 Jumping Jacks. (Scale to 3/3/3/12/12 if needed)." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "3 Rounds, adding weight each round:", "exercises": [ { "name": "Close Grip Chin-Ups or Inverted Rows", "details": "8 Chin-Ups or 16 Rows." }, { "name": "Standing Strict or 'Z' Press", "details": "8 reps. Goal is 60-70%+ of your 1RM." }, { "name": "Standing Plate Halos", "details": "8 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "3 Rounds with a barbell at 50% of your 1RM:", "exercises": [ { "name": "Strict Press to Waiter's Walk", "details": "10 Presses to 6-step walk, 8 presses to 6-step walk, 6 presses to 6-step walk. Rest 90s between rounds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "4 Rounds, same DBs for all:", "exercises": [ { "name": "Bent Over Rear Delt Flyes", "details": "8 reps." }, { "name": "Standing Lateral Raises", "details": "8 reps." }, { "name": "Standing Arnold Presses", "details": "8 reps." }, { "name": "Standing Semi-Supinated Strict Presses", "details": "8 reps. No rest between exercises, 2 min rest between rounds." } ] }
+                      ],
+                      "optionalConditioning": { "description": "AMRAP 10 mins: Ladder of 1 Pull-Up, 2 Dips/Push-Ups, 3 Squats. Double reps each round (e.g., 2/4/6, then 4/8/12)." }
+                    },
+                    {
+                        "day": 3,
+                        "workout": [
+                          { "type": "Weighted Carry", "intensity": "LIGHT", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Sprawls", "details": "4 reps (Like a burpee, but your chest hits the sandbag)." }, { "name": "Sandbag Carry", "details": "50ft Bear Hug Position, as close to bodyweight as possible. Rest for the remainder of the minute." } ] },
+                          { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Box Jumps", "details": "3 reps, as high as you can, focus on being explosive." }, { "name": "Squats or Box Squats", "details": "5 reps. Goal is 75%-85%+ of Your 1RM." }, { "name": "Hollow Rocks", "details": "20 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                          { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "4 Rounds. Load a squat bar with 50% of your 1RM Front Squat or Zercher Squat.", "exercises": [ { "name": "(1 & 1/2) Front or Zercher Squats", "details": "5 reps. (Drop to the hole, come up halfway, back to the hole, then full rep)." }, { "name": "Sandbag Squats", "details": "8 reps (Medium Weight). Drop extra deep, squeeze upper back and butt at the top." }, { "name": "Wall Sit", "details": "45 seconds with hands above your head. No rest between exercises, 2 min rest between rounds." } ] }
+                        ],
+                        "optionalConditioning": { "description": "4 Rounds, minimal rest: 20 Squats, 20 Stepping Lunges, 20 Jumping Lunges, 20 Jumping Squats." }
+                    },
+                    {
+                        "day": 4,
+                        "workout": [
+                          { "type": "Loading", "intensity": "HEAVY", "description": "At the top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Loads", "details": "3 reps over a bar or to a platform (Men’s Height 52” / Women’s 48”). Sandbag should be bodyweight or heavier. Rest for the remainder of the minute." } ] },
+                          { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Single Arm DB or KB Rows", "details": "8 reps each side." }, { "name": "Bench Press or Close Grip Bench Press", "details": "6 reps. Goal is 70-80%+ of your 1RM." }, { "name": "Dragon Flags or Leg Raises", "details": "7 Dragon Flags or 12 Leg Raises (control the descent slowly)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                          { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Dumbbell Squeeze Presses", "details": "12 reps (press the DBs against each other)." }, { "name": "Dumbbell or Kettlebell Straight Arm Pull-Overs", "details": "12 reps." }, { "name": "Max Reps Deficit Push-Ups", "details": "30 seconds (hands on DBs, chest to ground). 90 seconds rest between rounds." } ] }
+                        ],
+                        "optionalConditioning": { "description": "Every 30 seconds for 10-15 minutes: 3 Pull-Ups, 7 Push-Ups, 12 Squats." }
+                    }
+                  ]
+                },
+                {
+                  "week": 2,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Burpees (Optional)", "details": "3 reps." }, { "name": "Farmer's Walk", "details": "100ft @ 70% of Your 1RM 50ft Walk without Drops. Take the remainder of the minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "3 Rounds, adding weight each round:", "exercises": [ { "name": "Burpee Broad Jumps", "details": "4 reps (Jump as far as possible)." }, { "name": "Deadlifts or Snatch Grip Deadlifts", "details": "8 reps. Goal is 60-70%+ of your 1RM." }, { "name": "Ab Wheel Roll Outs or Barbell Roll-Outs", "details": "As many as possible." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "AMRAP 10 Minutes:", "exercises": [ { "name": "Romanian or Stiff Leg Deadlifts", "details": "5 reps (Heavy)." }, { "name": "Max Rep Single Arm DB/KB Rows (Left)", "details": "20 seconds (Heavy)." }, { "name": "Rest", "details": "20 seconds." }, { "name": "Max Rep Single Arm DB/KB Rows (Right)", "details": "20 seconds (Heavy)." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Ladder up until you can't keep up with the clock: Min 1: 1 Pull-Up, 2 Burpees, 3 Push-Ups, 4 Squats. Add 1 rep to each exercise every minute." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 6 Bodyweight, or 12 Inverted Rows." }, { "name": "Strict Press or Jerk/Split Jerk", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Hanging Windshield Wipers or Rainbows", "details": "6 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "Descending ladder from 12, 10, to 8 reps. Load bar with 65-75% of 1RM Strict Press.", "exercises": [ { "name": "Pull-Ups", "details": "" }, { "name": "Pin Presses", "details": "Dead stop on safety pins at eyebrow level." }, { "name": "Dips or Push-Ups", "details": "2x reps for push-ups." } ] },
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "AMRAP 10 Minutes:", "exercises": [ { "name": "Single Arm DB/KB Waiter's Walk (Left)", "details": "100ft (Moderate weight)." }, { "name": "Single Arm Farmer's Walk (Right)", "details": "100ft (Light-ish weight)." }, { "name": "Single Arm DB/KB Waiter's Walk (Right)", "details": "100ft (Moderate weight)." }, { "name": "Single Arm Farmer's Walk (Left)", "details": "100ft (Light-ish weight)." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps: 2 mins Hand Release Push-Ups, 2 mins Hollow Rocks. Then 90s of each. Then 60s of each." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "At the Top of Every Minute for 10 Minutes:", "exercises": [ { "name": "Sandbag Squats", "details": "3 reps (Squeeze upper back and butt at top)." }, { "name": "Sandbag Carry", "details": "50ft. Sandbag should be bodyweight or heavier. Take remainder of minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Kettlebell or Dumbbell Snatches", "details": "15 seconds each side (Explosive hips)." }, { "name": "Squats or Front/Zercher Squats", "details": "6 reps. Goal is 70-80%+ of your 1RM." }, { "name": "Hanging 'L' Sit or Leg Raises", "details": "30 second L-Sit or 8 Leg Raises." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "For 5 minutes, choose between Lunges or Step-Ups. Every time you stop, you owe 4 Pull-Ups or 8 Inverted Rows.", "exercises": [ { "name": "Lunges or Step-Ups", "details": "Move for 5 minutes. Goal: 40 lunges/min or 200 total reps." } ] }
+                      ],
+                      "optionalConditioning": { "description": "AMRAP 10 mins of 200 Meter Sprints. If no space, 7 minute Wall Sit." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "MEDIUM", "description": "At the Top of Every minute for 10 Minutes:", "exercises": [ { "name": "Sprawl to Sandbag Over Shoulder", "details": "3 reps. (Burpee with chest hitting bag, then throw bag over shoulder). Sandbag should be close to bodyweight." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "3 Rounds, adding weight each round:", "exercises": [ { "name": "Pendlay or Bent Over Rows", "details": "8 reps (Use same bar as bench if possible)." }, { "name": "Bench Press or Pin Bench Press", "details": "8 reps. Goal is 60-70%+ of your 1RM." }, { "name": "Bandy Twisty Things or Wood Chops", "details": "8 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "4 Rounds (12 total minutes).", "exercises": [ { "name": "Minute 1", "details": "5 Close Grip Bench Presses (Heavy), 5 Pull-Ups or 10 Rows. Rest remainder." }, { "name": "Minute 2", "details": "15 Neutral Grip Flat DB Presses (Moderate), 5 Pull-Ups or 10 Rows. Rest remainder." }, { "name": "Minute 3", "details": "20 seconds Tricep Extensions (Light, max reps). Rest remainder." } ] }
+                      ],
+                      "optionalConditioning": { "description": "3 Rounds, minimal rest: 60s max push-ups, 100ft Bear Walk, 100ft Gator Walk, 100ft Crab Walk." }
+                    }
+                  ]
+                },
+                {
+                  "week": 3,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "At the Top of Every Minute for 10 Minutes:", "exercises": [ { "name": "Farmer's Walk", "details": "150ft with 65% of your 50ft max. Take remainder of minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "3 reps (Close to bodyweight)." }, { "name": "Deadlifts or 13” Block Pulls", "details": "5 reps. Goal is 70-80%+ of your 1RM." }, { "name": "Standing Banded Crunches or Hanging Knee Raises", "details": "10 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "5 Total Rounds. Add weight each round. Use same bar for all.", "exercises": [ { "name": "Complex", "details": "15s Barbell Rows, 15s Rest, 15s RDLs, 15s Zercher Squats, 15s Zercher Hold/March, 30s Rest." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Tabata style, 8 rounds of each (20s work, 10s rest), 1 min rest between exercises: Cossack Squats, Pistols, Duck Walks." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 10 Bodyweight, or 25 Inverted Rows." }, { "name": "Strict Press or Push Press", "details": "6 reps. Goal is 70-80%+ of your 1RM." }, { "name": "Landmines", "details": "8 reps each side (Rotating Ab Exercise)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "For 10 minutes, work up in weight. Start with 80% of 1RM Strict Press.", "exercises": [ { "name": "Static Strict Press Hold or March", "details": "30 seconds. Start by squatting the weight up from J-hooks set below lockout. Rest 1 min and add weight. Continue for 10 mins." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "12 Rounds (6 mins total). Load bar with 30-50% of 1RM 'Z' Press.", "exercises": [ { "name": "'Z' Presses", "details": "20 seconds of as many reps as you can, 10 seconds rest." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Complete the ladder: 10 Burpees/1 HSPU, 9 Burpees/2 HSPU... down to 1 Burpee/10 HSPU." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "At the Top of Every Minute for 10 Minutes:", "exercises": [ { "name": "Sandbag Carry", "details": "50ft (At bodyweight or heavier)." }, { "name": "Farmer's Carry", "details": "50ft (At 70-80% of your 1RM 50ft carry). Take remainder of minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "3 Rounds, adding weight each round:", "exercises": [ { "name": "Burpee Pull-Ups", "details": "4 reps (Bar should be 1ft above reach)." }, { "name": "Squats or Pause Squats", "details": "8 reps. Goal is 60-70%+ of your 1RM." }, { "name": "Weighted Decline Sit-Ups", "details": "15 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "TEMPO Reps (4s descent, 4s pause, 4s ascent, 4s pause). Descending reps from 5 down to 1.", "exercises": [ { "name": "TEMPO Squats", "details": "Start at 65% 1RM, increase by 5% each set." }, { "name": "TEMPO Sandbag Squats", "details": "At bodyweight." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps: 2 mins Hindu Squats, 2 mins Feet Anchored Sit-ups. Then 90s of each. Then 60s of each." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "LIGHT", "description": "4 Rounds (Light-ish Sandbag):", "exercises": [ { "name": "Max Reps Loads", "details": "1 minute max reps over a bar or to a platform. 2 minutes rest between rounds. Beat the last round's score." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Deadlift Rows or Single Arm DB Rows", "details": "5 reps." }, { "name": "Bench Press or Floor Press", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Side Plank", "details": "30 seconds each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "Descending ladder from 8 down to 3 reps. Load bar with 65-75% of 1RM Bench.", "exercises": [ { "name": "Pin Bench Presses", "details": "Paused on pins at sticking point." }, { "name": "Dips or Bench Dips", "details": "" }, { "name": "Push-Ups", "details": "" } ] }
+                      ],
+                      "optionalConditioning": { "description": "Tabatas (9 mins total): 5 rounds of 20s max reps Plyo Push-Ups/10s rest. 1 min rest. 5 rounds of 20s max reps Deficit Push-Ups/10s rest." }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cycle": 2,
+              "weeks": "4-6",
+              "weeklyProgram": [
+                {
+                  "week": 4,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "5 Rounds, adding weight each round. As fast as possible:", "exercises": [ { "name": "Single Arm Farmer's Carry (Left)", "details": "50ft (Close to bodyweight), sprint back." }, { "name": "Sandbag Carry (Bearhug)", "details": "50ft (Bodyweight or heavier), sprint back." }, { "name": "Single Arm Farmer's Carry (Right)", "details": "50ft (Close to bodyweight). Rest 90-120s." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Box Jumps", "details": "4 reps (High & explosive)." }, { "name": "Deadlifts or Paused Deadlifts", "details": "4 reps. Goal is 85-90%+ of your 1RM." }, { "name": "Long Lever Plank", "details": "40 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "1-2 Rounds. Load bar with 75% of 1RM Deadlift.", "exercises": [ { "name": "Descending Time Max Reps", "details": "1 min max reps, 1 min rest (drop to 65%). 45s max reps, 45s rest (drop to 55%). 30s max reps." } ] }
+                      ],
+                      "optionalConditioning": { "description": "7 Minute Dead Hang from a pull-up bar. Every time you drop, you owe 5 burpees." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Close Grip Chin-Ups or Inverted Rows", "details": "9 Chin-Ups or 18 Rows." }, { "name": "Standing Strict or 'Z' Press", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Hanging Side Leg Raises", "details": "8 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "EMOM for 10 minutes. Load bar with 70% of 1RM Strict Press.", "exercises": [ { "name": "Strict Press & Pause Push-Press", "details": "2 Strict Presses & 2 Pause Push-Presses (pause in dip). Take remainder of minute to rest." } ] },
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "4 Rounds, no rest between exercises, 90s rest after cycle:", "exercises": [ { "name": "Single Arm DB Press (Left)", "details": "5 reps." }, { "name": "DB Waiter's Walk (Left)", "details": "100ft." }, { "name": "Pull-Ups or Rows", "details": "10 Pull-Ups or 20 Rows." }, { "name": "Single Arm DB Press (Right)", "details": "5 reps." }, { "name": "DB Waiter's Walk (Right)", "details": "100ft." }, { "name": "Pull-Ups or Rows", "details": "10 Pull-Ups or 20 Rows." } ] }
+                      ],
+                      "optionalConditioning": { "description": "As fast as you can, descending ladder 15-10-5 reps of: Pull-Ups (or rows), Dips (or bench dips), Squat Jumps." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Box Jumps", "details": "3 reps (As high as you can)." }, { "name": "Squats or Box Squats", "details": "3 reps. Goal is 80-90%+ of your 1RM." }, { "name": "Deadbugs", "details": "12 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "Load bar with 35-45% of 1RM Squat. Do not re-rack the bar.", "exercises": [ { "name": "Max Squats Windows", "details": "3 mins max squats, 3 mins rest. 2 mins max squats, 2 mins rest. 1 min max squats, 1 min rest." } ] },
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "Increasing distance carries with a lightish sandbag (close to bodyweight).", "exercises": [ { "name": "Carry Ladder", "details": "Min 1: 150ft carry, Min 2: Rest, Min 3: 200ft carry, Min 4: Rest, Min 5: 250ft carry or failure, Min 6: Rest, Min 7: 300ft carry or failure." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Be the Clock: Face 12 o'clock, do 12 lunges. Face 11, do 11. Go all the way around. Make them jumping for a challenge." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "HEAVY", "description": "At the top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Loads", "details": "3 reps. Use heavy sandbag or increase platform height. Take remainder of minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Dumbbell or Kettlebell Gorilla Rows", "details": "8 reps each side." }, { "name": "Bench Press or Close Grip Bench Press", "details": "4 reps. Goal is 85-90%+ of your 1RM." }, { "name": "Single Arm Dumbbell Hold", "details": "1 minute each side (heaviest possible)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "AMRAP 10 minutes, light weight, minimal rest:", "exercises": [ { "name": "Burpee Lateral Jumps Over Bar", "details": "4 reps." }, { "name": "Pendlay Rows", "details": "4 reps (same bar)." }, { "name": "Floor Presses", "details": "4 reps (same bar)." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Push-Up Challenge: Stand, drop to 1 push-up, stand. Drop to 2 push-ups, stand. Work up to 10+, then back down. No rest." }
+                    }
+                  ]
+                },
+                {
+                  "week": 5,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "For 12 Minutes:", "exercises": [ { "name": "ODD Minutes", "details": "Max Distance Farmer's Carry @ 65% of 1RM. Rest remainder of minute after grip fails." }, { "name": "EVEN Minutes", "details": "10 Farmer's Deadlifts. Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Kettlebell or Dumbbell Swings", "details": "30 seconds (Heavy, explosive hips)." }, { "name": "Deadlifts or Snatch Grip Deadlifts", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Long Lever Plank", "details": "45 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "Do not release bar until complex is complete. 1 min rest between rounds.", "exercises": [ { "name": "Snatch Grip Complex", "details": "6 Snatch Grip Deadlifts (Heavy), 10 Snatch Grip Shrugs, 30s Snatch Grip Holds/March." } ] }
+                      ],
+                      "optionalConditioning": { "description": "10 Minute Plank. You can rotate, shake, but don't let knees touch the deck. Keep 3 points of contact." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 6 Bodyweight, or 12 Inverted Rows." }, { "name": "Strict Press or Jerk/Split Jerk", "details": "3 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Full Contact Twists", "details": "6 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "3 Rounds. Load bar to 30-40% of 1RM Strict Press. 2 mins rest between rounds.", "exercises": [ { "name": "TEMPO Press to Push Press", "details": "6 TEMPO Strict Presses (4s up, 4s pause, 4s down), hold last rep for 20s. Immediately do 10 Push Presses, hold last rep for 20s." } ] },
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "4 Rounds (Light-ish), 2 mins rest between rounds:", "exercises": [ { "name": "DB Press to Waiter's Walk & Shrug", "details": "10 Standing Semi-Supinated DB Strict Presses, on last rep walk 30s. Drop DBs, 10 Shrugs (2s pause), hold last rep 30s." } ] }
+                      ],
+                      "optionalConditioning": { "description": "4 Rounds, minimal rest: 100ft Bear Crawl, 100ft Burpee Broad Jumps, 100ft Crab Walk." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "AMRAP 10 minutes:", "exercises": [ { "name": "Sandbag Complex", "details": "3 Sandbag Picks (to chest, hold 1s), 7 Sandbag Squats (deep), 50ft Carry (Bearhug). All with heavy sandbag. Rest as needed between rounds." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "3 reps (close to bodyweight)." }, { "name": "Squats or Front/Zercher Squats", "details": "4 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Weighted Plank", "details": "60 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "Load squat bar to 60% of 1RM.", "exercises": [ { "name": "Descending Reps Squats", "details": "20 reps, 60s rest. 15 reps, 60s rest. 10 reps, 60s rest. AMRAP (stop at 20)." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps: 3 mins Burpee Lateral Jumps, 3 mins Prisoner Squats. 2 mins of each. 1 min of each." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "MEDIUM", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Loads", "details": "5 reps over a bar or to a platform (Medium weight). Take remainder of minute to rest." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Eccentric Dumbbell Rows", "details": "6 reps each side (7s descent, explosive up)." }, { "name": "Bench Press or Pin Bench Press", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Pallof Presses", "details": "6 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "4 Rounds, adding weight each round:", "exercises": [ { "name": "Single Arm DB Rows", "details": "30s left, 30s right (Heavy, use straps if needed)." }, { "name": "Rest", "details": "30 seconds." }, { "name": "Incline Bench Press", "details": "30 seconds (Heavy, rest-pause if needed)." }, { "name": "Rest", "details": "60 seconds." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Max Push-Ups without breaking plank: 2 mins on, 2 mins off. 1 min on, 1 min off. 30s on, 30s off." }
+                    }
+                  ]
+                },
+                {
+                  "week": 6,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "Load implements to 70% of 50ft max. In front of a running clock for 9 minutes:", "exercises": [ { "name": "Descending Distance Farmer's Walks", "details": "Min 1: 150ft, Min 2: 100ft, Min 3: 50ft. Repeat this 3x." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "2 reps (Bodyweight or heavier)." }, { "name": "Deadlifts or 13” Block Pulls", "details": "3 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Hollow Rocks", "details": "20 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "10 Minutes to build to your heaviest Row Complex. 4 Rounds.", "exercises": [ { "name": "Row Complex", "details": "5 Strict Pendlay Rows, 5 Barbell Rows, 5 Deadlift Rows. Do not release bar. Rest as needed between rounds." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Deck of Cards for 12 mins. Hearts: Burpees, Spades: Pull-Ups/Rows, Diamonds: Jumping Squat Lateral Jumps, Clubs: HSPU/Pike Push-Ups." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 10 Bodyweight, or 25 Inverted Rows." }, { "name": "Strict Press or Push Press", "details": "4 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Weighted Russian Twists", "details": "30 seconds each side (Heavy)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "3 Rounds. Load bar light (e.g. 95lbs). Rest 2 mins between rounds.", "exercises": [ { "name": "Failure Triple Set", "details": "Max 'Z' Presses, then max Strict Presses, then max Push Presses. All with the same weight until failure." } ] },
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "GO HEAVIER THAN WEEK 3. For 10 minutes, work up in weight. Start with 80% of 1RM Strict Press.", "exercises": [ { "name": "Static Strict Press Hold or March", "details": "30 seconds. Start by squatting the weight up from J-hooks set below lockout. Rest 1 min and add weight. Continue for 10 mins." } ] }
+                      ],
+                      "optionalConditioning": { "description": "EMOM for 10 minutes: 3 Bodyweight Man Makers, 100ft Bear Walk. Rest remainder of minute." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "5 Rounds, adding weight each round:", "exercises": [ { "name": "Kettlebell or Dumbbell Swings", "details": "30 seconds (Heavy, explosive hips)." }, { "name": "Squats or Pause Squats", "details": "5 reps. Goal is 75-85%+ of your 1RM." }, { "name": "Medicine Ball Squat Jumps", "details": "8 reps immediately after squats." }, { "name": "Wall Sit", "details": "45 seconds with hands above head." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "EMOM for 10 minutes, then rest 2-4 mins, then another EMOM for 10 minutes.", "exercises": [ { "name": "Bulgarian Split Squats", "details": "3 reps each side (Moderate weight)." }, { "name": "Front Foot Elevated Split Squats", "details": "3 reps each side (Moderate weight)." } ] },
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "AMRAP 10 minutes of 50ft runs:", "exercises": [ { "name": "Sandbag Squat & Walk", "details": "5 Sandbag Squats, 5 steps holding sandbag. Repeat until you hit 50ft marker. See how many runs you can complete." } ] }
+                      ],
+                      "optionalConditioning": { "description": "As fast as possible, complete all reps of one exercise before moving to the next: 40 Pull-Ups/150 Rows, 120 Feet Anchored Sit-Ups, 150 Push-Ups, 200 Hindu Squats." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "LIGHT", "description": "Find the song 'Flower' by Moby. Follow the lyrics.", "exercises": [ { "name": "'Bring Sally Up' Sandbag Picks", "details": "Lift sandbag to bearhug lockout on 'Bring Sally Up', drop it on 'Bring Sally Down'. Use bodyweight sandbag or heavier." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Deadlift Rows or Single Arm DB Rows", "details": "5 reps." }, { "name": "Bench Press or Floor Press", "details": "3 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Dragon Flags or Laying Leg Raises", "details": "7 Dragon Flags or 14 Leg Raises." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "TEMPO Reps (4s descent, 4s pause, 4s ascent, 4s pause). Descending reps from 5 down to 1.", "exercises": [ { "name": "TEMPO Bench Press", "details": "Start at 65% 1RM, increase by 5% each set." }, { "name": "TEMPO Push-Ups", "details": "" } ] }
+                      ],
+                      "optionalConditioning": { "description": "On the clock, 1 min max reps then 1 min rest for each: Close Grip Push-Ups, Wide Grip Push-Ups, Deficit Push-Ups, Hand Release Push-Ups, Regular Push-Ups." }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cycle": 3,
+              "weeks": "7-9",
+              "weeklyProgram": [
+                {
+                  "week": 7,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "Work up to 80-85% of your 1RM 50ft carry, then take no more than 5 more rounds to find a new 1RM.", "exercises": [ { "name": "Find New 1RM Farmer's Carry", "details": "50ft. Take as long as needed between rounds." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "7 Rounds, adding weight each round:", "exercises": [ { "name": "Burpee Broad Jumps", "details": "4 reps (As far and explosive as possible)." }, { "name": "Deadlifts or Paused Deadlifts", "details": "2 reps. Goal is 95-100%+ of your 1RM - Find a new PR!" }, { "name": "RKC Plank", "details": "30 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "For 10 Minutes, use one bar with light-moderate weight.", "exercises": [ { "name": "ODD Minutes", "details": "20s RDLs / 20s Shrugs / 20s Rest." }, { "name": "EVEN Minutes", "details": "20s Snatch Grip Deads / 20s Snatch Grip Shrugs / 20s Rest." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps: 3 mins Prisoner Squats, 3 mins Bodyweight Man-Makers. 2 mins of each. 1 min of each." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Close Grip Chin-Ups or Inverted Rows", "details": "10 Chin-Ups or 20 Rows." }, { "name": "Standing Strict or 'Z' Press", "details": "3 reps. Goal is 60-70%+ of your 1RM." }, { "name": "Single Arm Dumbbell Hold", "details": "30 seconds each side (Heaviest possible)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "EMOM for 10 minutes:", "exercises": [ { "name": "Eccentric Push-Press", "details": "3 reps @ 75% of 1RM Push-Press, with a slow 4-second eccentric. Rest remainder of minute." } ] },
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "5 Rounds. Grab DBs you can strict press 15-20 times.", "exercises": [ { "name": "Strict Press to Overhead Shrug Walk", "details": "10 Strict Presses, but at lockout, hold in overhead 'shrug' position and walk 100ft. Then do 10 Push-Presses with same DBs." } ] }
+                      ],
+                      "optionalConditioning": { "description": "10 Rounds: 10s Pull-Ups/Rows, 20s Dips/Deficit Push-Ups, 30s Plank." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Sprawls", "details": "4 reps." }, { "name": "Sandbag Carry", "details": "50ft Bear Hug Position (close to bodyweight). Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "2 reps (close to bodyweight)." }, { "name": "Squat or Box Squat", "details": "1 rep. Goal is 100%+ of your 1RM - Hit a new PR!" }, { "name": "Hanging Leg or Knee Raises", "details": "7 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "EMOM for 10-12 minutes. Start with a lightly loaded squat bar.", "exercises": [ { "name": "Complex", "details": "1 Squat, 1 Pull-Up, 1 Burpee. Add weight each minute and see how heavy you can get." } ] }
+                      ],
+                      "optionalConditioning": { "description": "8 Rounds: 40 Meter Hill Sprint, Bear Walk back down. 2 mins rest after returning to start." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "HEAVY", "description": "At the top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Loads", "details": "3 reps. Use heavy sandbag or increase platform height. Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "7 Rounds, adding weight each round:", "exercises": [ { "name": "Chest Supported or Single Arm DB/KB Rows", "details": "8 reps." }, { "name": "Bench Press or Close Grip Bench Press", "details": "2 reps. Goal is 85-95%+ of your 1RM." }, { "name": "'V' Sit-Ups", "details": "20 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "Become the Clock: Grab medium DBs. Face 12 o'clock, do 12 push-ups, then clean & press. Turn to 11, do 11 push-ups, C&P. Go all the way around.", "exercises": [ { "name": "Push-Up Clock", "details": "If too easy, make it a 24-hour clock." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps: 2 mins Hand Release Push-Ups, 2 mins Leg Raises. Then 90s of each. Then 60s of each." }
+                    }
+                  ]
+                },
+                {
+                  "week": 8,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Burpees", "details": "3 reps." }, { "name": "Farmer's Walk", "details": "100ft @ 80% of your 1RM 50ft walk. Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Kettlebell or Dumbbell Swings", "details": "30 seconds (Heavy, explosive hips)." }, { "name": "Deadlifts or Snatch Grip Deadlifts", "details": "3 reps. Goal is 80-90%+ of your 1RM." }, { "name": "Ab Wheel or Barbell Roll-Outs", "details": "8 reps." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "Load bar with 80% of 1RM Deadlift.", "exercises": [ { "name": "Descending Weight Max Reps", "details": "30s max reps, 90s rest (drop to 70%). 30s max reps, 90s rest (drop to 60%). 30s max reps, 90s rest (drop to 50%). 30s max reps." } ] }
+                      ],
+                      "optionalConditioning": { "description": "4 Rounds of Tabata: 40s Burpees/20s rest, 40s Squats/20s rest, 40s Push-Ups or Plank/20s rest." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 6 Bodyweight, or 12 Inverted Rows." }, { "name": "Strict Press or Jerk/Split Jerk", "details": "1 rep. Goal is 100%+ of your 1RM - Find a new PR!" }, { "name": "Overhead Side Bends", "details": "4 reps each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "AMRAP 10 minutes, rest as little as needed:", "exercises": [ { "name": "Complex", "details": "4 Wide Grip Pull-Ups, 8 Neutral Grip DB Strict Presses, 10 Dips (or 15 Push-Ups), 12 Face Pulls." } ] },
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "For 10 Minutes:", "exercises": [ { "name": "ODD Minutes", "details": "100ft Crucifix Carry (arms straight out). Rest remainder." }, { "name": "EVEN Minutes", "details": "10 DB Arnold Presses (same DBs). Rest remainder." } ] }
+                      ],
+                      "optionalConditioning": { "description": "10 Rounds: 20s max Pull-Ups/Rows, 20s max Burpees/Hand Release Push-Ups, 20s rest." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "At the Top of Every Minute for 10 minutes:", "exercises": [ { "name": "Sandbag Carry Medley", "details": "50ft carry with lighter sandbag, 3 burpees, 50ft carry back with heavier sandbag. Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "7 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "3 reps (close to bodyweight)." }, { "name": "Squats or Front/Zercher Squats", "details": "2 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Flutter Kicks", "details": "40 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "3 Rounds, no rest between exercises, 2 mins rest after cycle:", "exercises": [ { "name": "Lunge & Squat Complex", "details": "20 DB Walking Lunges (heavy), 20 DEEP DB Goblet Squats, 20 DB Walking Lunges back, 20 DEEP DB Goblet Squats." } ] }
+                      ],
+                      "optionalConditioning": { "description": "No rest descending ladder 10-8-6-4 reps of: Walking Lunges, Squats, Bodyweight Man-Makers." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "MEDIUM", "description": "AMRAP 8 minutes:", "exercises": [ { "name": "Load & Burpee Ladder", "details": "1 Sandbag Over Bar (light), 1 Burpee. 2 of each. 3 of each... Continue adding reps." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Eccentric Dumbbell Rows", "details": "6 reps each side (7s descent)." }, { "name": "Bench Press or Pin Bench Press", "details": "3 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Dumbbell/Kettlebell Side Bends", "details": "8 reps each side with good holds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "4 Rounds, 90s rest between rounds:", "exercises": [ { "name": "Triset", "details": "15 Neutral Grip DB Bench Presses (heavy), 15 Dips, 15 Cable/Band Tricep Extensions (heavy)." } ] }
+                      ],
+                      "optionalConditioning": { "description": "For 10 Minutes: ODD mins: Max Pull-Ups & Dips. EVEN mins: Max 'V' Sit-Ups/Squat Jumps." }
+                    }
+                  ]
+                },
+                {
+                  "week": 9,
+                  "days": [
+                    {
+                      "day": 1,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Sandbag Over Shoulder", "details": "2 reps (close to bodyweight)." }, { "name": "Deadlift or 13” Block Pull", "details": "1 rep. Goal is 100%+ of your 1RM - Find a new PR!" }, { "name": "Long Lever Plank", "details": "30 seconds." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "5 Rounds as fast as possible. Load bar with 70% of 1RM.", "exercises": [ { "name": "Complex", "details": "6 Deadlifts, 6 Burpee Lateral Jumps Over the Bar. Your rest is a 1-minute plank." } ] },
+                        { "type": "Weighted Carry", "intensity": "LIGHT", "description": "Make the weight light-ish but challenging. Don't use straps unless necessary.", "exercises": [ { "name": "1 Mile Farmer's Carry", "details": "This is a workout you will remember. Make a decision about who you want to be." } ] }
+                      ],
+                      "optionalConditioning": { "description": "EMOM for 11 minutes: 5 Burpees, 5 Squats, 5 Push-Ups, 15 Mountain Climbers, 15 Jumping Jacks." }
+                    },
+                    {
+                      "day": 2,
+                      "workout": [
+                        { "type": "Strength Giant Set", "intensity": "MEDIUM", "description": "7 Rounds, adding weight each round:", "exercises": [ { "name": "Weighted/Bodyweight Pull-Ups or Rows", "details": "3 Weighted, 10 Bodyweight, or 25 Inverted Rows." }, { "name": "Strict Press or Push Press", "details": "2 reps. Goal is 85-95%+ of your 1RM." }, { "name": "Sandbag Turn Arounds", "details": "30 seconds each side (Heavy)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Weighted Carry", "intensity": "HEAVY", "description": "GO HEAVIER THAN WEEK 6. For 10 minutes, work up in weight. Start with 80% of 1RM Strict Press.", "exercises": [ { "name": "Static Strict Press Hold or March", "details": "30 seconds. Start by squatting the weight up from J-hooks set below lockout. Rest 1 min and add weight. Continue for 10 mins." } ] },
+                        { "type": "Assistance Finisher", "intensity": "LIGHT", "description": "For 10 Minutes:", "exercises": [ { "name": "ODD Minutes", "details": "4-6 Pull-Ups or 10 Rows. Rest remainder." }, { "name": "EVEN Minutes", "details": "10 'Z' Presses (light weight). Rest remainder." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Ladder up until you can't keep up with the clock: Min 1: 1 Pull-Up, 2 Burpee Box Jumps, 3 MMA Get-Ups. Add 1 rep to each exercise every minute." }
+                    },
+                    {
+                      "day": 3,
+                      "workout": [
+                        { "type": "Weighted Carry", "intensity": "MEDIUM", "description": "At the Top of Every Minute for 10 Minutes:", "exercises": [ { "name": "Sandbag Carry", "details": "50ft (At bodyweight or heavier)." }, { "name": "Farmer's Carry", "details": "50ft (At 70-80% of your 1RM 50ft carry). Rest remainder of minute." } ] },
+                        { "type": "Strength Giant Set", "intensity": "LIGHT", "description": "8 Rounds, adding weight each round:", "exercises": [ { "name": "Burpee Pull-Ups", "details": "4 reps (Bar 1ft above reach)." }, { "name": "Squats or Pause Squats", "details": "3 reps. Goal is 80-90%+ of your 1RM." }, { "name": "Steering Wheel Hold", "details": "45 seconds (Hold a plate at 9 & 3 o'clock with arms extended)." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "HEAVY", "description": "Load bar with 80% of 1RM High Bar Squat.", "exercises": [ { "name": "Descending Weight Max Reps", "details": "30s max reps, 90s rest (drop to 70%). 30s max reps, 90s rest (drop to 60%). 30s max reps, 90s rest (drop to 50%). 30s max reps." } ] }
+                      ],
+                      "optionalConditioning": { "description": "No rest descending ladder 10-8-6-4 reps of: Squats, Jumping Squats, Lunges (each side), Jumping Lunges (each side). Rest 30s between ladders." }
+                    },
+                    {
+                      "day": 4,
+                      "workout": [
+                        { "type": "Loading", "intensity": "LIGHT", "description": "3 Rounds (Light-ish Sandbag):", "exercises": [ { "name": "Complex", "details": "1 min max reps Loads, 1 min max reps Burpees, 1 min rest. Beat last round's score." } ] },
+                        { "type": "Strength Giant Set", "intensity": "HEAVY", "description": "6 Rounds, adding weight each round:", "exercises": [ { "name": "Deadlift Rows or Single Arm DB Rows", "details": "5 reps." }, { "name": "Bench Press or Floor Press", "details": "1 rep. Goal is 100%+ of your 1RM - Hit a new PR!" }, { "name": "Side Plank", "details": "30 seconds each side." }, { "name": "Rest", "details": "90 seconds." } ] },
+                        { "type": "Assistance Finisher", "intensity": "MEDIUM", "description": "3 Rounds. Use same DBs & bench. 20s rest between exercises.", "exercises": [ { "name": "Circuit", "details": "40s Push-Ups (on bands/rings or regular), 40s DB Squeeze Presses, 40s DB Squeeze Pull-Overs, 40s Low to High Flys." } ] }
+                      ],
+                      "optionalConditioning": { "description": "Timed max reps with 90s/60s/30s on/off intervals for: Close Grip Push-Ups, Deficit Push-Ups, Hand Release Push-Ups." }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        };
+
+        // The program repeats after 9 weeks. This code duplicates the first 3 mesocycles to create the full 18-week program.
+        const meso1to3 = JSON.parse(JSON.stringify(edcData.mesocycles)); // Deep copy
+        const meso4to6 = JSON.parse(JSON.stringify(edcData.mesocycles));
+        
+        meso4to6.forEach((meso, mesoIndex) => {
+            meso.cycle += 3; // a cycle is 3 weeks, so we add 3 to get 4, 5, 6
+            meso.weeks = `${mesoIndex * 3 + 10}-${mesoIndex * 3 + 12}`;
+            meso.weeklyProgram.forEach(week => {
+                week.week += 9;
+            });
+        });
+
+        edcData.mesocycles = [...meso1to3, ...meso4to6];
+        
+        // Correct the cycle numbers and week ranges for the full 18 weeks
+        edcData.mesocycles.forEach((meso, mesoIndex) => {
+            meso.cycle = mesoIndex + 1;
+            const startWeek = mesoIndex * 3 + 1;
+            const endWeek = startWeek + 2;
+            meso.weeks = `${startWeek}-${endWeek}`;
+            meso.weeklyProgram.forEach((week, weekIndex) => {
+                week.week = startWeek + weekIndex;
+            });
+        });
+
+
         document.addEventListener('DOMContentLoaded', () => {
             const cardContainer = document.getElementById('card-container');
             const modal = document.getElementById('info-modal');
             const modalBody = document.getElementById('modal-body');
             const closeModalBtn = document.querySelector('.close-btn');
 
-            let edcData = null;
-
-            // Fetch JSON data
-            fetch('edcdata.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    edcData = data;
-                    renderCards();
-                })
-                .catch(error => {
-                    console.error('Error fetching EDC data:', error);
-                    cardContainer.innerHTML = '<p style="color:red;">Could not load program data. Please check the console for errors.</p>';
-                });
+            // Data is already available in the edcData variable
+            renderCards();
 
             // Render all main cards
             function renderCards() {
