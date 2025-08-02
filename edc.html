@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.D.C. Program</title>
+    <style>
+        :root {
+            --bg-color: #2d2d2d;
+            --primary-color: #35374B;
+            --secondary-color: #344955;
+            --accent-color-1: #50727B;
+            --accent-color-2: #78A083;
+            --text-color: #f0f0f0;
+            --card-bg: #3a3a3a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color-2);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: var(--accent-color-2);
+            margin-top: 0;
+        }
+        
+        .mesocycle-card .week-buttons {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .mesocycle-card.expanded .week-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .week-btn, .day-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .week-btn:hover, .day-btn:hover {
+            background-color: var(--accent-color-1);
+        }
+        
+        .day-links {
+            display: none;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .day-links.active {
+            display: flex;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid var(--secondary-color);
+            width: 80%;
+            max-width: 800px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--text-color);
+        }
+        
+        .modal-content h2 {
+            color: var(--accent-color-2);
+            font-size: 2rem;
+            margin-top: 0;
+        }
+        
+        .modal-content h3 {
+            color: var(--accent-color-1);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .modal-content li {
+            background: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .modal-content p {
+            font-size: 1.1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>E.D.C. Program</h1>
+            <p>Your comprehensive 18-week guide to functional strength and athleticism.</p>
+        </header>
+
+        <div id="card-container" class="card-grid">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardContainer = document.getElementById('card-container');
+            const modal = document.getElementById('info-modal');
+            const modalBody = document.getElementById('modal-body');
+            const closeModalBtn = document.querySelector('.close-btn');
+
+            let edcData = null;
+
+            // Fetch JSON data
+            fetch('edcdata.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    edcData = data;
+                    renderCards();
+                })
+                .catch(error => {
+                    console.error('Error fetching EDC data:', error);
+                    cardContainer.innerHTML = '<p style="color:red;">Could not load program data. Please check the console for errors.</p>';
+                });
+
+            // Render all main cards
+            function renderCards() {
+                // Info Cards
+                const infoCards = [
+                    { id: 'programOverview', title: 'Program Overview' },
+                    { id: 'cardioOptions', title: 'Cardio Options' },
+                    { id: 'diet', title: 'Diet & Recovery' },
+                    { id: 'progressiveOverload', title: 'Progressive Overload' }
+                ];
+
+                infoCards.forEach(cardInfo => {
+                    const card = createCard(cardInfo.title, edcData[cardInfo.id].summary);
+                    card.dataset.modalId = cardInfo.id;
+                    card.addEventListener('click', () => openInfoModal(cardInfo.id));
+                    cardContainer.appendChild(card);
+                });
+
+                // Mesocycle Cards
+                edcData.mesocycles.forEach((meso, index) => {
+                    const card = createCard(`Mesocycle ${meso.cycle}`, `Weeks ${meso.weeks}`);
+                    card.classList.add('mesocycle-card');
+                    card.dataset.mesoIndex = index;
+                    
+                    const weekButtonsContainer = document.createElement('div');
+                    weekButtonsContainer.className = 'week-buttons';
+                    
+                    meso.weeklyProgram.forEach((week, weekIndex) => {
+                        const weekBtn = document.createElement('button');
+                        weekBtn.className = 'week-btn';
+                        weekBtn.textContent = `Week ${week.week}`;
+                        weekBtn.dataset.weekIndex = weekIndex;
+                        weekButtonsContainer.appendChild(weekBtn);
+                        
+                        const dayLinksContainer = document.createElement('div');
+                        dayLinksContainer.className = 'day-links';
+                        dayLinksContainer.id = `meso-${index}-week-${weekIndex}-days`;
+
+                        week.days.forEach((day, dayIndex) => {
+                            const dayBtn = document.createElement('button');
+                            dayBtn.className = 'day-btn';
+                            dayBtn.textContent = `Day ${day.day}`;
+                            dayBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openDayModal(index, weekIndex, dayIndex);
+                            });
+                            dayLinksContainer.appendChild(dayBtn);
+                        });
+                        weekButtonsContainer.appendChild(dayLinksContainer);
+                    });
+
+                    card.appendChild(weekButtonsContainer);
+                    card.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('card') || e.target.parentElement.classList.contains('card')) {
+                            toggleMesocycleCard(card);
+                        }
+                    });
+                    
+                    weekButtonsContainer.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('week-btn')) {
+                            e.stopPropagation();
+                            toggleWeekView(e.target, index);
+                        }
+                    });
+
+                    cardContainer.appendChild(card);
+                });
+            }
+
+            function createCard(title, description) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h2>${title}</h2><p>${description}</p>`;
+                return card;
+            }
+            
+            function toggleMesocycleCard(card) {
+                card.classList.toggle('expanded');
+                // Close any open week views within this card
+                const activeDayLinks = card.querySelectorAll('.day-links.active');
+                activeDayLinks.forEach(link => link.classList.remove('active'));
+            }
+            
+            function toggleWeekView(weekBtn, mesoIndex) {
+                const weekIndex = weekBtn.dataset.weekIndex;
+                const dayLinksId = `meso-${mesoIndex}-week-${weekIndex}-days`;
+                const dayLinks = document.getElementById(dayLinksId);
+                
+                // Hide other day links in the same mesocycle
+                const allDayLinks = weekBtn.closest('.mesocycle-card').querySelectorAll('.day-links');
+                allDayLinks.forEach(link => {
+                    if(link.id !== dayLinksId) {
+                        link.classList.remove('active');
+                    }
+                });
+
+                dayLinks.classList.toggle('active');
+            }
+
+            // Open Modals
+            function openInfoModal(id) {
+                const content = edcData[id];
+                let html = `<h2>${content.title}</h2>`;
+                html += `<p>${content.details}</p>`;
+                modalBody.innerHTML = html;
+                modal.style.display = 'block';
+            }
+
+            function openDayModal(mesoIndex, weekIndex, dayIndex) {
+                const dayData = edcData.mesocycles[mesoIndex].weeklyProgram[weekIndex].days[dayIndex];
+                let html = `<h2>Mesocycle ${mesoIndex + 1}, Week ${edcData.mesocycles[mesoIndex].weeklyProgram[weekIndex].week}, Day ${dayData.day}</h2>`;
+
+                dayData.workout.forEach(part => {
+                    html += `<h3>${part.type} - (${part.intensity})</h3>`;
+                    if (part.description) {
+                         html += `<p>${part.description}</p>`;
+                    }
+                    html += '<ul>';
+                    part.exercises.forEach(ex => {
+                       html += `<li><strong>${ex.name}:</strong> ${ex.details}</li>`;
+                    });
+                    html += '</ul>';
+                });
+                
+                if (dayData.optionalConditioning) {
+                    html += `<h3>Optional Bodyweight Conditioning</h3>`;
+                    html += `<p>${dayData.optionalConditioning.description}</p>`;
+                }
+
+                modalBody.innerHTML = html;
+                modal.style.display = 'block';
+            }
+
+            // Close Modal Logic
+            closeModalBtn.onclick = () => modal.style.display = "none";
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+        });
+    </script>
+</body>
+</html>

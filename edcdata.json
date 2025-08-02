@@ -1,0 +1,184 @@
+{
+  "programOverview": {
+    "title": "Program Overview & Philosophy",
+    "summary": "The core principles and goals of the E.D.C. program.",
+    "details": "The EVERY.DAY.CARRY. (EDC) Program is a comprehensive fitness regimen designed to enhance every aspect of your life by building true functional strength, conditioning, and athleticism. The name has a dual meaning: you will consistently carry heavy, awkward objects, and you will carry the strength gained into your everyday life. This program is for those who want to be strong, athletic, lean, well-conditioned, and injury-resistant. It's not just about lifting in the gym but about applying that strength to real-world challenges, making you an asset rather than a liability. It benefits both the average lifter seeking a new challenge and 'Warrior Athletes' (MMA fighters, military, first responders) who need to manipulate heavy, uncooperative objects or bodies in high-stakes situations. The program builds a bigger 'engine' for whatever your life demands."
+  },
+  "cardioOptions": {
+    "title": "Cardio & Conditioning",
+    "summary": "Guidance on cardio, conditioning, and weighted carries.",
+    "details": "Cardio in the EDC Program is integrated through two main avenues. Firstly, the core weighted carries are incredibly demanding on your heart and lungs. Carrying heavy, awkward objects requires significant oxygen, building immense cardiovascular conditioning and work capacity. This improves foot speed, agility, and balance. Secondly, the program includes optional bodyweight conditioning sessions. These are designed to further challenge your lungs or serve as active recovery without hindering your strength gains. They use high-intensity formats like EMOMs, AMRAPs, and ladders with exercises like burpees, squats, push-ups, sprints, and animal walks. This dual approach ensures you build a powerful cardiovascular system that supports both strength and real-world functional fitness."
+  },
+  "diet": {
+    "title": "Diet & Recovery",
+    "summary": "Nutritional guidelines and recovery strategies for optimal results.",
+    "details": "Proper nutrition and recovery are at least 50% of your results in this demanding program. A poor diet will not provide the fuel needed for these intense sessions, leading to poor results or injury. You don't need to be a 'food Nazi,' but every meal should be a conscious choice that moves you closer to your goals. Think of food as fuel for performance. Recovery is equally critical. You will experience soreness in new ways as you use muscles you may have never trained before. It is vital to get adequate sleep, stay hydrated, and dedicate 30-60 minutes daily to active recovery. This can include stretching, foam rolling, yoga, meditation, or cold plunges. Living like an athlete means prioritizing these practices over distractions like social media. Your choices today determine the person you become."
+  },
+  "progressiveOverload": {
+    "title": "Progressive Overload Scheme",
+    "summary": "Principles of progression for strength and carries.",
+    "details": "Progression is key. For weighted carries, a 1-Rep Max (1RM) is the most weight you can carry for 50 feet without dropping it. While percentage-based training is an option, a linear approach is often better for beginners to carries, as gains come quickly. The program uses HEAVY, MEDIUM, and LIGHT intensities. HEAVY carries are for short distances (~50ft) with loads over 70% of your 1RM. MEDIUM carries are for moderate distances (~100ft) with loads of 55%-70% 1RM. LIGHT carries are for long distances (150ft+) with lighter loads. For strength work, you will work up to a top set for a prescribed rep range each day in a Giant Set format. Always strive to lift as heavy as possible for the given reps without failing. The prescribed rounds are your 'working sets' and do not include warm-ups. Continue adding weight each round until you hit your top set for the day."
+  },
+  "mesocycles": [
+    {
+      "cycle": 1,
+      "weeks": "1-3",
+      "weeklyProgram": [
+        {
+          "week": 1,
+          "days": [
+            {
+              "day": 1,
+              "workout": [
+                {
+                  "type": "Weighted Carry",
+                  "intensity": "HEAVY",
+                  "description": "At the Top of Every Minute for 10 Minutes:",
+                  "exercises": [
+                    { "name": "Farmer’s Deadlifts", "details": "3 reps (Just a Deadlift with the implements in your hand)." },
+                    { "name": "Farmer’s Carry", "details": "50ft @ 75% of Your 1RM 50ft Carry without Drops. Take the remainder of the minute to rest." }
+                  ]
+                },
+                {
+                  "type": "Strength Giant Set",
+                  "intensity": "MEDIUM",
+                  "description": "4 Rounds, adding weight each round:",
+                  "exercises": [
+                    { "name": "Sandbag Over Shoulder", "details": "3 reps (Light-ish)." },
+                    { "name": "Conventional or Paused Deadlifts", "details": "6 reps (Pause 2” off the Floor). Goal is 70-80%+ of your 1RM." },
+                    { "name": "RKC Plank", "details": "30 seconds." },
+                    { "name": "Rest", "details": "90 seconds." }
+                  ]
+                },
+                {
+                  "type": "Assistance Finisher",
+                  "intensity": "LIGHT",
+                  "description": "Load a bar with 60% of your 1RM Deadlift. Add 2 reps every minute until you can't keep up.",
+                  "exercises": [
+                    { "name": "Deadlift Ladder", "details": "Min 1: 2 reps, Min 2: 4 reps, Min 3: 6 reps, etc." }
+                  ]
+                }
+              ],
+              "optionalConditioning": {
+                "description": "EMOM for 10-15 mins: 5 Burpees, 5 Squats, 5 Push-Ups, 15 Mountain Climbers, 15 Jumping Jacks. (Scale to 3/3/3/12/12 if needed)."
+              }
+            },
+            {
+              "day": 2,
+              "workout": [
+                {
+                  "type": "Strength Giant Set",
+                  "intensity": "LIGHT",
+                  "description": "3 Rounds, adding weight each round:",
+                  "exercises": [
+                    { "name": "Close Grip Chin-Ups or Inverted Rows", "details": "8 Chin-Ups or 16 Rows." },
+                    { "name": "Standing Strict or 'Z' Press", "details": "8 reps. Goal is 60-70%+ of your 1RM." },
+                    { "name": "Standing Plate Halos", "details": "8 reps each side." },
+                    { "name": "Rest", "details": "90 seconds." }
+                  ]
+                },
+                {
+                  "type": "Weighted Carry",
+                  "intensity": "MEDIUM",
+                  "description": "3 Rounds with a barbell at 50% of your 1RM:",
+                  "exercises": [
+                    { "name": "Strict Press to Waiter's Walk", "details": "10 Presses to 6-step walk, 8 presses to 6-step walk, 6 presses to 6-step walk. Rest 90s between rounds." }
+                  ]
+                },
+                {
+                  "type": "Assistance Finisher",
+                  "intensity": "LIGHT",
+                  "description": "4 Rounds, same DBs for all:",
+                  "exercises": [
+                    { "name": "Bent Over Rear Delt Flyes", "details": "8 reps." },
+                    { "name": "Standing Lateral Raises", "details": "8 reps." },
+                    { "name": "Standing Arnold Presses", "details": "8 reps." },
+                    { "name": "Standing Semi-Supinated Strict Presses", "details": "8 reps. No rest between exercises, 2 min rest between rounds." }
+                  ]
+                }
+              ],
+              "optionalConditioning": {
+                "description": "AMRAP 10 mins: Ladder of 1 Pull-Up, 2 Dips/Push-Ups, 3 Squats. Double reps each round (e.g., 2/4/6, then 4/8/12)."
+              }
+            },
+            {
+                "day": 3,
+                "workout": [
+                  {
+                    "type": "Weighted Carry",
+                    "intensity": "LIGHT",
+                    "description": "At the Top of Every Minute for 10 minutes:",
+                    "exercises": [
+                      { "name": "Sandbag Sprawls", "details": "4 reps (Like a burpee, but your chest hits the sandbag)." },
+                      { "name": "Sandbag Carry", "details": "50ft Bear Hug Position, as close to bodyweight as possible. Rest for the remainder of the minute." }
+                    ]
+                  },
+                  {
+                    "type": "Strength Giant Set",
+                    "intensity": "HEAVY",
+                    "description": "5 Rounds, adding weight each round:",
+                    "exercises": [
+                      { "name": "Box Jumps", "details": "3 reps, as high as you can, focus on being explosive." },
+                      { "name": "Squats or Box Squats", "details": "5 reps. Goal is 75%-85%+ of Your 1RM." },
+                      { "name": "Hollow Rocks", "details": "20 reps." },
+                      { "name": "Rest", "details": "90 seconds." }
+                    ]
+                  },
+                  {
+                    "type": "Assistance Finisher",
+                    "intensity": "MEDIUM",
+                    "description": "4 Rounds. Load a squat bar with 50% of your 1RM Front Squat or Zercher Squat.",
+                    "exercises": [
+                      { "name": "(1 & 1/2) Front or Zercher Squats", "details": "5 reps. (Drop to the hole, come up halfway, back to the hole, then full rep)." },
+                      { "name": "Sandbag Squats", "details": "8 reps (Medium Weight). Drop extra deep, squeeze upper back and butt at the top." },
+                      { "name": "Wall Sit", "details": "45 seconds with hands above your head. No rest between exercises, 2 min rest between rounds." }
+                    ]
+                  }
+                ],
+                "optionalConditioning": {
+                  "description": "4 Rounds, minimal rest: 20 Squats, 20 Stepping Lunges, 20 Jumping Lunges, 20 Jumping Squats."
+                }
+            },
+            {
+                "day": 4,
+                "workout": [
+                  {
+                    "type": "Loading",
+                    "intensity": "HEAVY",
+                    "description": "At the top of Every Minute for 10 minutes:",
+                    "exercises": [
+                      { "name": "Sandbag Loads", "details": "3 reps over a bar or to a platform (Men’s Height 52” / Women’s 48”). Sandbag should be bodyweight or heavier. Rest for the remainder of the minute." }
+                    ]
+                  },
+                  {
+                    "type": "Strength Giant Set",
+                    "intensity": "MEDIUM",
+                    "description": "4 Rounds, adding weight each round:",
+                    "exercises": [
+                      { "name": "Single Arm DB or KB Rows", "details": "8 reps each side." },
+                      { "name": "Bench Press or Close Grip Bench Press", "details": "6 reps. Goal is 70-80%+ of your 1RM." },
+                      { "name": "Dragon Flags or Leg Raises", "details": "7 Dragon Flags or 12 Leg Raises (control the descent slowly)." },
+                      { "name": "Rest", "details": "90 seconds." }
+                    ]
+                  },
+                  {
+                    "type": "Assistance Finisher",
+                    "intensity": "LIGHT",
+                    "description": "4 Rounds, adding weight each round:",
+                    "exercises": [
+                      { "name": "Dumbbell Squeeze Presses", "details": "12 reps (press the DBs against each other)." },
+                      { "name": "Dumbbell or Kettlebell Straight Arm Pull-Overs", "details": "12 reps." },
+                      { "name": "Max Reps Deficit Push-Ups", "details": "30 seconds (hands on DBs, chest to ground). 90 seconds rest between rounds." }
+                    ]
+                  }
+                ],
+                "optionalConditioning": {
+                  "description": "Every 30 seconds for 10-15 minutes: 3 Pull-Ups, 7 Push-Ups, 12 Squats."
+                }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
