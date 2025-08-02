@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fighter Pull-up Program</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f2f2f2;
+      color: #222;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    label, input, button {
+      width: 100%;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.6rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .day-card {
+      padding: 1rem;
+      border-left: 5px solid #007bff;
+    }
+
+    .rest-day {
+      border-left-color: #999;
+      background: #eee;
+      color: #555;
+    }
+
+    .reps {
+      font-weight: bold;
+    }
+
+    @media (min-width: 600px) {
+      .card {
+        max-width: 500px;
+        margin: 1rem auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Fighter Pull-up Program</h1>
+    <label for="maxReps">Enter your max pull-ups:</label>
+    <input type="number" id="maxReps" min="1" max="30" />
+    <button onclick="generateProgram()">Generate Program</button>
+  </div>
+
+  <div id="programOutput"></div>
+
+  <script>
+    function generateProgram() {
+      const max = parseInt(document.getElementById('maxReps').value);
+      const output = document.getElementById('programOutput');
+      output.innerHTML = '';
+
+      if (isNaN(max) || max < 1) {
+        alert("Please enter a number greater than 0.");
+        return;
+      }
+
+      let day = 1;
+      let topSet = max;
+      let programLength = 23;
+      let progress = [
+        [0, -1, -2, -3, -4],
+        [0, -1, -2, -3, -3],
+        [0, -1, -2, -2, -3],
+        [0, -1, -1, -2, -3],
+        [0,  0, -1, -2, -3]
+      ];
+
+      for (let i = 0; i < programLength; i++) {
+        const isRestDay = (day % 6 === 0);
+        const dayCard = document.createElement('div');
+        dayCard.className = 'card day-card';
+
+        if (isRestDay) {
+          dayCard.classList.add('rest-day');
+          dayCard.innerHTML = `<h3>Day ${day}</h3><p>Rest Day</p>`;
+        } else {
+          let weekDay = i % 5; // 0–4 repeat
+          let sets = progress[weekDay].map(offset => Math.max(1, topSet + offset));
+          let setsText = sets.join(', ');
+          dayCard.innerHTML = `<h3>Day ${day}</h3><p class="reps">Sets: ${setsText}</p>`;
+        }
+
+        output.appendChild(dayCard);
+        day++;
+      }
+    }
+  </script>
+</body>
+</html>
