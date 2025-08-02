@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Impact Low Volume High Frequency Training</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ------------------- */
+        /* ---   RESET   --- */
+        /* ------------------- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 100%; /* 1rem = 16px */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: #1a0033; /* Dark purple background */
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2, h3, h4, p {
+            margin-bottom: 1.25rem;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #F14A00;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+        }
+
+        h4 {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: #C62300;
+        }
+
+        p, li {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        strong {
+            color: #F14A00;
+        }
+
+        /* ------------------- */
+        /* --- UTILITIES --- */
+        /* ------------------- */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* ------------------- */
+        /* ---   LAYOUT  --- */
+        /* ------------------- */
+        .main-header {
+            padding: 2rem 0;
+            background-color: #2A004E;
+            border-bottom: 4px solid #F14A00;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* ------------------- */
+        /* ---   CARD    --- */
+        /* ------------------- */
+        .card {
+            background-color: #500073;
+            border: 2px solid #C62300;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(241, 74, 0, 0.2);
+        }
+
+        .card__title {
+            font-size: 1.75rem;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* ------------------- */
+        /* ---   MODAL   --- */
+        /* ------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(42, 0, 78, 0.9);
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content {
+            background-color: #1a0033;
+            margin: 5% auto;
+            padding: 2rem 3rem;
+            border: 3px solid #F14A00;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            color: #ffffff;
+            position: relative;
+            animation: slideIn 0.5s;
+        }
+        
+        .modal-content--nested {
+             background-color: #2A004E;
+        }
+
+        .modal__close-btn {
+            color: #ffffff;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal__close-btn:hover,
+        .modal__close-btn:focus {
+            color: #F14A00;
+        }
+
+        .modal__body {
+            padding-top: 2rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal__body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .modal__body::-webkit-scrollbar-track {
+            background: #2A004E;
+            border-radius: 10px;
+        }
+
+        .modal__body::-webkit-scrollbar-thumb {
+            background-color: #C62300;
+            border-radius: 10px;
+            border: 3px solid #2A004E;
+        }
+        
+        .modal__back-btn {
+            background: #C62300;
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal__back-btn:hover {
+            background: #F14A00;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container text-center">
+            <h1>Visual Impact Low Volume High Frequency Training</h1>
+            <p>The Complete Guide to Building a Dense, Toned Physique</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div id="main-grid" class="card-grid">
+                <div class="card" data-target="overview">
+                    <h3 class="card__title">Program Overview</h3>
+                </div>
+                <div class="card" data-target="weeks-1-4">
+                    <h3 class="card__title">Weeks 1-4</h3>
+                </div>
+                <div class="card" data-target="weeks-5-8">
+                    <h3 class="card__title">Weeks 5-8</h3>
+                </div>
+                <div class="card" data-target="weeks-9-12">
+                    <h3 class="card__title">Weeks 9-12</h3>
+                </div>
+                <div class="card" data-target="diet">
+                    <h3 class="card__title">Diet</h3>
+                </div>
+                <div class="card" data-target="cardio">
+                    <h3 class="card__title">Cardio</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal" class="modal">
+        <div id="modal-content" class="modal-content">
+            <span id="modal-close" class="modal__close-btn">&times;</span>
+            <div id="modal-body" class="modal__body"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainGrid = document.getElementById('main-grid');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalBody = document.getElementById('modal-body');
+            const closeModalBtn = document.getElementById('modal-close');
+
+            const content = {
+                overview: {
+                    title: 'Program Overview & Philosophy',
+                    body: `
+                        <p>Welcome to a paradigm shift in resistance training. This program challenges the conventional "blitz and rest" model of bodybuilding, where muscles are worked to exhaustion and then rested for 48-72 hours. Instead, we focus on <strong>high frequency and low volume</strong> to rapidly increase muscle density and what is known as "true muscle tone".</p>
+                        <h4>The Philosophy</h4>
+                        <p>The core principle is to condition your Central Nervous System (CNS) to fire more efficiently. By training muscle groups frequently with lower volume, you send constant signals to your CNS to improve its ability to recruit muscle fibers. This results in muscles that are harder and more defined, even in a relaxed state.</p>
+                        <p>A key aspect of this routine is to <strong>avoid training to failure</strong>. Pushing to failure can send negative feedback to the CNS, hindering its ability to recover and adapt. The goal is to stimulate the muscle, not annihilate it. This allows for the high frequency of training that is central to the program's success.</p>
+                        <h4>What to Expect Over 12 Weeks</h4>
+                        <p>This program is an intensive 8-12 week "boot camp" designed to transform your physique. You will be training 4-6 days per week, alternating between two different types of workout days:</p>
+                        <ul>
+                            <li><strong>Explosive Days:</strong> Focused on lifting with maximum speed and force to generate a strong CNS surge.</li>
+                            <li><strong>Time Under Tension (TUT) Days:</strong> Focused on slow, deliberate movements to maximize muscle density and tone with less joint stress.</li>
+                        </ul>
+                        <p>By the end of the 12 weeks, you can expect significant improvements in strength, muscle definition, and density. This is not a year-round program; it's a specialized cycle to achieve a new level of conditioning, which can then be maintained with a less demanding routine.</p>
+                    `
+                },
+                diet: {
+                    title: 'The Hybrid Diet Plan',
+                    body: `
+                        <p>This program recommends a "hybrid diet" that strategically uses carbohydrates to your advantage, keeping your metabolism high while promoting fat loss. The approach involves low-carb intake during the day and targeted carb consumption at night, particularly after workouts.</p>
+                        <h4>The Strategy</h4>
+                        <p>By keeping carbs low during the day, your body is encouraged to use fat for fuel. Then, by consuming carbs after your evening workout, you replenish muscle glycogen stores, which keeps your metabolism revving and prevents the metabolic slowdown that can occur on long-term low-carb diets. This strategic carb intake ensures that the carbs are primarily used by your muscles rather than being stored as body fat.</p>
+                        <h4>Calorie Tracking Guideline</h4>
+                        <p>To get started with your daily calorie intake, you can use the following formula as a baseline. Remember to adjust based on your progress and how you feel.</p>
+                        <p><strong>Goal Weight in Pounds x (Hours working out per week + 9.5) = Daily Calorie Target</strong></p>
+                        <p>For example, if your goal weight is 180 lbs and you work out 5 hours per week:</p>
+                        <p>180 x (5 + 9.5) = 180 x 14.5 = 2,610 calories per day.</p>
+                        <p>This is a starting point. Monitor your progress and adjust your intake as needed.</p>
+                    `
+                },
+                cardio: {
+                    title: 'Cardio for Fat Loss',
+                    body: `
+                        <p>Cardio is a crucial component of this program, performed <strong>after</strong> resistance training. Its purpose is to deplete muscle glycogen and burn additional calories, which is essential for revealing the muscle definition you are building.</p>
+                        <h4>Option 1: Limited Time (15 Minutes)</h4>
+                        <p>If you're short on time, you have two effective options:</p>
+                        <ul>
+                            <li><strong>HIIT (High-Intensity Interval Training):</strong> Alternate 30 seconds of all-out effort with 30 seconds of easy recovery for 15 minutes.</li>
+                            <li><strong>Steady-State Cardio:</strong> Maintain a challenging but sustainable pace for the full 15 minutes. You should feel a slight burn in the working muscles.</li>
+                        </ul>
+                        <h4>Option 2: Ample Time (30 Minutes)</h4>
+                        <p>If you have more time, you can enhance the fat-burning effect:</p>
+                        <ul>
+                            <li><strong>HIIT + Moderate Cardio:</strong> Perform a 15-minute HIIT session, followed immediately by 15 minutes of moderate-intensity steady-state cardio.</li>
+                            <li><strong>Steady-State Cardio:</strong> Perform 30 minutes of steady-state cardio at a pace that creates a slight, consistent burn in your muscles.</li>
+                        </ul>
+                        <p>The key is consistency. Performing cardio after your lifts ensures that you tap into fat stores for energy more effectively.</p>
+                    `
+                },
+                'weeks-1-4': { title: 'Weeks 1-4' },
+                'weeks-5-8': { title: 'Weeks 5-8' },
+                'weeks-9-12': { title: 'Weeks 9-12' },
+            };
+
+            const workoutData = {
+                explosive: {
+                    title: "Explosive Day",
+                    desc: "Goal: Generate a strong CNS surge by lifting explosively. Use low reps (2-5) and low sets (4-5 for large muscles, 3-4 for small). Rest 1-2 minutes between sets. Stick to the same 5 core exercises on these days. <strong>Lift with maximum speed and force, but always stop short of failure.</strong>",
+                    exercises: [
+                        "<strong>Pressing Movement (e.g., Dumbbell Bench Press):</strong> 4 sets of 2-5 reps",
+                        "<strong>Leg Exercise (e.g., Dumbbell Squats):</strong> 4 sets of 2-5 reps",
+                        "<strong>Back Exercise (e.g., One-Arm Dumbbell Rows):</strong> 4 sets of 2-5 reps",
+                        "<strong>Bicep Exercise (e.g., Seated Alternate Dumbbell Curls):</strong> 3 sets of 3-5 reps",
+                        "<strong>Tricep Exercise (e.g., Lying Tricep Extensions):</strong> 3 sets of 3-5 reps"
+                    ]
+                },
+                tut: {
+                    title: "TUT (Time Under Tension) Day",
+                    desc: "Goal: Maximize muscle density and tone with less joint stress. Use slow, deliberate movements and focus on 'Irradiation' (squeezing surrounding muscles). The routine is 3 sets of 3-4 reps, with about 1 minute of rest. You can vary exercises on these days. <strong>Focus on maximum tension, not weight.</strong>",
+                    exercises: [
+                        "<strong>Pressing Movement (e.g., Incline Dumbbell Press):</strong> 3 sets of 3-4 reps",
+                        "<strong>Leg Exercise (e.g., Dumbbell Lunges):</strong> 3 sets of 3-4 reps",
+                        "<strong>Back Exercise (e.g., Cable Rows):</strong> 3 sets of 3-4 reps",
+                        "<strong>Bicep Exercise (e.g., Dumbbell Concentration Curls):</strong> 3 sets of 3-4 reps",
+                        "<strong>Tricep Exercise (e.g., Bodyweight Dips):</strong> 3 sets of 3-4 reps"
+                    ]
+                }
+            };
+            
+            function openModal(content) {
+                modalBody.innerHTML = `<h2>${content.title}</h2>${content.body}`;
+                modal.style.display = 'block';
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+                modalBody.innerHTML = '';
+                modalContent.classList.remove('modal-content--nested');
+            }
+
+            function showWeeks(target) {
+                const title = content[target].title;
+                let weekCards = '';
+                for (let i = 1; i <= 4; i++) {
+                    const weekNumber = parseInt(target.match(/\d+/)[0]) + i - 1;
+                    weekCards += `<div class="card" data-week="${weekNumber}" data-phase="${target}">
+                                    <h3 class="card__title">Week ${weekNumber}</h3>
+                                 </div>`;
+                }
+                modalBody.innerHTML = `
+                    <button class="modal__back-btn" data-target="main">&larr; Back to Main Menu</button>
+                    <h2>${title}</h2>
+                    <div class="card-grid">${weekCards}</div>
+                `;
+                modal.style.display = 'block';
+            }
+
+            function showWeekDetail(weekNumber, phase) {
+                 modalContent.classList.add('modal-content--nested');
+                 let dayCards = '';
+                 for (let i = 1; i <= 5; i++) {
+                     const workoutType = (i % 2 !== 0) ? 'explosive' : 'tut';
+                     const dayType = (i % 2 !== 0) ? 'Explosive' : 'TUT';
+                     dayCards += `<div class="card" data-day="${i}" data-type="${workoutType}">
+                                    <h3 class="card__title">Day ${i} (${dayType})</h3>
+                                  </div>`;
+                 }
+                 modalBody.innerHTML = `
+                    <button class="modal__back-btn" data-target="${phase}">&larr; Back to Weeks</button>
+                    <h2>Week ${weekNumber} Workouts</h2>
+                    <div class="card-grid">${dayCards}</div>
+                 `;
+            }
+
+            function showDayDetail(day, type, week, phase) {
+                const workout = workoutData[type];
+                let exercisesHtml = '<ul>';
+                workout.exercises.forEach(ex => {
+                    exercisesHtml += `<li>${ex}</li>`;
+                });
+                exercisesHtml += '</ul>';
+
+                modalBody.innerHTML = `
+                    <button class="modal__back-btn" data-week="${week}" data-phase="${phase}">&larr; Back to Week ${week}</button>
+                    <h2>${workout.title}</h2>
+                    <p>${workout.desc}</p>
+                    <h4>Workout Routine:</h4>
+                    ${exercisesHtml}
+                `;
+            }
+
+            mainGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.card');
+                if (!card) return;
+
+                const target = card.dataset.target;
+
+                if (target.startsWith('weeks')) {
+                    showWeeks(target);
+                } else {
+                    openModal(content[target]);
+                }
+            });
+
+            modalBody.addEventListener('click', (e) => {
+                const targetElement = e.target.closest('.card, .modal__back-btn');
+                if (!targetElement) return;
+                
+                if(targetElement.classList.contains('modal__back-btn')) {
+                    const target = targetElement.dataset.target;
+                    if (target === 'main') {
+                        closeModal();
+                    } else if (target.startsWith('weeks')) {
+                        modalContent.classList.remove('modal-content--nested');
+                        showWeeks(target);
+                    } else { // Back to week detail
+                        const week = targetElement.dataset.week;
+                        const phase = targetElement.dataset.phase;
+                        showWeekDetail(week, phase);
+                    }
+                } else if (targetElement.classList.contains('card')) {
+                    if (targetElement.dataset.week) {
+                        const week = targetElement.dataset.week;
+                        const phase = targetElement.dataset.phase;
+                        showWeekDetail(week, phase);
+                    } else if (targetElement.dataset.day) {
+                        const day = targetElement.dataset.day;
+                        const type = targetElement.dataset.type;
+                        const weekCard = modalBody.querySelector('.modal__back-btn');
+                        const week = weekCard.dataset.week;
+                        const phase = weekCard.dataset.phase;
+                        showDayDetail(day, type, week, phase);
+                    }
+                }
+            });
+
+            closeModalBtn.addEventListener('click', closeModal);
+
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
