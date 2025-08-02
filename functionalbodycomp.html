@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional Body Composition Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /*
+         * CSS using BEM (Block, Element, Modifier) methodology
+         * and a dark, minimalist aesthetic with the specified color palette.
+         */
+
+        /* Color Variables */
+        :root {
+            --color-primary: #070F2B;
+            --color-secondary: #1B1A55;
+            --color-tertiary: #535C91;
+            --color-accent: #9290C3;
+            --color-text-light: #f4f4f9;
+            --color-text-dark: #2c2c3e;
+            --color-shadow: rgba(0, 0, 0, 0.4);
+            --color-modal-bg: rgba(0, 0, 0, 0.8);
+            --color-week-1: #9290C3;
+            --color-week-2: #B2A4FF;
+            --color-week-3: #756AB6;
+            --color-week-4: #4D4C7D;
+            --color-week-5: #9290C3; /* Rotate back */
+            --color-week-6: #B2A4FF;
+            --color-week-7: #756AB6;
+            --color-week-8: #4D4C7D;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        main {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding-bottom: 2rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--color-text-light);
+            margin-top: 0;
+        }
+
+        h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 600; }
+        h3 { font-size: clamp(1.25rem, 3.5vw, 1.75rem); font-weight: 600; }
+        h4 { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 600; }
+
+        p, ul, ol {
+            font-size: clamp(1rem, 2.5vw, 1.125rem);
+        }
+        
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .container {
+            padding: 1rem 0;
+        }
+
+        /* Accessibility and UX */
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+        
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+
+        /* * Layout and Component Styling 
+         */
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* The main clickable cards on the landing page */
+        .card {
+            background-color: var(--color-secondary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px var(--color-shadow);
+        }
+        
+        .card:hover, .card:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--color-shadow);
+        }
+
+        .card__title {
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Workout Grid */
+        .workout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        .workout-grid__day {
+            width: 100%;
+            padding-top: 100%; /* Creates a square */
+            position: relative;
+            background-color: var(--color-tertiary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 2px 5px var(--color-shadow);
+        }
+
+        .workout-grid__day:hover, .workout-grid__day:focus {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px var(--color-shadow);
+        }
+
+        .workout-grid__day-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            font-size: clamp(0.75rem, 3vw, 1.25rem);
+            color: var(--color-text-light);
+            text-align: center;
+        }
+
+        /* Week coloring for the workout grid */
+        .workout-grid__day--week-1, .workout-grid__day--week-5 { background-color: var(--color-week-1); }
+        .workout-grid__day--week-2, .workout-grid__day--week-6 { background-color: var(--color-week-2); }
+        .workout-grid__day--week-3, .workout-grid__day--week-7 { background-color: var(--color-week-3); }
+        .workout-grid__day--week-4, .workout-grid__day--week-8 { background-color: var(--color-week-4); }
+
+        /* Modal styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: var(--color-modal-bg);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.is-visible {
+            display: block;
+            opacity: 1;
+        }
+        
+        .modal__content {
+            background-color: var(--color-secondary);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 800px;
+            box-shadow: 0 8px 30px var(--color-shadow);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.is-visible .modal__content {
+            transform: translateY(0);
+        }
+
+        .modal__close {
+            color: var(--color-text-light);
+            font-size: 2rem;
+            font-weight: bold;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            line-height: 1;
+        }
+
+        .modal__close:hover, .modal__close:focus {
+            color: var(--color-accent);
+        }
+
+        /* Specific modal content styling */
+        .modal__content-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-tertiary);
+        }
+        
+        .modal__content-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .modal__content h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .modal__content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Workout Detail Page */
+        .workout-detail {
+            display: none; /* Hidden by default */
+        }
+        
+        .workout-detail.is-visible {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .workout-detail__header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .workout-detail__back-btn {
+            background-color: var(--color-accent);
+            color: var(--color-text-dark);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            line-height: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .workout-detail__back-btn:hover {
+            background-color: #A2A1E0;
+        }
+
+        .workout-detail-card {
+            background-color: var(--color-secondary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px var(--color-shadow);
+        }
+        
+        .workout-detail-card h3 {
+            border-bottom: 2px solid var(--color-tertiary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .workout-list {
+            margin: 0;
+            padding: 0;
+        }
+
+        .workout-list__item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .workout-list__item-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            background-color: var(--color-tertiary);
+            color: var(--color-text-light);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <main id="app">
+        <!-- Landing Page View -->
+        <section id="landing-page" class="container">
+            <header class="app-header">
+                <h1>Functional Body Composition</h1>
+                <p>Look good, move well. Your 8-week program guide.</p>
+            </header>
+
+            <div class="card-container">
+                <!-- Program Overview Card -->
+                <div class="card" id="card-overview" role="button" tabindex="0">
+                    <h3 class="card__title">Program Overview</h3>
+                    <p>A comprehensive guide to the program's philosophy, inspirations, and core concepts.</p>
+                </div>
+
+                <!-- Progressive Overload Card -->
+                <div class="card" id="card-progressive-overload" role="button" tabindex="0">
+                    <h3 class="card__title">Progressive Overload</h3>
+                    <p>Understand how tempo, sets, reps, and rest periods change to drive results.</p>
+                </div>
+
+                <!-- Tempo Card -->
+                <div class="card" id="card-tempo" role="button" tabindex="0">
+                    <h3 class="card__title">Tempo Notation</h3>
+                    <p>Learn to read and execute the precise tempo for each exercise.</p>
+                </div>
+
+                <!-- Diet Card -->
+                <div class="card" id="card-diet" role="button" tabindex="0">
+                    <h3 class="card__title">Diet & Nutrition</h3>
+                    <p>Guidance on fueling your body to support your training and goals.</p>
+                </div>
+            </div>
+
+            <!-- Workout Grid -->
+            <h2>8-Week Training Calendar</h2>
+            <div class="workout-grid" id="workout-grid">
+                <!-- Grid items will be dynamically generated here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Workout Detail View (initially hidden) -->
+        <section id="workout-detail-page" class="container workout-detail">
+            <header class="workout-detail__header">
+                <button class="workout-detail__back-btn" id="back-to-home" aria-label="Back to home page">&#x2190;</button>
+                <h2 id="workout-day-title"></h2>
+            </header>
+            
+            <div id="workout-content">
+                <!-- Workout details will be populated here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modal-overview" class="modal">
+        <div class="modal__content">
+            <span class="modal__close">&times;</span>
+            <h2 class="modal__title">Program Overview</h2>
+            <div class="modal__body">
+                <h3>Philosophy & Inspirations</h3>
+                <p>The Functional Body Composition program is an 8-week initiative designed to develop physique and strength while incorporating functional fitness principles. The goal is to help you "look good, move well."</p>
+                <p>It draws inspiration from:</p>
+                <ul>
+                    <li><strong>German Body Composition (GBC):</strong> A methodology known for supersets, time under tension, and manipulating rest periods to intensify training. The program's author noted that when done correctly, the GBC method is "just about guaranteed to get you results."</li>
+                    <li><strong>Functional Bodybuilding (FBB):</strong> Incorporates intelligent warmups and hybrid programs, dialing back intensity from pure CrossFit.</li>
+                    <li><strong>Mixed Modal Training:</strong> Uses principles from competitive CrossFit to enhance the metabolic impact of training and develop local muscle fatigue.</li>
+                </ul>
+                <p>The program aims to combine the efficacy of GBC for hypertrophy and fat loss with increased "functionality" by adding more variety and emphasizing quality movement, addressing the potential for monotony in traditional GBC.</p>
+
+                <h3>Structure and Key Concepts for Success</h3>
+                <p>The program follows a 7-day weekly calendar over 8 weeks. The optimal schedule is:</p>
+                <ul>
+                    <li><strong>Monday:</strong> Day 1 - Upper Pull + Lower Squat</li>
+                    <li><strong>Tuesday:</strong> Day 2 - Upper Push + Lower Pull</li>
+                    <li><strong>Wednesday:</strong> REST - EASY ACTIVE RECOVERY</li>
+                    <li><strong>Thursday:</strong> Day 3 - Upper Push and Pull</li>
+                    <li><strong>Friday:</strong> Day 4 - Lower Body Squat and Pull</li>
+                    <li><strong>Saturday:</strong> Day 5 - Shoulders, Arms, Core + Intensity</li>
+                    <li><strong>Sunday:</strong> REST - FULL REST DAY</li>
+                </ul>
+                <p>To succeed, it is crucial to follow a **Consistent Schedule**, **Honor the Tempo, Rest, and Supersets**, and **Load Wisely**. Avoid mixing programs and remember that "more is NOT always better." If you feel "trashed," a 1-week deload is recommended.</p>
+                
+                <h3>Loading - Choose Wisely</h3>
+                <p>The program does not provide percentage guidelines from one-rep maxes. The common mistake is loading too heavy, which compromises form and tempo. Conversely, don't go too light. Aim for the top end of a rep range (e.g., 8 reps in an 6-8 rep range) with the heaviest weight you can control while maintaining proper form and tempo.</p>
+                <p>Weeks 1 and 2 are "loading weeks" to find your weights. In Weeks 3-8, as rest periods shorten and volume increases, don't expect to make huge weight increases. Maintaining or making small increases is a sign of great progress. A properly loaded superset should feel challenging on the last few sets but allow you to remain in control throughout.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-progressive-overload" class="modal">
+        <div class="modal__content">
+            <span class="modal__close">&times;</span>
+            <h2 class="modal__title">Progressive Overload</h2>
+            <div class="modal__body">
+                <p>The program's progressive overload scheme is multifaceted, drawing on GBC principles to intensify training over the 8 weeks. The primary mechanisms of progression are:</p>
+                <div class="modal__content-section">
+                    <h3>Loading and Weight Progression</h3>
+                    <p>Weeks 1 and 2 are "loading weeks" to find appropriate training weights. The goal is to choose weights that allow you to maintain good form and tempo while aiming for the top of the prescribed rep range. The program emphasizes that making huge weight increases is not the primary goal. As rest periods shorten and volume increases in Weeks 3-8, the focus is on maintaining the same loads or making only small increases, as the sets will become tougher due to the reduced rest and increased volume.</p>
+                </div>
+                <div class="modal__content-section">
+                    <h3>Rest Period Progression</h3>
+                    <p>This is a key mechanism of progressive overload. Rest periods between exercises in supersets are progressively shortened, making the same weights and tempos feel much harder.</p>
+                    <ul>
+                        <li><strong>Weeks 1 & 2:</strong> Core strength supersets include 75-second rest periods.</li>
+                        <li><strong>Weeks 3 & 4:</strong> Rest periods are shortened to 60 seconds. The goal is to maintain or slightly increase loads.</li>
+                        <li><strong>Weeks 5 & 6:</strong> The number of sets for core supersets increases from 3 to 4, while rest periods remain at 60 seconds, adding significant volume.</li>
+                        <li><strong>Weeks 7 & 8:</strong> Rest periods are further shortened to 45 seconds, with 4 sets per superset, significantly increasing intensity.</li>
+                    </ul>
+                </div>
+                <div class="modal__content-section">
+                    <h3>Sets and Reps Progression</h3>
+                    <p>The number of sets for core strength supersets increases from 3 to 4 starting in Week 5. The rep ranges for strength supersets generally remain consistent across weeks, with the challenge coming from the changes in rest and volume.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-tempo" class="modal">
+        <div class="modal__content">
+            <span class="modal__close">&times;</span>
+            <h2 class="modal__title">Tempo Notation</h2>
+            <div class="modal__body">
+                <p>The strength portions of the workouts are precise and require exact tempos. Following the prescribed tempo is critical for success as it dictates the Time Under Tension (TUT) for the muscle, which is a key driver of muscle growth and strength. Rushing tempos is a common mistake that compromises form and defeats the purpose of the training method.</p>
+                
+                <h3>How to read Tempo Notation</h3>
+                <p>The tempo is represented by a four-digit number, such as <strong>2110</strong>. Each digit corresponds to a specific phase of the lift, measured in seconds:</p>
+                <ul>
+                    <li><strong>First Digit:</strong> The eccentric (lowering) phase. For example, in a squat, this is the time it takes to descend into the squat. A `2` means 2 seconds.</li>
+                    <li><strong>Second Digit:</strong> The isometric hold at the bottom of the movement. In a squat, this is the pause at the deepest point. A `1` means 1 second.</li>
+                    <li><strong>Third Digit:</strong> The concentric (lifting) phase. In a squat, this is the time to stand back up. An `X` means explosive movement, as fast as possible. A `1` means 1 second.</li>
+                    <li><strong>Fourth Digit:</strong> The isometric hold at the top of the movement. In a squat, this is the pause at the top before starting the next rep. A `0` means no pause.</li>
+                </ul>
+                <p>For example, a tempo of <strong>31X0</strong> for a bench press means: 3 seconds to lower the bar to your chest, 1-second pause on the chest, an explosive drive up, and no pause at the top before starting the next rep.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-diet" class="modal">
+        <div class="modal__content">
+            <span class="modal__close">&times;</span>
+            <h2 class="modal__title">Diet & Nutrition</h2>
+            <div class="modal__body">
+                <p>To achieve optimal results, a strategic approach to diet and nutrition is emphasized as equally important as the training. Combining both is the most effective path to success. The program highlights that you will progress significantly more by closely manipulating your diet than by merely adding in more training.</p>
+                
+                <h3>Key Recommendations</h3>
+                <ul>
+                    <li><strong>Fuel Properly:</strong> Avoid the pitfall of justifying poor nutritional choices by thinking you "earned it" in the gym. Proper fueling enhances energy, performance, and overall health.</li>
+                    <li><strong>Precision Nutrition Calculator:</strong> The program recommends utilizing the Precision Nutrition calculator to determine your specific nutritional requirements. Use "Muscle Gain" or "Body Recomposition" as your training goals and "INTENSE" for your activity level.</li>
+                    <li><strong>Meet Your Protein Goals:</strong> It is of paramount importance to meet your protein goals, especially given the significant volume of resistance training involved.</li>
+                    <li><strong>Progress, Not Perfection:</strong> Perfection in nutrition is not required to achieve results; simply doing a little better than your current habits will suffice.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATA ---
+        const workouts = {
+            "week1-day1": {
+                title: "Week 1 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo (*rear foot on 4-6\" plates)" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week1-day2": {
+                title: "Week 1 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week1-day3": {
+                title: "Week 1 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week1-day4": {
+                title: "Week 1 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week1-day5": {
+                title: "Week 1 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week2-day1": {
+                title: "Week 2 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week2-day2": {
+                title: "Week 2 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week2-day3": {
+                title: "Week 2 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week2-day4": {
+                title: "Week 2 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week2-day5": {
+                title: "Week 2 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "3 Sets, 75sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week3-day1": {
+                title: "Week 3 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week3-day2": {
+                title: "Week 3 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week3-day3": {
+                title: "Week 3 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week3-day4": {
+                title: "Week 3 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week3-day5": {
+                title: "Week 3 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week4-day1": {
+                title: "Week 4 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week4-day2": {
+                title: "Week 4 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week4-day3": {
+                title: "Week 4 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week4-day4": {
+                title: "Week 4 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week4-day5": {
+                title: "Week 4 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "3 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week5-day1": {
+                title: "Week 5 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week5-day2": {
+                title: "Week 5 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week5-day3": {
+                title: "Week 5 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week5-day4": {
+                title: "Week 5 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week5-day5": {
+                title: "Week 5 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week6-day1": {
+                title: "Week 6 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week6-day2": {
+                title: "Week 6 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week6-day3": {
+                title: "Week 6 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week6-day4": {
+                title: "Week 6 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week6-day5": {
+                title: "Week 6 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "4 Sets, 60sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week7-day1": {
+                title: "Week 7 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week7-day2": {
+                title: "Week 7 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week7-day3": {
+                title: "Week 7 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week7-day4": {
+                title: "Week 7 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week7-day5": {
+                title: "Week 7 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+            "week8-day1": {
+                title: "Week 8 - Day 1: Squat + Upper Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Bent Over Band Pull Aparts", details: "12 reps (pause 1sec with hands wide)" },
+                            { name: "Drop Lunge to Knee Lift", details: "10/leg (1-3\")" },
+                            { name: "Quadruped Shoulder Taps", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Back Rack Split Squat", details: "8-10/leg, 2110 tempo" },
+                            { name: "A2) Pronated Strict Pull Up", details: "8-10 reps, 2011 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Cyclist Front Squat", details: "8-10 reps, 31X0 tempo" },
+                            { name: "B2) Chainsaw Row", details: "8-10/arm, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        exercises: [
+                            { name: "C) 5min AMRAP", details: "2-4-6-8-10-12... Renegade Rows (50/35lbs), *5 Cal Row between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Strict Knees to Elbows, *5 Cal Bike between each set" },
+                            { name: "C) 5min AMRAP (rest 2mins after)", details: "2-4-6-8-10-12... Alternating DB Thrusters (50/35lbs), *30 Double Unders between each set" }
+                        ]
+                    }
+                ]
+            },
+            "week8-day2": {
+                title: "Week 8 - Day 2: Hinge + Vertical Push",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Dumbbell Deadlifts", details: "5 reps" },
+                            { name: "Dumbbell Hang Power Clean", details: "5 reps" },
+                            { name: "Dumbbell Strict Press", details: "5 reps" },
+                            { name: "Yoga Push Ups", details: "10 reps" },
+                            { name: "Jump Rope Single Unders", details: "50 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Segmented Clean Deadlift", details: "6-8 reps, 3131 tempo (with straps)" },
+                            { name: "A2) Half Kneeling Barbell Press", details: "4-5 reps/knee, 20X2 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Deficit Landmine Single Leg RDL", details: "8-10/leg, 3010 tempo" },
+                            { name: "B2) Single Arm Dumbbell Push Press", details: "8-10/arm, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "FOR TIME",
+                        details: "@ 85% Effort",
+                        exercises: [
+                            { name: "C) 27-21-15 Row Cals", details: "" },
+                            { name: "21-15-9 Strict Handstand Push Up", details: "(*Scale to Pike Strict HSPU)" },
+                            { name: "Rest 3mins", details: "" },
+                            { name: "21-15-9 Bike Cals", details: "" },
+                            { name: "27-21-15 GHD Sit Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week8-day3": {
+                title: "Week 8 - Day 3: Horizontal Push + Pull",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Single Arm Bottoms Up KB Carry", details: "10m/arm" },
+                            { name: "Scapular Push Ups", details: "10 reps" },
+                            { name: "Passive Ring Hang", details: "30 seconds" },
+                            { name: "Band Pull Aparts", details: "15 reps" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Wide Grip Bench Press", details: "10-12 reps, 31X0 tempo" },
+                            { name: "A2) Pendlay Row", details: "10-12 reps, 30X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Strict Bar Dips", details: "10-12 reps, 2020 tempo" },
+                            { name: "B2) Supinated Grip Body Row", details: "12-14 reps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "CONSISTENT EFFORT",
+                        details: "15min AMRAP",
+                        exercises: [
+                            { name: "20sec L Sit on Rings", details: "" },
+                            { name: "15m Quadruped Crawl Forwards", details: "" },
+                            { name: "15m Quadruped Crawl Backwards", details: "" },
+                            { name: "10 Dual KB Clean and Push Press", details: "44/26lbs" },
+                            { name: "5 Strict Chest to Bar Pull Ups", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "week8-day4": {
+                title: "Week 8 - Day 4: Hinge + Squat",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Banded Hip Thrust", details: "15 reps + 20sec Isometric Hold at Top" },
+                            { name: "KB Loaded Jefferson Curl Light", details: "8-10 reps" },
+                            { name: "High Knees Jump Rope", details: "30 seconds" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Snatch Grip Romanian Deadlift", details: "8-10 reps, 3110 tempo" },
+                            { name: "A2) Suitcase Long Step Walking Lunge", details: "14-16 steps, 30X0 tempo" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSETS",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "B1) Barbell Hip Thrust", details: "8-10 reps, 20X2 tempo" },
+                            { name: "B2) Goblet 1-1/4 Squat", details: "8-10 reps, 2111 tempo" }
+                        ]
+                    },
+                    {
+                        type: "REPEATABLE PACE",
+                        details: "Every 5mins x 4 sets",
+                        exercises: [
+                            { name: "Continuous DB Farmers Carry", details: "45sec, TOUGH weight" },
+                            { name: "Assault Bike", details: "15/12 Cals" },
+                            { name: "Supine Toes to Bar", details: "12 reps, 3sec lowering" },
+                            { name: "Box Jump Step Down", details: "9 reps, 30/24\"" }
+                        ]
+                    }
+                ]
+            },
+            "week8-day5": {
+                title: "Week 8 - Day 5: Shoulders + Arms",
+                sections: [
+                    {
+                        type: "WARMUP",
+                        details: "3 Sets, rest as needed",
+                        exercises: [
+                            { name: "Yoga Push Up", details: "8 reps" },
+                            { name: "Prone Snow Angels", details: "8 reps" },
+                            { name: "Scapular Pull Ups", details: "8 reps" },
+                            { name: "Side Plank Rotations", details: "8/side, slow and deliberate" }
+                        ]
+                    },
+                    {
+                        type: "STRENGTH SUPERSET",
+                        details: "4 Sets, 45sec rest between exercises and sets",
+                        exercises: [
+                            { name: "A1) Tall Kneeling Filly Press", details: "8-10/arm, 2111 tempo" },
+                            { name: "A2) Close Grip Parallette Tricep Push Up", details: "8-10 reps, 3011 tempo" },
+                            { name: "A3) Incline Bench Dumbbell Bicep Curl", details: "8-10 reps, 40X1 tempo" }
+                        ]
+                    },
+                    {
+                        type: "MUSCLE ENDURANCE",
+                        details: "5 rounds for time, @90% effort",
+                        exercises: [
+                            { name: "C1) Bike Cals", details: "15/12 reps" },
+                            { name: "C2) Burpee Over Rower", details: "10 reps" },
+                            { name: "C3) Wall Walks", details: "5 reps" }
+                        ]
+                    },
+                    {
+                        type: "ACCESSORY",
+                        details: "3 Sets, 60sec rest between sets",
+                        exercises: [
+                            { name: "D1) Incline Bench DB Lateral Raise", details: "10-12 reps, 3111 tempo" },
+                            { name: "D2) Single Arm Face Pull", details: "10-12 reps, 2020 tempo" },
+                        ]
+                    }
+                ]
+            },
+        };
+
+        // --- DOM Elements ---
+        const landingPage = document.getElementById('landing-page');
+        const workoutDetailPage = document.getElementById('workout-detail-page');
+        const workoutGrid = document.getElementById('workout-grid');
+        const workoutDayTitle = document.getElementById('workout-day-title');
+        const workoutContent = document.getElementById('workout-content');
+        const backButton = document.getElementById('back-to-home');
+        const modalElements = {
+            overview: document.getElementById('modal-overview'),
+            tempo: document.getElementById('modal-tempo'),
+            progressiveOverload: document.getElementById('modal-progressive-overload'),
+            diet: document.getElementById('modal-diet')
+        };
+        const cards = {
+            overview: document.getElementById('card-overview'),
+            tempo: document.getElementById('card-tempo'),
+            progressiveOverload: document.getElementById('card-progressive-overload'),
+            diet: document.getElementById('card-diet')
+        };
+
+        // --- Functions ---
+
+        /**
+         * Closes all modals by removing the 'is-visible' class.
+         */
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('is-visible');
+            });
+        }
+        
+        /**
+         * Renders the workout grid with all 40 workout days.
+         */
+        function renderWorkoutGrid() {
+            workoutGrid.innerHTML = ''; // Clear previous content
+            let dayCount = 0;
+            for (let week = 1; week <= 8; week++) {
+                for (let day = 1; day <= 5; day++) {
+                    dayCount++;
+                    const dayKey = `week${week}-day${day}`;
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = `workout-grid__day workout-grid__day--week-${week}`;
+                    dayDiv.dataset.dayKey = dayKey;
+                    dayDiv.setAttribute('role', 'button');
+                    dayDiv.setAttribute('tabindex', '0');
+                    dayDiv.innerHTML = `<span class="workout-grid__day-label">Day ${dayCount}</span>`;
+                    workoutGrid.appendChild(dayDiv);
+
+                    // Add click and keyboard event listeners for accessibility
+                    dayDiv.addEventListener('click', () => showWorkoutDetails(dayKey));
+                    dayDiv.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            showWorkoutDetails(dayKey);
+                        }
+                    });
+                }
+            }
+        }
+        
+        /**
+         * Displays the workout details for a specific day.
+         * @param {string} dayKey - The key for the workout day (e.g., 'week1-day1').
+         */
+        function showWorkoutDetails(dayKey) {
+            const workout = workouts[dayKey];
+            if (!workout) {
+                // In a real app, you might show a "workout not found" message.
+                console.error(`Workout data for ${dayKey} not found.`);
+                return;
+            }
+
+            // Set the title
+            workoutDayTitle.textContent = workout.title;
+            
+            // Clear and build the workout content
+            workoutContent.innerHTML = '';
+            workout.sections.forEach(section => {
+                const sectionCard = document.createElement('div');
+                sectionCard.className = 'workout-detail-card';
+                
+                let sectionHTML = `<h3>${section.type}</h3>`;
+                if (section.details) {
+                    sectionHTML += `<p><em>${section.details}</em></p>`;
+                }
+                
+                sectionHTML += `<ul class="workout-list">`;
+                section.exercises.forEach((exercise, index) => {
+                    const iconLabel = section.type === "STRENGTH SUPERSETS" ? String.fromCharCode(65 + Math.floor(index / 2)) : "";
+                    sectionHTML += `
+                        <li class="workout-list__item">
+                            <span class="workout-list__item-icon">${iconLabel}</span>
+                            <div class="workout-list__item-content">
+                                <strong>${exercise.name}</strong>
+                                <p>${exercise.details}</p>
+                            </div>
+                        </li>
+                    `;
+                });
+                sectionHTML += `</ul>`;
+                
+                sectionCard.innerHTML = sectionHTML;
+                workoutContent.appendChild(sectionCard);
+            });
+
+            // Hide the landing page and show the workout detail page
+            landingPage.style.display = 'none';
+            workoutDetailPage.classList.add('is-visible');
+            window.scrollTo(0, 0); // Scroll to the top of the page
+        }
+
+        /**
+         * Shows a specific modal.
+         * @param {string} modalId - The ID of the modal element.
+         */
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('is-visible');
+            }
+        }
+        
+        // --- Event Listeners ---
+        
+        // Modal close buttons
+        document.querySelectorAll('.modal .modal__close').forEach(button => {
+            button.addEventListener('click', closeModals);
+        });
+        
+        // Close modal when clicking outside the content
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModals();
+                }
+            });
+        });
+        
+        // Add event listeners to the main cards
+        cards.overview.addEventListener('click', () => showModal('modal-overview'));
+        cards.progressiveOverload.addEventListener('click', () => showModal('modal-progressive-overload'));
+        cards.tempo.addEventListener('click', () => showModal('modal-tempo'));
+        cards.diet.addEventListener('click', () => showModal('modal-diet'));
+
+        // Add event listeners for keyboard navigation on cards
+        Object.values(cards).forEach(card => {
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showModal(e.currentTarget.id.replace('card-', 'modal-'));
+                }
+            });
+        });
+
+        // Back button from workout detail page
+        backButton.addEventListener('click', () => {
+            workoutDetailPage.classList.remove('is-visible');
+            landingPage.style.display = 'block';
+            window.scrollTo(0, 0);
+        });
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderWorkoutGrid();
+        });
+
+    </script>
+</body>
+</html>
