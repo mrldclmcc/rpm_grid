@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBuilt 2.0 Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Variables and Global Styles for Dark Theme */
+        :root {
+            --color-primary: #e0e0e0; /* Light text for readability on dark background */
+            --color-background: #18230F; /* Very dark green/brown for main background */
+            --color-card-bg: #27391C; /* Darker green/brown for card backgrounds */
+            --color-accent: #255F38; /* Medium dark green for accents, buttons, borders */
+            --color-light-gray: #3a4d39; /* Slightly lighter shade for card headers in dark theme */
+            --color-text-light: #b0b0b0; /* Lighter gray for secondary text */
+
+            /* Spacing - Fluid based on viewport width */
+            --space-xs: clamp(0.5rem, 1vw + 0.25rem, 0.75rem);
+            --space-sm: clamp(0.75rem, 1.5vw + 0.5rem, 1.25rem);
+            --space-md: clamp(1rem, 2vw + 1rem, 1.75rem);
+            --space-lg: clamp(1.5rem, 3vw + 1.5rem, 2.5rem);
+
+            /* Font Sizes - Fluid based on viewport width */
+            --font-size-xs: clamp(0.8rem, 1.2vw + 0.7rem, 0.9rem);
+            --font-size-sm: clamp(0.9rem, 1.5vw + 0.8rem, 1.05rem);
+            --font-size-md: clamp(1rem, 2vw + 1rem, 1.25rem);
+            --font-size-lg: clamp(1.25rem, 2.5vw + 1.25rem, 1.6rem);
+            --font-size-xl: clamp(1.5rem, 3vw + 1.5rem, 2rem);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-primary); /* Use light primary color for text */
+            line-height: 1.6;
+            margin: 0;
+            padding: var(--space-sm);
+            box-sizing: border-box;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1; /* Allow container to grow and push footer down */
+            position: relative; /* For positioning back buttons relative to container */
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            padding-bottom: var(--space-lg); /* Padding for content above back button */
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* Header Styling */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-md);
+            padding: var(--space-md) 0;
+            border-bottom: 3px solid var(--color-accent);
+            position: relative; /* For positioning back button within header */
+        }
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: var(--font-size-xl);
+            margin: 0;
+            color: var(--color-accent);
+            letter-spacing: 1.5px;
+        }
+
+        /* Card Component */
+        .card {
+            background-color: var(--color-card-bg); /* Darker green/brown for cards */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Darker shadow for dark theme */
+            margin-bottom: var(--space-md);
+            overflow: hidden;
+            border-left: 6px solid var(--color-accent);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        .card-header {
+            padding: var(--space-sm) var(--space-md);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--color-light-gray); /* Slightly lighter green for header */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
+            font-family: 'Montserrat', sans-serif;
+            font-size: var(--font-size-md);
+            color: var(--color-primary); /* Light text on header */
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: var(--font-size-md);
+            flex-grow: 1;
+        }
+        .card-header .arrow {
+            font-size: var(--font-size-lg);
+            margin-left: var(--space-sm);
+            transition: transform 0.3s ease;
+            color: var(--color-primary); /* Arrow color */
+        }
+        .card-header.active .arrow {
+            transform: rotate(90deg);
+        }
+
+        .card-content {
+            padding: var(--space-sm) var(--space-md);
+            display: none;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light); /* Lighter gray for details text */
+        }
+        .card-content.active {
+            display: block;
+        }
+
+        /* Grid Layout for Main Menu */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-sm);
+        }
+        .card-grid .card {
+            border-left: 6px solid #1F7D53; /* Brighter green for main menu cards */
+        }
+        .card-grid .card .card-header {
+            background-color: #27391C; /* Match card background for main menu headers */
+            color: var(--color-primary);
+        }
+
+        /* Button Styling */
+        .button {
+            display: block;
+            width: 100%;
+            padding: var(--space-sm);
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-size: var(--font-size-md);
+            cursor: pointer;
+            margin-bottom: var(--space-sm);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .button:hover {
+            background-color: #1F7D53; /* Brighter green on hover */
+            transform: translateY(-1px);
+        }
+
+        .back-button {
+            margin-top: var(--space-md);
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            background: none;
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 5px;
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .back-button:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        /* Top-Left Back Arrow Button */
+        .top-left-back-arrow {
+            position: absolute;
+            top: var(--space-sm);
+            left: var(--space-sm);
+            font-size: var(--font-size-lg);
+            color: var(--color-accent);
+            cursor: pointer;
+            text-decoration: none;
+            padding: var(--space-xs);
+            border-radius: 50%;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            z-index: 10; /* Ensure it's above other content */
+        }
+        .top-left-back-arrow:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #1F7D53;
+        }
+
+        /* List and Paragraph Styling within Cards */
+        .card-content ul, .card-content ol {
+            padding-left: var(--space-md);
+            margin-top: var(--space-xs);
+            margin-bottom: var(--space-xs);
+        }
+        .card-content li {
+            margin-bottom: var(--space-xs);
+        }
+        .card-content h4 {
+            font-size: var(--font-size-md);
+            margin-top: var(--space-sm);
+            margin-bottom: var(--space-xs);
+            color: var(--color-primary); /* Light primary color for headings */
+        }
+        .card-content p {
+            margin-bottom: var(--space-xs);
+        }
+        .card-content strong {
+            color: var(--color-primary); /* Light primary color for strong text */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>ReBuilt 2.0</h1>
+        </header>
+
+        <!-- Main Menu Screen -->
+        <div id="mainMenuScreen" class="screen active">
+            <div class="card-grid">
+                <a href="#" class="card" onclick="showScreen('programOverviewScreen')">
+                    <div class="card-header"><h3>Program Overview</h3></div>
+                </a>
+                <a href="#" class="card" onclick="showWorkoutBlock('Weeks 1-4')">
+                    <div class="card-header"><h3>Weeks 1-4</h3></div>
+                </a>
+                <a href="#" class="card" onclick="showWorkoutBlock('Weeks 5-8')">
+                    <div class="card-header"><h3>Weeks 5-8</h3></div>
+                </a>
+                <a href="#" class="card" onclick="showWorkoutBlock('Weeks 9-12')">
+                    <div class="card-header"><h3>Weeks 9-12</h3></div>
+                </a>
+            </div>
+            <a href="#" class="card" onclick="showScreen('commandmentsScreen')">
+                <div class="card-header"><h3>Training Longevity Commandments</h3></div>
+            </a>
+        </div>
+
+        <!-- Program Overview Screen -->
+        <div id="programOverviewScreen" class="screen">
+            <a href="#" class="top-left-back-arrow" onclick="showScreen('mainMenuScreen')">&larr;</a>
+            <div class="card">
+                <div class="card-header active" onclick="toggleCardContent(this)">
+                    <h3>Program Overview & Philosophy</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content active">
+                    <p>Thank you for purchasing Rebuilt 2.0. You've made a great decision!</p>
+                    <p>On October 9, 2020, Joe DeFranco had major shoulder surgery. (This was his 4th major surgery, as he had 3 back surgeries in his 20's to remove a tumor that was growing inside his sacrum.) This time around, his supraspinatus & biceps tendons were completely torn, along with his infraspinatus, subscapularis and labrum. These tears/injuries were a culmination of 35 years of heavy lifting, combined with 13 years of playing football.</p>
+                    <p>The DAY Joe arrived home from his surgery, he began planning, researching and designing ReBuilt 2.0. It's been a long road... and it certainly wasn't easy. But here we are - 14 months post-surgery - and he's in the best shape of his life [at 46-years-old]!</p>
+                    <p>Most people accept joint pain as part of the muscle-building & strength-building process, but it doesn't have to be that way! ReBuilt 2.0 uses the most joint-friendly exercises - in the proper sequencing - to reduce joint stress, while increasing strength, hypertrophy & mobility!</p>
+                    <p>As you can see from Joe's pics, ReBuilt 2.0 has built him the best physique of his life - and the best part is - he actually feels better than he looks. Now it's YOUR turn!</p>
+                    <p>If you're like Joe and have nagging injuries (from playing sports when you were younger and/or years of heavy lifting), ReBuilt 2.0 is about to change your life! Gone are the days when training would take away from your quality of life. It's time to build a physique that enhances your daily activities and feels as good as it looks... It's time to get REBUILT!</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header active" onclick="toggleCardContent(this)">
+                    <h3>Program Components & Notes</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content active">
+                    <h4>1. Exercise Execution</h4>
+                    <p>Make sure to watch the VIDEO DEMOS of each exercise before you begin this program! We filmed every single exercise in this program for you. Take advantage of the video library and review each exercise before you begin each workout. Proper exercise execution is key if you're interested in maximizing your results!</p>
+
+                    <h4>2. Training Days | Program Split Recommendation</h4>
+                    <p>Recommended Split:</p>
+                    <ul>
+                        <li><strong>Monday:</strong> Push</li>
+                        <li><strong>Tuesday:</strong> Legs</li>
+                        <li><strong>Wednesday:</strong> Off</li>
+                        <li><strong>Thursday:</strong> Pull</li>
+                        <li><strong>Friday:</strong> Off</li>
+                        <li><strong>Saturday:</strong> Full Body</li>
+                        <li><strong>Sunday:</strong> Off</li>
+                    </ul>
+                    <p><strong>NOTE:</strong> If you prefer/need weekends off, simply perform your Full Body workout on Friday. (Of all the body parts, I believe "upper back" can handle the most volume/frequency. After all, they are postural muscles which "fight gravity" 24/7 so training 'Back' on "back-to-back" days (pun intended) is NOT the end of the world :)</p>
+
+                    <h4>3. RPE for “Pump-n-Prime" circuits</h4>
+                    <p>You will see "RPE 5-7" written next to all the "Pump-n-Prime" circuits. This is merely a reminder to not go "too crazy" (weight-wise) on these exercises. Think of this circuit as the final phase of your WARM-UP. Your main goal(s) are to bring some blood to the primary & supporting muscles (which helps provide some additional stability once we get into the heavier, more intense exercises), improve mobility/ROM & prime ("wake up") your CNS. You do NOT want to go to failure (or anywhere near failure) on these sets. These circuits have been placed at the beginning of each session to ENHANCE the subsequent workout, not take away from it.</p>
+
+                    <h4>4. "Total Reps" Explanation</h4>
+                    <p>For your Main Lift (on PUSH Day) during Weeks 1-4 you'll be performing "40 total reps w/ your 10-15RM"... Don't worry about figuring out percentages of your "1RM" for the 'Slight Decline DB Pause Bench Press'. Simply choose a weight that you know you can complete for 10 reps, but not more than 15 reps. THAT'S the weight you'll be using for all sets. (Simple enough for ya?!)</p>
+                    <ul>
+                        <li>If you happen to get over 15 reps on the first set, no problem... Simply go 5-10lbs heavier during the following week's workout.</li>
+                        <li>On the other hand, if you couldn't complete 10 reps on the first set, you went too heavy. In that case you'll need to drop the weight. You'll figure it out :)</li>
+                    </ul>
+                    <p>If you choose an appropriate weight, your "week-to-week" goal is to try and complete your total reps in less time each week. (Your ability to complete the 40 reps in less time should be a product of shorter rest intervals between sets, NOT because you're "rushing" through the actual reps!) REMEMBER to pause for a second at the bottom of each & every rep!</p>
+
+                    <h4>5. "OFF DAY" Recommendations [VERY IMPORTANT]</h4>
+                    <p>I recommend taking a minimum of 10-12k total steps every day. (That seems to be the "sweet spot" where most of the health/longevity benefits begin.) Personally, for my ReBuilt 2.0 transformation I walked 30-40 minutes "every" morning. (NOTE: My goal was to walk every morning, but I averaged 6 days a week, never less than 5 days.) Every night, after dinner, I also walked our dogs for 10-20 minutes. (I highly recommend taking a 10+ minute walk after each and every meal, whenever possible. This helps improve digestion, while reducing gas & bloating.) On days that I missed one or more of my walks, I simply "added extra steps" onto another (less busy) day later in the week. Your “big picture” goal is to get at least 70-85k total steps in each week; Figure out the most convenient/consistent way to get those steps in [based on YOUR schedule] and make it happen!</p>
+                    <p>I personally didn’t do any other “cardio”, besides my daily morning/evening walks, while on the ReBuilt 2.0 program. But, if you’d like to incorporate a little extra cardio (besides walking) into this program, I’d recommend 1 HIIT session a week. Just make sure you’re doing it properly!</p>
+                    <p>Here’s my HIIT recommendation: 10sec of ALL-OUT effort followed by 50sec of active recovery. Do this for 8-12 rounds with a 2-3 min warm-up & cool down. (Assault bike, rower or sled/prowler are some of my favorite choices for HIIT sessions.)</p>
+
+                    <h4>6. Rest Intervals</h4>
+                    <p>If a specific rest interval isn’t specified for an exercise, rest as long/little as you feel you need to perform the next set at the highest possible level. (Everyone has different strength/conditioning levels, so work at a pace that’s appropriate for YOU.) BUT, with that being said, don’t get in a habit of resting 3-4 minutes between every set! REMEMBER: We’re prioritizing health, longevity & relative strength on this program - so your goal should be to “push the pace” of your workouts (without sacrificing the quality of your reps/sets).</p>
+
+                    <h4>7. Weekly Progress [supplemental & accessory exercises]</h4>
+                    <p>“Progress” can come in many different forms: You can lift more weight each week, decrease your rest intervals (while lifting the same weight), improve your technique, increase the number of reps (with the same weight), etc. Make sure you’re doing everything in your power to progress from week-to-week. Don’t just “go through the motions”!</p>
+                    <p>FOR EXAMPLE: If an exercise calls for “3 sets of 12-15 reps” [during one of the 4-week training blocks] you can:</p>
+                    <ul>
+                        <li><strong>OPTION A:</strong> Perform 3 sets of 15 reps during the first week, then increase the weight and decrease the reps the following week(s).</li>
+                        <li><strong>OPTION B:</strong> Perform 3 sets of 12 during the first week, then try and increase the reps [while using the same or more weight] the following week(s).</li>
+                    </ul>
+                    <p>These are just 2 examples of the many ways you can progress from week-to-week. I don’t care how you decide to progress your supplemental & accessory exercises, as long as you’re progressing!</p>
+
+                    <h4>8. Exercise Substitutions</h4>
+                    <p>If an exercise hurts, DON’T DO IT! (See “Training Longevity Commandment #1”). There is always an alternative/regression, so there’s no need to “push through pain”. You must become your own best trainer/coach. Just because an exercise/regression may not be programmed in any of the ReBuilt 2.0 workouts doesn’t mean you can’t incorporate it. If there’s a variation of a movement that you feel is better for you and your body, DO IT! Again, I want you to become your own best trainer/coach. Nobody knows how your body feels better than you. Be smart and make any programming adjustments that you feel are needed to personalize the ReBuilt 2.0 program for your body.</p>
+
+                    <h4>9. Equipment Requirements</h4>
+                    <p>The majority of the ReBuilt 2.0 program requires only basic equipment that most commercial (or well-equipped home) gyms have: Rack, Adjustable Bench, Dumbbells, Barbell, Bands & Rings/suspension trainer. Cables are also incorporated into the program, but most of the cable exercises can be substituted with band(s) if needed.</p>
+                </div>
+            </div>
+            <button class="back-button" onclick="showScreen('mainMenuScreen')">← Back to Main Menu</button>
+        </div>
+
+        <!-- Training Longevity Commandments Screen -->
+        <div id="commandmentsScreen" class="screen">
+            <a href="#" class="top-left-back-arrow" onclick="showScreen('mainMenuScreen')">&larr;</a>
+            <h2 style="text-align: center; font-family: 'Montserrat', sans-serif; color: var(--color-primary);">Training Longevity Commandments</h2>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#1) Though Shalt Never Train Through Pain</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>This is paramount. If an exercise causes sharp or persistent pain, stop immediately. There are always alternative exercises or regressions that can be performed without pain. Listen to your body and prioritize long-term joint health over short-term gains.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#2) Though Shalt Never Sacrifice Form To Lift More Weight</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Proper form ensures that the target muscles are effectively worked and minimizes the risk of injury. Lifting more weight with poor form is counterproductive and dangerous. Focus on quality repetitions over quantity or ego.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#3) Though Shalt Choose Exercises That Overload Your Muscles More Than Your Joints</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Select exercises that provide a strong stimulus to the muscles without placing excessive stress on your joints. This often means favoring dumbbell or machine variations, or specific barbell variations that are more joint-friendly.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#4) Though Shalt Warm Up To Train, NOT “Train” To Warm Up</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>The "Quick 6" warm-up routines are designed to prepare your body for the workout, improve mobility, and activate the necessary muscles. They are not meant to be exhaustive workouts themselves. Don't skip them.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#5) Though Shalt Emphasize Relative Strength Gains Over Absolute Strength Gains</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Relative strength refers to your strength-to-bodyweight ratio. This program prioritizes becoming stronger for your size, which often translates to better athleticism and joint health, rather than simply lifting the heaviest weight possible regardless of body mass.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#6) Though Shalt Limit The Use Of The Straight Barbell in Your Training</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Straight barbells can sometimes place undue stress on wrists, elbows, and shoulders. This program incorporates more joint-friendly alternatives like dumbbells, kettlebells, and specialized bars to achieve similar training effects with less orthopedic strain.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#7) Though Shalt Limit Axial Loading in Your Training</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Axial loading refers to weight placed directly on the spine (e.g., traditional back squats, overhead presses with a barbell). While not eliminated, this program strategically limits and modifies these movements to reduce spinal compression and promote longevity.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#8) Though Shalt “Pull” Twice As Often As You “Push”</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Many training programs overemphasize pushing movements (chest, shoulders, triceps), leading to muscular imbalances and postural issues. This commandment ensures a strong emphasis on pulling movements (back, biceps) to promote balanced development and better posture.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#9) Though Shalt Program Pressing Movements That Allow The Scapula To Move Freely</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>For optimal shoulder health, the scapula (shoulder blade) should be able to move naturally during pressing movements. Exercises that pin the scapula (like some machine presses) are limited in favor of those that allow for natural scapular rhythm.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#10) Though Shalt Program Your ‘Main Lift’ Towards the Middle/End of Your Workout</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Placing the main, heaviest lift later in the workout allows for a more thorough warm-up and pre-fatigue of supporting muscles, which can enhance performance and reduce injury risk on the primary movement.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#11) Though Shalt Incorporate Various Methods of “Making Light Weights Feel Heavy”</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Techniques like tempo training (slow eccentrics), pause reps, continuous tension, and high-rep sets can make lighter weights feel incredibly challenging, promoting hypertrophy and strength gains without requiring maximal loads that stress joints.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#12) Though Shalt Limit the Amount of Missed Reps, Forced Reps & Training To Failure [on your main/compound lifts]</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>While pushing intensity is important, consistently training to absolute failure on heavy compound lifts can be overly taxing on the nervous system and increase injury risk. The program advocates for leaving 1-2 reps "in the tank" on main lifts.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#13) Though Shalt Incorporate Loaded Carries Regularly in Your Training</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Loaded carries (like Farmer's Walks) are excellent for building grip strength, core stability, and overall work capacity, translating to improved performance in other lifts and daily activities.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#14) Though Shalt Walk At Least 10-12k Steps Per Day</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>Daily walking is emphasized for overall health, recovery, and body composition. It's a low-impact activity that complements the more intense training sessions.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCardContent(this)">
+                    <h3>#15) Though Shalt ALWAYS Return Thy Shopping Cart! :)</h3>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="card-content">
+                    <p>This commandment is a lighthearted reminder that true strength and character extend beyond the gym. It encourages being a considerate and responsible individual in all aspects of life.</p>
+                </div>
+            </div>
+            <button class="back-button" onclick="showScreen('mainMenuScreen')">← Back to Main Menu</button>
+        </div>
+
+        <!-- Workout Block Screen (Will be dynamically populated) -->
+        <div id="workoutBlockScreen" class="screen">
+            <a href="#" class="top-left-back-arrow" onclick="showScreen('mainMenuScreen')">&larr;</a>
+            <h2 id="workoutBlockTitle" style="text-align: center; font-family: 'Montserrat', sans-serif; color: var(--color-primary);"></h2>
+            <div id="workoutBlockContent">
+                <!-- Workout cards will be dynamically inserted here -->
+            </div>
+            <button class="back-button" onclick="showScreen('mainMenuScreen')">← Back to Main Menu</button>
+        </div>
+
+        <!-- Daily Workout Screen (Will be dynamically populated) -->
+        <div id="dailyWorkoutScreen" class="screen">
+            <a href="#" class="top-left-back-arrow" onclick="showPreviousWorkoutBlock()">&larr;</a>
+            <h2 id="dailyWorkoutTitle" style="text-align: center; font-family: 'Montserrat', sans-serif; color: var(--color-primary);"></h2>
+            <div id="dailyWorkoutContent">
+                <!-- Exercise cards will be dynamically inserted here -->
+            </div>
+            <button class="back-button" onclick="showPreviousWorkoutBlock()">← Back to Workouts</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Store the last viewed workout block to enable correct back navigation
+        let lastWorkoutBlock = '';
+
+        // Data for the entire program, structured by week and day.
+        // This data is meticulously extracted from the provided PDF.
+        const programData = {
+            "Weeks 1-4": {
+                "Monday: PUSH WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PUSH",
+                        exercises: [
+                            { name: "1. Dr. Kirsch Protocol w/ Scapular depressions", details: "Hang x 30sec, then perform 10 scap depressions." },
+                            { name: "2. Prayer Stretch", details: "Hold for 5 deep breaths." },
+                            { name: "3. Half-Kneeling Thoracic Rotation Combo [against wall]", details: "3 reps per side." },
+                            { name: "4. Modified Scorpion Pec Stretch - Palm down", details: "Hold for 5 deep breaths each side." },
+                            { name: "5. ISO-Hold Y-W-T-Surfboard", details: "Hold each position for 15sec." },
+                            { name: "6. Scap Push-ups", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Prone Y-W Raise w/ PVC (or Bodybar)", details: "8 reps." },
+                            { name: "b. Flat Bench DB Flyes", details: "10 reps." },
+                            { name: "c. Flat Bench DB Tricep Kickbacks", details: "12 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Seesaw Push-ups", details: "3 x 10-15, Last set AMRAP. The goal is to complete all reps without allowing the sides of the barbell to touch the floor." },
+                            { name: "b. Band Pull-Aparts (overhand)", details: "3 x 12-20." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Slight Decline* DB Pause Bench Press", details: "40 total reps w/ your 10-15RM (See “Total Reps” explanation on page 10.)<br>*Place 25lb plate under foot-end of bench | 1sec pause at bottom of each rep." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 2min after last set of the main lift, drop weight approx. 10-15% and then perform your drop-set.",
+                        exercises: [
+                            { name: "a. Slight Decline DB *Squeeze Press [w/ Rest-Pause]", details: "1 set x “AMRAP” (leaving 1-2 reps “in the tank”), rest 20-30sec, then perform as many more reps as possible.<br>*Placing 1-2 Airex Pads [b/t dumbbells] is recommended, but NOT required." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Superset",
+                        exercises: [
+                            { name: "a. *Prone Incline DB Y-Raise", details: "3 x 20,15,12 (increase weight each set).<br>*Set incline at approx. 75-80 degrees." },
+                            { name: "b. Flat KB (or) DB Tricep Extensions", details: "3 x 10-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. Single Arm Cable (or Band) Lateral Raise 21’s", details: "2 sets. *FULL ROM x 7, TOP-Half x 7, BOTTOM-Half x 7.<br>NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    }
+                ],
+                "Tuesday: LOWER WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: LOWER",
+                        exercises: [
+                            { name: "1. Big Toe/Ankle Mobilization", details: "10 reps." },
+                            { name: "2. Rear Foot Elevated Quad/Hip Flexor Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "3. Elevated Pigeon Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "4. 90/90 Hip Switch", details: "6-10 reps per side." },
+                            { name: "5. Hand Supported Hip Airplane", details: "10 reps per leg." },
+                            { name: "6. Lateral Lunge", details: "6-10 reps per side." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Wall Tib Raises", details: "3 x 20-35 reps." },
+                            { name: "b. Band “Moonwalkers”", details: "15-20 reps per leg." },
+                            { name: "c. Single Leg Seated Band Leg Curls", details: "10-15 reps per leg." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Split Stance Barbell (or KB) RDL’s*", details: "3 x 8 reps each leg. *90% of weight on FRONT foot. (Turn back foot OUT slightly)." },
+                            { name: "b. (Band-Assisted) Reverse Nordics", details: "3 x 6 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. KOT Split Squat, front foot/toes elevated [holding dumbbells]", details: "WK1 = 3 x 10 per leg.<br>WK2 = 3 x 8 per leg.<br>WK3-4 = 4 x 8,7,6,6 per leg* (*increase weight from WK1 *increase weight each set)." }
+                        ]
+                    },
+                    {
+                        title: "4. Accessory Superset",
+                        exercises: [
+                            { name: "a. 45-Degree Hypers (OR) Reverse Hypers", details: "3 x 10-15 reps." },
+                            { name: "b. Foam Roller Body Saw", details: "3 x 8-12 slow/controlled reps." }
+                        ]
+                    },
+                    {
+                        title: "5. Finisher",
+                        exercises: [
+                            { name: "a. Kettlebell Mile, holding 10% BW in each hand.", details: "" }
+                        ]
+                    }
+                ],
+                "Thursday: PULL WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PULL",
+                        exercises: [
+                            { name: "1. Child’s Pose w/ Lat Stretch", details: "3-5 deep breaths w/ right arm & 3-5 deep breathes w/ left arm." },
+                            { name: "2. World’s Greatest Stretch", details: "3-5 reps per side." },
+                            { name: "3. Modified Scorpion Biceps Stretch - Thumb down", details: "Hold for 5 deep breaths each side." },
+                            { name: "4. Prone Handcuff Retractions", details: "10 reps." },
+                            { name: "5. PVC “Pull-Apart” Behind-The-Neck Press", details: "5 reps." },
+                            { name: "6. Overhead Reach Against Wall", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Superset (RPE 5-7)",
+                        exercises: [
+                            { name: "a. Straight One-Arm Band Pulldown", details: "3 x 8-12 per arm." },
+                            { name: "b. Band “No Money” External Rotation*", details: "3 x 12-15. *Can use “Loop/Theraband” (OR) “Straight Band”." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Exercise",
+                        exercises: [
+                            { name: "a. Half Kneeling Single Arm Lat Pulldown w/ ISO-Holds*", details: "*Drive elbow into thigh for 2-count each rep. WK 1-2 = 3 x 10, 8, 8 per arm. WK 3-4 = 4 x 8 per arm. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Chest Supported DB or KB Rows [w/ ISO-Holds]", details: "3 x 10-12. *Hold each rep in contracted position for a “1-count”." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 60sec after last set of the main lift, drop weight approx. 20% and then perform your drop-set.",
+                        exercises: [
+                            { name: "a. Chest Supported ISO-Alternating DB or KB Row", details: "1 set x 8-10 reps each arm." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Back/Bi Superset",
+                        exercises: [
+                            { name: "a. ISO-Hold Y-W-T-I", details: "3 x 15sec hold each position." },
+                            { name: "b. DB “Smash” Spider Curls", details: "3 x 10-12 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. Incline 1.5-Rep Dumbbell Curls", details: "2 sets x 8-12 reps. *Set up Incline Bench b/t 60-75degrees." }
+                        ]
+                    }
+                ],
+                "Saturday: FULL BODY WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: FULL BODY",
+                        exercises: [
+                            { name: "1. Lax or Golf Ball Smash - Bottom of feet", details: "60sec per foot." },
+                            { name: "2. Band-Assisted Squats + Cossack Squats", details: "10 squats + 5 cossack squats per side." },
+                            { name: "3. Band Lat + Pec Stretch", details: "30sec each position." },
+                            { name: "4. Band Dislocates", details: "10 reps." },
+                            { name: "5. High Plank to Downward Dog", details: "10 reps." },
+                            { name: "6. Bent-Knee Copenhagen Side Plank", details: "Hold 20sec each side." }
+                        ]
+                    },
+                    {
+                        title: "1. Main Lift",
+                        exercises: [
+                            { 
+                                name: "a. Goblet Box Squats", 
+                                details: `35-50 TOTAL reps w/ 50% Bodyweight.
+                                <p>Perform 1-2 low-rep warm-up sets before you start your work sets.</p>
+                                <ul>
+                                    <li>WK 1 = 35 total reps w/ 50% BW</li>
+                                    <li>WK 2 = 40 total reps w/ 50% BW</li>
+                                    <li>WK 3 = 45 total reps w/ 50% BW</li>
+                                    <li>WK 4 = 50 total reps w/ 50% BW</li>
+                                </ul>
+                                <p><strong>NOTE:</strong> To reduce shoulder stress, you can “mix & match” the load by wearing a weight vest and/or placing a chain(s) around your neck. FOR EXAMPLE: A 200lb man can hold an 80lb dumbbell & place a 20lb chain around his neck [as opposed to just holding a 100lb dumbbell.] *Follow this advice whenever performing a Goblet Squat variation while on this program.</p>` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "2. EDT Superset",
+                        notes: "WKS 1-2 = Perform 5-10 reps each movement in an alternating fashion. Rest as little as needed and repeat x 15 MINUTES. WKS 3-4 = Perform 5-10 reps each movement in an alternating fashion. Rest as little as needed and repeat x 18 MINUTES. *Advanced trainees can wear light weight vest for EDT Supersets if needed.",
+                        exercises: [
+                            { name: "a. Inverted Bodyweight Rows", details: "5-10 reps. *Choose the appropriate set-up/technique for your current strength level." },
+                            { name: "b. Push-ups (“3-2-1” technique)", details: "5-10 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. “Pick-A-Part!” [Optional]",
+                        exercises: [
+                            { name: "a. Pick a body part(s) that you feel needs more work and spend 10-12 minutes training it.", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "Weeks 5-8": {
+                "Monday: PUSH WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PUSH",
+                        exercises: [
+                            { name: "1. Dr. Kirsch Protocol w/ Scapular depressions", details: "Hang x 30sec, then perform 10 scap depressions." },
+                            { name: "2. Prayer Stretch", details: "Hold for 5 deep breaths." },
+                            { name: "3. Half-Kneeling Thoracic Rotation Combo [against wall]", details: "3 reps per side." },
+                            { name: "4. Modified Scorpion Pec Stretch - Palm down", details: "Hold for 5 deep breaths each side." },
+                            { name: "5. ISO-Hold Y-W-T-Surfboard", details: "Hold each position for 15sec." },
+                            { name: "6. Scap Push-ups", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Gripless Band Face Pull-Aparts", details: "10-15 reps." },
+                            { name: "b. Low Incline DB Flyes", details: "10 reps." },
+                            { name: "c. Low Incline DB Tricep Kickbacks", details: "12 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Ring/Suspension Push-ups", details: "3 x 8-12 reps (weighted if necessary)." },
+                            { name: "b. Band Pull-Aparts (underhand)", details: "3 x 12-20 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Low Incline Eccentric-Focussed DB Bench (on Bosu)*", details: "4 sets x 8, 7, 6, 6 reps (5-second lowering each rep).<br>*Bosu Ball recommended, but NOT required." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 2min after last set of the main lift, drop weight 20-25% and then perform your drop-set.",
+                        exercises: [
+                            { 
+                                name: "a. Low Incline Alternating DB Bench - Ascending Ladder*", 
+                                details: `*Start w/ both arms locked out. Perform 1 rep w/ right arm, then 1 rep w/ left arm.
+                                <br>Then perform 2 consecutive reps w/ your right arm followed by 2 consecutive reps w/ your left.
+                                <br>Then, 3 consecutive reps w/ your right arm & 3 consecutive reps w/ your left.
+                                <br>The goal is to make it to “6 reps” each arm (which would equal 21 TOTAL reps per arm).` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Superset",
+                        exercises: [
+                            { name: "a. Side-Lying Incline Laterals", details: "3 x 8-10 reps per arm." },
+                            { name: "b. X-Band Lateral Raises", details: "3 x 10-20 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. Meadows Rear Delt Swings", details: "100 total reps." }
+                        ]
+                    }
+                ],
+                "Tuesday: LOWER WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: LOWER",
+                        exercises: [
+                            { name: "1. Big Toe/Ankle Mobilization", details: "10 reps." },
+                            { name: "2. Rear Foot Elevated Quad/Hip Flexor Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "3. Elevated Pigeon Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "4. 90/90 Hip Switch", details: "6-10 reps per side." },
+                            { name: "5. Hand Supported Hip Airplane", details: "10 reps per leg." },
+                            { name: "6. Lateral Lunge", details: "6-10 reps per side." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Reverse Step-ups", details: "8-12 reps each leg." },
+                            { name: "b. Seated Band Leg Curls (bilateral)", details: "10-20 reps." },
+                            { name: "c. Straight Leg Calf Raises", details: "10-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Hand Supported Single Leg RDL’s", details: "3 x 8-10 reps per leg. *Contralateral load (opposite hand)." },
+                            { name: "b. (Band-Assisted) Reverse Nordics", details: "3 x 6-8 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Deficit Reverse Lunges, holding dumbbells*", details: "4 sets x 8, 7, 6, 5 reps each leg (increasing weight each set).<br>*Can use straps if grip becomes a limiting factor." }
+                        ]
+                    },
+                    {
+                        title: "4. Accessory Superset",
+                        exercises: [
+                            { name: "a. Glute Bridge Sliders", details: "3 x 6-8 reps (slow/controlled eccentric)." },
+                            { name: "b. Banded Reverse Crunches (OR) Hanging Bent-Knee Raises", details: "3 sets x 10-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "5. Finisher",
+                        notes: "*Perform right arm, then left arm (without resting between arms). After you complete your 1st set with each arm, REST 60sec, then repeat for 2 more sets. **Holding 25% of your BW is a good starting point/weight. Once you can complete all 3 sets x 45-60sec w/ 25% BW (and near-perfect posture/technique), you can increase the weight.",
+                        exercises: [
+                            { name: "a. Single Arm Farmer’s Walk, holding DB or KB", details: "3 x 45-60sec each arm." }
+                        ]
+                    }
+                ],
+                "Thursday: PULL WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PULL",
+                        exercises: [
+                            { name: "1. Child’s Pose w/ Lat Stretch", details: "3-5 deep breaths w/ right arm & 3-5 deep breathes w/ left arm." },
+                            { name: "2. World’s Greatest Stretch", details: "3-5 reps per side." },
+                            { name: "3. Modified Scorpion Biceps Stretch - Thumb down", details: "Hold for 5 deep breaths each side." },
+                            { name: "4. Prone Handcuff Retractions", details: "10 reps." },
+                            { name: "5. PVC “Pull-Apart” Behind-The-Neck Press", details: "5 reps." },
+                            { name: "6. Overhead Reach Against Wall", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Superset (RPE 5-7)",
+                        exercises: [
+                            { name: "a. Straight Arm Cable Pulldowns*", details: "3 x 10-12 reps. *Use straight bar or long rope. NOTE: Most cable exercises can be substituted with band(s) if needed." },
+                            { name: "b. Single Arm Cable (or Band) Ext. Rot. (elbow at side)", details: "3 x 10. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Exercise",
+                        exercises: [
+                            { name: "a. One-Arm DB “Gorilla” Rows", details: "3 x 10, 8, 8 reps each arm." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. (Weighted) Inverted BW Rows", details: "40-50 total reps. WKS 5-6 = 40 total reps. WKS 7-8 = 50 total reps." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 60sec after last set of the main lift, then perform your dropset.",
+                        exercises: [
+                            { name: "a. Inverted BW Row ISO-HOLD [w/ yoga block]", details: "1 set x ALAP. *Knees bent/Feet on floor (Beginner/Intermediate) OR Straight Legs/elevated on bench (Advanced)." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Back/Bi Superset",
+                        exercises: [
+                            { name: "a. Y-Handcuffs", details: "3 x 8-10 (slow/controlled reps)." },
+                            { name: "b. Reverse Grip EZ Bar Curls", details: "3 x 10-12 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. DB Curl 21’s (version 2.0)", details: "2 sets x 21 reps. *Zottman Curls x 7, Palms Up x 7, Hammer Curls x 7." }
+                        ]
+                    }
+                ],
+                "Saturday: FULL BODY WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: FULL BODY",
+                        exercises: [
+                            { name: "1. Lax or Golf Ball Smash - Bottom of feet", details: "60sec per foot." },
+                            { name: "2. Band-Assisted Squats + Cossack Squats", details: "10 squats + 5 cossack squats per side." },
+                            { name: "3. Band Lat + Pec Stretch", details: "30sec each position." },
+                            { name: "4. Band Dislocates", details: "10 reps." },
+                            { name: "5. High Plank to Downward Dog", details: "10 reps." },
+                            { name: "6. Bent-Knee Copenhagen Side Plank", details: "Hold 20sec each side." }
+                        ]
+                    },
+                    {
+                        title: "1. Main Lift",
+                        exercises: [
+                            { 
+                                name: "a. Goblet Box Squats", 
+                                details: `35-50 TOTAL reps w/ 50% Bodyweight.
+                                <p>Perform 1-2 low-rep warm-up sets before you start your work sets.</p>
+                                <ul>
+                                    <li>WK 1 = 35 total reps w/ 50% BW</li>
+                                    <li>WK 2 = 40 total reps w/ 50% BW</li>
+                                    <li>WK 3 = 45 total reps w/ 50% BW</li>
+                                    <li>WK 4 = 50 total reps w/ 50% BW</li>
+                                </ul>
+                                <p><strong>NOTE:</strong> To reduce shoulder stress, you can “mix & match” the load by wearing a weight vest and/or placing a chain(s) around your neck. FOR EXAMPLE: A 200lb man can hold an 80lb dumbbell & place a 20lb chain around his neck [as opposed to just holding a 100lb dumbbell.] *Follow this advice whenever performing a Goblet Squat variation while on this program.</p>` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "2. EDT Superset",
+                        notes: "WKS 1-2 = Perform 5-10 reps each movement in an alternating fashion. Rest as little as needed and repeat x 15 MINUTES. WKS 3-4 = Perform 5-10 reps each movement in an alternating fashion. Rest as little as needed and repeat x 18 MINUTES. *Advanced trainees can wear light weight vest for EDT Supersets if needed.",
+                        exercises: [
+                            { name: "a. Inverted Bodyweight Rows", details: "5-10 reps. *Choose the appropriate set-up/technique for your current strength level." },
+                            { name: "b. Push-ups (“3-2-1” technique)", details: "5-10 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. “Pick-A-Part!” [Optional]",
+                        exercises: [
+                            { name: "a. Pick a body part(s) that you feel needs more work and spend 10-12 minutes training it.", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "Weeks 5-8": {
+                "Monday: PUSH WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PUSH",
+                        exercises: [
+                            { name: "1. Dr. Kirsch Protocol w/ Scapular depressions", details: "Hang x 30sec, then perform 10 scap depressions." },
+                            { name: "2. Prayer Stretch", details: "Hold for 5 deep breaths." },
+                            { name: "3. Half-Kneeling Thoracic Rotation Combo [against wall]", details: "3 reps per side." },
+                            { name: "4. Modified Scorpion Pec Stretch - Palm down", details: "Hold for 5 deep breaths each side." },
+                            { name: "5. ISO-Hold Y-W-T-Surfboard", details: "Hold each position for 15sec." },
+                            { name: "6. Scap Push-ups", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Gripless Band Face Pull-Aparts", details: "10-15 reps." },
+                            { name: "b. Low Incline DB Flyes", details: "10 reps." },
+                            { name: "c. Low Incline DB Tricep Kickbacks", details: "12 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Ring/Suspension Push-ups", details: "3 x 8-12 reps (weighted if necessary)." },
+                            { name: "b. Band Pull-Aparts (underhand)", details: "3 x 12-20 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Low Incline Eccentric-Focussed DB Bench (on Bosu)*", details: "4 sets x 8, 7, 6, 6 reps (5-second lowering each rep).<br>*Bosu Ball recommended, but NOT required." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 2min after last set of the main lift, drop weight 20-25% and then perform your drop-set.",
+                        exercises: [
+                            { 
+                                name: "a. Low Incline Alternating DB Bench - Ascending Ladder*", 
+                                details: `*Start w/ both arms locked out. Perform 1 rep w/ right arm, then 1 rep w/ left arm.
+                                <br>Then perform 2 consecutive reps w/ your right arm followed by 2 consecutive reps w/ your left.
+                                <br>Then, 3 consecutive reps w/ your right arm & 3 consecutive reps w/ your left.
+                                <br>The goal is to make it to “6 reps” each arm (which would equal 21 TOTAL reps per arm).` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Superset",
+                        exercises: [
+                            { name: "a. Side-Lying Incline Laterals", details: "3 x 8-10 reps per arm." },
+                            { name: "b. X-Band Lateral Raises", details: "3 x 10-20 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. Meadows Rear Delt Swings", details: "100 total reps." }
+                        ]
+                    }
+                ],
+                "Tuesday: LOWER WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: LOWER",
+                        exercises: [
+                            { name: "1. Big Toe/Ankle Mobilization", details: "10 reps." },
+                            { name: "2. Rear Foot Elevated Quad/Hip Flexor Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "3. Elevated Pigeon Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "4. 90/90 Hip Switch", details: "6-10 reps per side." },
+                            { name: "5. Hand Supported Hip Airplane", details: "10 reps per leg." },
+                            { name: "6. Lateral Lunge", details: "6-10 reps per side." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Reverse Step-ups", details: "8-12 reps each leg." },
+                            { name: "b. Seated Band Leg Curls (bilateral)", details: "10-20 reps." },
+                            { name: "c. Straight Leg Calf Raises", details: "10-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Hand Supported Single Leg RDL’s", details: "3 x 8-10 reps per leg. *Contralateral load (opposite hand)." },
+                            { name: "b. (Band-Assisted) Reverse Nordics", details: "3 x 6-8 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Deficit Reverse Lunges, holding dumbbells*", details: "4 sets x 8, 7, 6, 5 reps each leg (increasing weight each set).<br>*Can use straps if grip becomes a limiting factor." }
+                        ]
+                    },
+                    {
+                        title: "4. Accessory Superset",
+                        exercises: [
+                            { name: "a. Glute Bridge Sliders", details: "3 x 6-8 reps (slow/controlled eccentric)." },
+                            { name: "b. Banded Reverse Crunches (OR) Hanging Bent-Knee Raises", details: "3 sets x 10-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "5. Finisher",
+                        notes: "*Perform right arm, then left arm (without resting between arms). After you complete your 1st set with each arm, REST 60sec, then repeat for 2 more sets. **Holding 25% of your BW is a good starting point/weight. Once you can complete all 3 sets x 45-60sec w/ 25% BW (and near-perfect posture/technique), you can increase the weight.",
+                        exercises: [
+                            { name: "a. Single Arm Farmer’s Walk, holding DB or KB", details: "3 x 45-60sec each arm." }
+                        ]
+                    }
+                ],
+                "Thursday: PULL WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PULL",
+                        exercises: [
+                            { name: "1. Child’s Pose w/ Lat Stretch", details: "3-5 deep breaths w/ right arm & 3-5 deep breathes w/ left arm." },
+                            { name: "2. World’s Greatest Stretch", details: "3-5 reps per side." },
+                            { name: "3. Modified Scorpion Biceps Stretch - Thumb down", details: "Hold for 5 deep breaths each side." },
+                            { name: "4. Prone Handcuff Retractions", details: "10 reps." },
+                            { name: "5. PVC “Pull-Apart” Behind-The-Neck Press", details: "5 reps." },
+                            { name: "6. Overhead Reach Against Wall", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Superset (RPE 5-7)",
+                        exercises: [
+                            { name: "a. Straight Arm Cable Pulldowns*", details: "3 x 10-12 reps. *Use straight bar or long rope. NOTE: Most cable exercises can be substituted with band(s) if needed." },
+                            { name: "b. Single Arm Cable (or Band) Ext. Rot. (elbow at side)", details: "3 x 10. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Exercise",
+                        exercises: [
+                            { name: "a. One-Arm DB “Gorilla” Rows", details: "3 x 10, 8, 8 reps each arm." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. (Weighted) Inverted BW Rows", details: "40-50 total reps. WKS 5-6 = 40 total reps. WKS 7-8 = 50 total reps." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 60sec after last set of the main lift, then perform your dropset.",
+                        exercises: [
+                            { name: "a. Inverted BW Row ISO-HOLD [w/ yoga block]", details: "1 set x ALAP. *Knees bent/Feet on floor (Beginner/Intermediate) OR Straight Legs/elevated on bench (Advanced)." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Back/Bi Superset",
+                        exercises: [
+                            { name: "a. Y-Handcuffs", details: "3 x 8-10 (slow/controlled reps)." },
+                            { name: "b. Reverse Grip EZ Bar Curls", details: "3 x 10-12 reps." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. DB Curl 21’s (version 2.0)", details: "2 sets x 21 reps. *Zottman Curls x 7, Palms Up x 7, Hammer Curls x 7." }
+                        ]
+                    }
+                ],
+                "Saturday: FULL BODY WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: FULL BODY",
+                        exercises: [
+                            { name: "1. Lax or Golf Ball Smash - Bottom of feet", details: "60sec per foot." },
+                            { name: "2. Band-Assisted Squats + Cossack Squats", details: "10 squats + 5 cossack squats per side." },
+                            { name: "3. Band Lat + Pec Stretch", details: "30sec each position." },
+                            { name: "4. Band Dislocates", details: "10 reps." },
+                            { name: "5. High Plank to Downward Dog", details: "10 reps." },
+                            { name: "6. Bent-Knee Copenhagen Side Plank", details: "Hold 20sec each side." }
+                        ]
+                    },
+                    {
+                        title: "1. Main Lift",
+                        exercises: [
+                            { 
+                                name: "a. Weighted Push-ups - Timed*", 
+                                details: `50 TOTAL reps. [Use weight vest, band, backpack, chain(s), sandbag, or a combo of any 2 for additional weight].
+                                <p>*Choose a resistance/weight that represents your 12-15 rep max & complete 50 TOTAL REPS in the shortest time possible. [Start your stopwatch before your first rep/set and then stop it immediately upon completing your 50th rep.]</p>
+                                <p>RECORD YOUR TIME and try and complete your 50 reps [with the same resistance] in LESS time the following week.</p>` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "2. EDT Superset",
+                        notes: "Perform 5-8 reps each movement in an alternating fashion. Rest as little as needed and repeat x 18 MINUTES.",
+                        exercises: [
+                            { name: "a. Goblet Squats, heels elevated", details: "*Suggested weight = 55% of your bodyweight." },
+                            { name: "b. L-Sit Rack Pull-ups*", details: "*Advanced trainees can place a chain, med ball or weight plate on lap for added resistance." }
+                        ]
+                    },
+                    {
+                        title: "3. “Pick-A-Part!” [Optional]",
+                        exercises: [
+                            { name: "a. Pick a body part(s) that you feel needs more work and spend 10-12 minutes training it.", details: "" }
+                        ]
+                    }
+                ]
+            },
+            "Weeks 9-12": {
+                "Monday: PUSH WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PUSH",
+                        exercises: [
+                            { name: "1. Dr. Kirsch Protocol w/ Scapular depressions", details: "Hang x 30sec, then perform 10 scap depressions." },
+                            { name: "2. Prayer Stretch", details: "Hold for 5 deep breaths." },
+                            { name: "3. Half-Kneeling Thoracic Rotation Combo [against wall]", details: "3 reps per side." },
+                            { name: "4. Modified Scorpion Pec Stretch - Palm down", details: "Hold for 5 deep breaths each side." },
+                            { name: "5. ISO-Hold Y-W-T-Surfboard", details: "Hold each position for 15sec." },
+                            { name: "6. Scap Push-ups", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Superset (RPE 5-7)",
+                        exercises: [
+                            { name: "a. Supine Band “Pullover-Apart & Press”", details: "3 x 5-10 reps." },
+                            { name: "c. Shoulder Touch Push-ups", details: "3 x 5-10 reps per arm." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { 
+                                name: "a. Single Arm DB Floor Press", 
+                                details: `WKS 9-10 = 3 x 8-10 reps per arm (increasing weight each set).
+                                <br>WKS 11-12 = 2 x 8-10 reps per arm, 1 x AMRAP w/ 40% BW*.
+                                <p>*EXAMPLE: 200lb man would perform final set w/ 80lb DB.<br>*WOMEN: Use 25% BW for this set.</p>` 
+                            },
+                            { name: "b. Floor Band Pull-Aparts (overhand)", details: "3 x 12-20 reps." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Barbell Bench Press variation*", details: "4 sets x 5 reps, last set 5+.<br>*Recommended: neutral/angled barbell + chains and/or reverse bands [chains/reverse bands: decrease shoulder stress/loading in bottom position]." }
+                        ]
+                    },
+                    {
+                        title: "4. Accessory Exercise",
+                        exercises: [
+                            { name: "a. Cable Crossovers (OR) Single Arm Band Fly", details: "3 x 10-12. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "5. Finisher",
+                        notes: "2-3 sets.",
+                        exercises: [
+                            { 
+                                name: "a. Seated Medial Delt MASSacre 2.0 (Slight FWD lean)", 
+                                details: `- ISO-Alternating Lateral Raises x 6 per arm.
+                                <br>- Lateral Raises x 8.
+                                <br>- L-Lateral Raises x 10.
+                                <br>- Bottom-Half Lateral Raises x 12 (last set 12+).` 
+                            }
+                        ]
+                    }
+                ],
+                "Tuesday: LOWER WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: LOWER",
+                        exercises: [
+                            { name: "1. Big Toe/Ankle Mobilization", details: "10 reps." },
+                            { name: "2. Rear Foot Elevated Quad/Hip Flexor Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "3. Elevated Pigeon Stretch", details: "Hold for 5 deep breaths (approx. 45-60sec)." },
+                            { name: "4. 90/90 Hip Switch", details: "6-10 reps per side." },
+                            { name: "5. Hand Supported Hip Airplane", details: "10 reps per leg." },
+                            { name: "6. Lateral Lunge", details: "6-10 reps per side." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Circuit (RPE 5-7)",
+                        notes: "Perform 3 rounds of this circuit w/ minimal rest between rounds.",
+                        exercises: [
+                            { name: "a. Spanish Squats (holding light DB or KB)", details: "10 reps." },
+                            { name: "b. Stability Ball Bridge + Curl", details: "10 reps." },
+                            { name: "c. Bent-Knee Calf Raises", details: "20-35 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Superset",
+                        exercises: [
+                            { name: "a. Single Leg RDL’s*", details: "3 x 8,7,6 per leg (increasing weight each set). *Ipsilateral load (same-side hand)." },
+                            { name: "b. (Band Assisted) Reverse Nordics", details: "3 x 6-8 reps OR Backward Sled Drags: 3 x 40-50 yards per set." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        exercises: [
+                            { name: "a. Bulgarian Split Squats, holding DB’s*", details: "*3 x 6, 5, 5 each leg. *Increase weight each set / Can use straps if needed." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 2min after last set of the main lift, drop weight 20% and then perform your drop-set.",
+                        exercises: [
+                            { name: "a. 1.5-Rep Bulgarian Split Squats", details: "1 x 8-10 reps each leg." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Superset",
+                        exercises: [
+                            { name: "a. Barbell Hip Thrusts", details: "3 x 10, 8, 8 (pause at top of each rep for 1sec)." },
+                            { name: "b. McGill Curl-ups", details: "3 x 5 “each leg” (hold each rep/contraction for 5sec)." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        notes: "Sets 1&2 = 30-45sec. Set 3 = Max Time* [*Goal = 40% BW per hand (or more) for 45+ seconds]. NOTE: If space is limited, just walk 5-6 steps forward & 5-6 steps backward. Repeat for the duration of each set.",
+                        exercises: [
+                            { name: "a. Timed Forward/Backward Farmer’s Walks", details: "3 sets." }
+                        ]
+                    }
+                ],
+                "Thursday: PULL WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: PULL",
+                        exercises: [
+                            { name: "1. Child’s Pose w/ Lat Stretch", details: "3-5 deep breaths w/ right arm & 3-5 deep breathes w/ left arm." },
+                            { name: "2. World’s Greatest Stretch", details: "3-5 reps per side." },
+                            { name: "3. Modified Scorpion Biceps Stretch - Thumb down", details: "Hold for 5 deep breaths each side." },
+                            { name: "4. Prone Handcuff Retractions", details: "10 reps." },
+                            { name: "5. PVC “Pull-Apart” Behind-The-Neck Press", details: "5 reps." },
+                            { name: "6. Overhead Reach Against Wall", details: "10 reps." }
+                        ]
+                    },
+                    {
+                        title: "1. Pump-n-Prime Superset (RPE 5-7)",
+                        exercises: [
+                            { name: "a. Cross Bench DB or KB Pullovers*", details: "*Lat emphasis - elbows tucked. 3 sets x 8-10 reps." },
+                            { name: "b. X-Band Rear Delt Flyes (OR) DB Rear Delt Flyes", details: "3 sets x 12-15 reps." }
+                        ]
+                    },
+                    {
+                        title: "2. Supplemental Exercise",
+                        exercises: [
+                            { name: "a. Meadows Landmine Row", details: "3 x 12, 10, 8 reps each arm* (*increasing weight each set)." }
+                        ]
+                    },
+                    {
+                        title: "3. Main Lift",
+                        notes: "*Choose a weight that represents the maximum weight that you can complete for 12-15 near-perfect reps. NOTE: It’s better to choose a lighter/more conservative weight in this exercise to ensure quality execution/upper back development.",
+                        exercises: [
+                            { name: "a. Seated Cable Low Rows", details: "50-60 total reps*. WKS 9-10: 50 total reps. WKS 11-12: 60 total reps. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "4. DROP-SET",
+                        notes: "Rest 60sec after last set of the main lift, drop weight approx. 20% and then perform your drop-set.",
+                        exercises: [
+                            { name: "a. 1.5-Rep Seated Cable Low Rows", details: "1 x 8-12 reps. NOTE: Most cable exercises can be substituted with band(s) if needed." }
+                        ]
+                    },
+                    {
+                        title: "5. Accessory Back/Bi Superset",
+                        notes: "NOTE: You may need to start with bodyweight-only for this exercise. It’s tough!!",
+                        exercises: [
+                            { name: "a. “Batwing T’s” (chest elevated)*", details: "3 x 5 reps*. *1 REP = Batwing/Row position x 3sec hold, then T-position x 3sec hold." },
+                            { name: "b. Cross-Body Hammer Curls", details: "3 x 8, 7, 6 (increasing weight each set)." }
+                        ]
+                    },
+                    {
+                        title: "6. Finisher",
+                        exercises: [
+                            { name: "a. Single Arm Preacher Curls", details: "2 x 10-12 reps each arm." }
+                        ]
+                    }
+                ],
+                "Saturday: FULL BODY WORKOUT": [
+                    {
+                        title: "Quick 6 Warm-up: FULL BODY",
+                        exercises: [
+                            { name: "1. Lax or Golf Ball Smash - Bottom of feet", details: "60sec per foot." },
+                            { name: "2. Band-Assisted Squats + Cossack Squats", details: "10 squats + 5 cossack squats per side." },
+                            { name: "3. Band Lat + Pec Stretch", details: "30sec each position." },
+                            { name: "4. Band Dislocates", details: "10 reps." },
+                            { name: "5. High Plank to Downward Dog", details: "10 reps." },
+                            { name: "6. Bent-Knee Copenhagen Side Plank", details: "Hold 20sec each side." }
+                        ]
+                    },
+                    {
+                        title: "1. Main Lift",
+                        notes: "*If you can’t do a single chin-up, perform Band Assisted Chin-ups (and follow the same instructions/workout outlined above). **If you can’t do at least 5 band-assisted chin-ups, perform Eccentric Chin-ups: 3-5 sets of 2-4 lowerings, 5-10sec each lowering.",
+                        exercises: [
+                            { 
+                                name: "a. Chin-ups (Neutral Grip recommended)", 
+                                details: `WKS 9-10 = Take your chin-up max and multiply it by 3. That is your training volume. EXAMPLE: If you can do 5 chin-ups, then your training volume for Weeks 9 & 10 is 15 TOTAL reps (because 5 x 3 = 15).
+                                <br>WKS 11-12 = Take your chin-up max and multiply it by 4. That is your training volume. EXAMPLE: If you can do 5 chin-ups, then your training volume for Weeks 11&12 will be 20 TOTAL reps (because 5 x 4 = 20).` 
+                            }
+                        ]
+                    },
+                    {
+                        title: "2. EDT Superset",
+                        notes: "Perform each movement in an alternating fashion. Rest as little as needed and repeat x 20 MINUTES. NOTE: The goal is to perform as many near-perfect reps (of both exercises) as possible in the 20 minutes. When finished, write down the total number of reps you completed in each exercise and try to beat that number the following week!",
+                        exercises: [
+                            { 
+                                name: "a. Weighted Deficit Push-ups*", 
+                                details: `6-10 reps*. Use Dumbbells, Push-up Handles, or Suspension Trainer for deficit. Use weight vest, band, backpack, chain(s), or any combo of each, for additional weight*.
+                                <p>*Choose a resistance/weight that represents your 12-15 rep max.</p>` 
+                            },
+                            { name: "b. “Traditional” Goblet Squats*", details: "5-8 reps w/ 60% BW*. *60% BW is a general guideline/recommendation. Make sure to adjust the weight for YOUR specific strength/conditioning level." }
+                        ]
+                    },
+                    {
+                        title: "3. “Pick-A-Part!” [Optional]",
+                        exercises: [
+                            { name: "a. Pick a body part(s) that you feel needs more work and spend 10-12 minutes training it.", details: "" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Screen management functions
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            // Scroll to top of the new screen
+            window.scrollTo(0, 0);
+        }
+
+        function toggleCardContent(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const arrow = headerElement.querySelector('.arrow');
+            content.classList.toggle('active');
+            headerElement.classList.toggle('active'); // Toggle active class on header for arrow rotation
+        }
+
+        function showWorkoutBlock(blockTitle) {
+            lastWorkoutBlock = blockTitle; // Store the current block for back navigation
+            showScreen('workoutBlockScreen');
+            document.getElementById('workoutBlockTitle').textContent = blockTitle;
+            const workoutBlockContent = document.getElementById('workoutBlockContent');
+            workoutBlockContent.innerHTML = '';
+            
+            const days = Object.keys(programData[blockTitle]);
+            days.forEach(day => {
+                const dayCard = document.createElement('a');
+                dayCard.className = 'card';
+                dayCard.href = '#';
+                dayCard.onclick = (e) => {
+                    e.preventDefault(); // Prevent default link behavior
+                    showDailyWorkout(blockTitle, day);
+                };
+                dayCard.innerHTML = `<div class="card-header"><h3>${day}</h3></div>`;
+                workoutBlockContent.appendChild(dayCard);
+            });
+        }
+
+        function showDailyWorkout(blockTitle, dayTitle) {
+            showScreen('dailyWorkoutScreen');
+            document.getElementById('dailyWorkoutTitle').textContent = dayTitle;
+            const dailyWorkoutContent = document.getElementById('dailyWorkoutContent');
+            dailyWorkoutContent.innerHTML = '';
+
+            const workoutDetails = programData[blockTitle][dayTitle];
+            workoutDetails.forEach(section => {
+                const sectionCard = document.createElement('div');
+                sectionCard.className = 'card';
+                let sectionHtml = `<div class="card-header" onclick="toggleCardContent(this)">
+                                        <h3>${section.title}</h3>
+                                        <span class="arrow">▶</span>
+                                    </div>`;
+                sectionHtml += `<div class="card-content">`;
+                if (section.notes) {
+                    sectionHtml += `<p><strong>Note:</strong> ${section.notes}</p>`;
+                }
+                sectionHtml += `<ul>`;
+                section.exercises.forEach(exercise => {
+                    sectionHtml += `<li><strong>${exercise.name}</strong>: ${exercise.details}</li>`;
+                });
+                sectionHtml += `</ul></div>`;
+                sectionCard.innerHTML = sectionHtml;
+                dailyWorkoutContent.appendChild(sectionCard);
+            });
+
+            // Set up the back button for this specific context
+            const backButton = document.querySelector('#dailyWorkoutScreen .back-button');
+            backButton.onclick = () => showWorkoutBlock(blockTitle);
+        }
+
+        // Function to handle back navigation from daily workout to its parent block
+        function showPreviousWorkoutBlock() {
+            if (lastWorkoutBlock) {
+                showWorkoutBlock(lastWorkoutBlock);
+            } else {
+                showScreen('mainMenuScreen'); // Fallback to main menu if no block was stored
+            }
+        }
+
+        // Initialize content for Program Overview and Commandments to be active by default
+        // This ensures they are expanded when the screen is first shown
+        document.addEventListener('DOMContentLoaded', () => {
+            // For Program Overview
+            const programOverviewHeader = document.querySelector('#programOverviewScreen .card-header');
+            if (programOverviewHeader) {
+                programOverviewHeader.classList.add('active');
+                programOverviewHeader.nextElementSibling.classList.add('active');
+            }
+
+            // For Commandments (all should be collapsed initially)
+            document.querySelectorAll('#commandmentsScreen .card-header').forEach(header => {
+                header.classList.remove('active');
+                header.nextElementSibling.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
