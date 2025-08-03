@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Unity Power-Building Program</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Base Styles (CUBE CSS inspired) */
+        :root {
+            /* Colors */
+            --color-primary-dark: #2D3250;
+            --color-secondary-dark: #424769;
+            --color-accent: #f2b740;
+            --color-text-light: #F6F6F6;
+            --color-text-dark: #121212;
+
+            /* Fonts */
+            --font-family-base: 'Inter', sans-serif;
+
+            /* Spacing */
+            --space-s: 0.5rem;
+            --space-m: 1rem;
+            --space-l: 1.5rem;
+            --space-xl: 2rem;
+            --space-xxl: 3rem;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body, h1, h2, h3, p, ul, ol, li {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            margin: var(--space-xl) auto;
+            padding: var(--space-m);
+        }
+
+        .u-text-center {
+            text-align: center;
+        }
+
+        .u-display-none {
+            display: none !important;
+        }
+
+        /* --- Global & Shared Component Styles --- */
+        .header {
+            text-align: center;
+            padding: var(--space-xl);
+            background-color: var(--color-secondary-dark);
+            width: 100%;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .header__title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+        }
+
+        .header__subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            font-weight: 400;
+            margin-top: var(--space-s);
+            opacity: 0.8;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-l);
+            margin-top: var(--space-xl);
+        }
+        
+        .card {
+            background-color: var(--color-secondary-dark);
+            padding: var(--space-l);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card__title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card__description {
+            font-size: 0.9rem;
+            margin-top: var(--space-s);
+            opacity: 0.7;
+        }
+
+        /* Grouping */
+        .group-card {
+            position: relative;
+            padding-top: var(--space-xxl);
+            overflow: hidden;
+        }
+
+        .group-card::before {
+            content: attr(data-group-name);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--space-s);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .group-1-bg::before { background-color: #383e63; }
+        .group-2-bg::before { background-color: #4c527f; }
+        .group-3-bg::before { background-color: #60669b; }
+        .group-4-bg::before { background-color: #748bb3; }
+        .group-5-bg::before { background-color: #8896c7; }
+        .group-6-bg::before { background-color: #9ca1db; }
+        .group-7-bg::before { background-color: #a8aee5; }
+        .group-8-bg::before { background-color: #b3b9ef; }
+        .group-9-bg::before { background-color: #bec3fa; }
+
+        /* Detail Screens */
+        .detail-screen {
+            background-color: var(--color-secondary-dark);
+            padding: var(--space-xl);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin-top: 0;
+        }
+
+        .detail-screen__header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .detail-screen__back-button {
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 2rem;
+            margin-right: var(--space-l);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .detail-screen__back-button:hover {
+            color: var(--color-accent);
+        }
+
+        .detail-screen__title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+        }
+
+        .detail-screen__content h3 {
+            font-size: 1.25rem;
+            margin-top: var(--space-l);
+            margin-bottom: var(--space-s);
+            border-left: 3px solid var(--color-accent);
+            padding-left: var(--space-s);
+        }
+
+        .detail-screen__content p,
+        .detail-screen__content li {
+            margin-bottom: var(--space-m);
+        }
+
+        .detail-screen__content strong {
+            color: var(--color-accent);
+        }
+
+        .detail-screen__content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--space-l);
+        }
+
+        .detail-screen__content th,
+        .detail-screen__content td {
+            border: 1px solid var(--color-primary-dark);
+            padding: var(--space-s);
+            text-align: left;
+        }
+
+        .detail-screen__content th {
+            background-color: var(--color-primary-dark);
+            font-weight: 600;
+        }
+        
+        .detail-screen__content table tr:nth-child(even) {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .back-to-home-button {
+            display: block;
+            width: fit-content;
+            margin: var(--space-xxl) auto var(--space-l) auto;
+            padding: var(--space-s) var(--space-l);
+            background-color: var(--color-accent);
+            color: var(--color-text-dark);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .back-to-home-button:hover {
+            opacity: 0.8;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Main Header -->
+    <header class="header">
+        <h1 class="header__title">The Unity Power-Building Program</h1>
+        <p class="header__subtitle">A 9-week program by John Meadows & Dave Tate</p>
+    </header>
+
+    <!-- Home Screen -->
+    <main id="home-screen" class="container">
+
+        <!-- Static Pages Section -->
+        <h2 class="u-text-center" style="margin-bottom: var(--space-l);">Program Information</h2>
+        <div class="card-grid">
+            <div class="card" data-target="program-overview">
+                <h2 class="card__title">Program Overview</h2>
+                <p class="card__description">The philosophy and structure of Unity.</p>
+            </div>
+            <div class="card" data-target="program-design">
+                <h2 class="card__title">Program Design</h2>
+                <p class="card__description">Detailed breakdown of training methods.</p>
+            </div>
+            <div class="card" data-target="progression-scheme">
+                <h2 class="card__title">Progressive Overload</h2>
+                <p class="card__description">Learn how to make aggressive gains.</p>
+            </div>
+            <div class="card" data-target="warm-up">
+                <h2 class="card__title">Global Warm-Up</h2>
+                <p class="card__description">Prepare for every workout session.</p>
+            </div>
+        </div>
+
+        <!-- Daily Sessions Section -->
+        <h2 class="u-text-center" style="margin-top: var(--space-xxl); margin-bottom: var(--space-l);">Daily Sessions</h2>
+        <div id="day-grid-container" class="card-grid">
+            <!-- Day cards will be dynamically generated here -->
+        </div>
+
+    </main>
+
+    <!-- Static Detail Screens -->
+    <section id="program-overview-screen" class="container detail-screen u-display-none">
+        <div class="detail-screen__header">
+            <button class="detail-screen__back-button" data-navigation-context="static-detail">&leftarrow;</button>
+            <h2 class="detail-screen__title">Program Overview</h2>
+        </div>
+        <div class="detail-screen__content">
+            <p>The Unity program is a powerbuilding training program developed by John Meadows and Dave Tate, drawing on their decades of experience in both powerlifting and bodybuilding. The name "Unity" reflects the program's core goal of combining the disciplines of bodybuilding and powerlifting to achieve a worldwide conquest of muscular development and strength. It is designed to foster both physical strength and muscle growth, addressing areas like maximal motor unit recruitment, mechanical tension for hypertrophy, and rate of force development.</p>
+            
+            <h3>Program Structure</h3>
+            <p>The Unity Powerbuilding Training Program is structured over <strong>9 weeks</strong>, divided into three blocks of three weeks each. The program follows a 5-day training split, with two full rest days at the end of the week:</p>
+            <ul>
+                <li><strong>Day 1:</strong> Lower body focus with Dynamic speed sets.</li>
+                <li><strong>Day 2:</strong> Upper body push focus with Dynamic speed sets.</li>
+                <li><strong>Day 3:</strong> Upper body pull focus.</li>
+                <li><strong>Day 4:</strong> Lower body focus with Max Effort work.</li>
+                <li><strong>Day 5:</strong> Upper body push focus with Max Effort work.</li>
+                <li><strong>Days 6 & 7:</strong> OFF – Family Days.</li>
+            </ul>
+            <p>The program emphasizes the importance of <strong>recovery</strong>, particularly after Days 4 and 5, which are noted as the hardest training days. Recommendations for recovery include specific nutrition (intra-workout amino, electrolyte, and carb drinks) and lifestyle adjustments (reducing stress, aiming for 5 full sleep cycles).</p>
+        </div>
+        <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+    </section>
+
+    <section id="program-design-screen" class="container detail-screen u-display-none">
+        <div class="detail-screen__header">
+            <button class="detail-screen__back-button" data-navigation-context="static-detail">&leftarrow;</button>
+            <h2 class="detail-screen__title">Program Design</h2>
+        </div>
+        <div class="detail-screen__content">
+            <p>The Unity program integrates various training methodologies to achieve its powerbuilding goals:</p>
+            <ul>
+                <li><strong>Foundation in Big 3 Lifts:</strong> The program uses the squat, bench press, and deadlift as its foundational movements.</li>
+                <li><strong>Max Effort Work:</strong> This method involves working up to very heavy, lower repetition sets, aiming for personal records (PRs). This type of training is crucial for achieving maximal motor unit recruitment, which is the activation of the largest nerve cells controlling hundreds of muscle fibers, leading to increased strength and muscle fiber size.</li>
+                <li><strong>Dynamic Work:</strong> This involves using lighter weights, typically 55-75% of your 1-rep maximum, with a focus on explosive speed. The goal is to improve your rate of force development, making you more explosive and enabling you to push more weight.</li>
+                <li><strong>Bodybuilding Method:</strong> This involves traditional bodybuilding techniques, often using loads around 75-85% of your 1-rep maximum, performed to failure or close to it. High-intensity techniques that push you beyond failure, such as drop sets or partials, are also incorporated.</li>
+                <li><strong>Intensity Regulation (RPE):</strong> For exercises that are not percentage-based, the program utilizes the Rate of Perceived Exertion (RPE) scale to guide intensity levels. RPE values range from 6.0 (fairly easy warm-up) to 13 (multiple high-intensity techniques/go apeshit set!), indicating how many reps are left "in the tank". Working sets are generally considered to be RPE 7.0 and above.</li>
+                <li><strong>Feeder Sets:</strong> Crucial low-rep sets are used to gradually prepare your muscles for the heavier working sets, helping to prevent injury and premature exhaustion.</li>
+            </ul>
+        </div>
+        <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+    </section>
+
+    <section id="progression-scheme-screen" class="container detail-screen u-display-none">
+        <div class="detail-screen__header">
+            <button class="detail-screen__back-button" data-navigation-context="static-detail">&leftarrow;</button>
+            <h2 class="detail-screen__title">Progressive Overload</h2>
+        </div>
+        <div class="detail-screen__content">
+            <p>The program features <strong>very aggressive progressions</strong> from week to week, with all progressions clearly highlighted in bold type within the workout plans. While hitting every single progression is not explicitly expected, giving your maximum effort is crucial for success, as even achieving 25% of the progressions will lead to significant results.</p>
+            <p>Progressive overload is implemented through various methods:</p>
+            <ul>
+                <li><strong>Increasing Repetitions:</strong> Often, you are instructed to perform more reps with the <strong>same weight</strong> used in previous weeks.</li>
+                <li><strong>Increasing Weight:</strong> You will also be challenged to increase the weight on specific exercises while maintaining or increasing reps.</li>
+                <li><strong>Adding Sets:</strong> The total number of work sets for certain exercises increases across weeks.</li>
+                <li><strong>Increasing Percentage of 1-Rep Max (1RM):</strong> For dynamic work, the percentage of your 1RM used gradually increases across the training blocks.</li>
+                <li><strong>Implementing Advanced Intensity Techniques:</strong> The program frequently incorporates or increases the intensity of techniques like partial reps, drop sets, cluster sets, and isoholds.</li>
+                <li><strong>Decreasing Rest Periods:</strong> For some exercises, the rest time between sets is progressively reduced to increase density and intensity.</li>
+                <li><strong>Increased Movement Volume/Distance:</strong> For carries, the number of steps or distance is increased.</li>
+                <li><strong>Slowing Down Tempo:</strong> For certain exercises, the progression is to slow down your tempo even more than the previous week.</li>
+            </ul>
+        </div>
+        <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+    </section>
+
+    <section id="warm-up-screen" class="container detail-screen u-display-none">
+        <div class="detail-screen__header">
+            <button class="detail-screen__back-button" data-navigation-context="static-detail">&leftarrow;</button>
+            <h2 class="detail-screen__title">Global Warm-Up</h2>
+        </div>
+        <div class="detail-screen__content">
+            <p>Perform this warm-up routine before every training day. Do 3 rounds with no rest between movements.</p>
+            <ol>
+                <li>Hanging Leg Raise – 6–10 reps</li>
+                <li>Front Plank – 15 sec</li>
+                <li>Band Pull-Apart (long micro-mini) – 15 reps</li>
+            </ol>
+        </div>
+        <button class="back-to-home-button" data-navigation-context="static-detail">Back to Home</button>
+    </section>
+    
+    <!-- Workout Detail Screen -->
+    <section id="workout-detail-screen" class="container detail-screen u-display-none">
+        <div class="detail-screen__header">
+            <button id="workout-back-button" class="detail-screen__back-button">&leftarrow;</button>
+            <h2 id="workout-title" class="detail-screen__title"></h2>
+        </div>
+        <div id="workout-content" class="detail-screen__content">
+            <!-- Workout blocks will be dynamically generated here -->
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: var(--space-xxl);">
+            <button id="prev-day-button" class="back-to-home-button" style="margin: 0;">&leftarrow; Previous Day</button>
+            <button id="next-day-button" class="back-to-home-button" style="margin: 0;">Next Day &rightarrow;</button>
+        </div>
+    </section>
+
+    <!-- JavaScript for dynamic content and navigation -->
+    <script>
+        // --- DATA STRUCTURES ---
+
+        // Program Details and Grouping
+        const PROGRAM_DETAILS = {
+            title: "The Unity Power-Building Program",
+            totalDays: 45, // 9 weeks * 5 training days per week
+            dailySessionsTitle: "Daily Sessions",
+            gridColumns: 5
+        };
+
+        const PROGRAM_GROUPING = [
+            { name: "Week 1", startDay: 1, endDay: 5, colorClass: "group-1-bg" },
+            { name: "Week 2", startDay: 6, endDay: 10, colorClass: "group-2-bg" },
+            { name: "Week 3", startDay: 11, endDay: 15, colorClass: "group-3-bg" },
+            { name: "Week 4", startDay: 16, endDay: 20, colorClass: "group-4-bg" },
+            { name: "Week 5", startDay: 21, endDay: 25, colorClass: "group-5-bg" },
+            { name: "Week 6", startDay: 26, endDay: 30, colorClass: "group-6-bg" },
+            { name: "Week 7", startDay: 31, endDay: 35, colorClass: "group-7-bg" },
+            { name: "Week 8", startDay: 36, endDay: 40, colorClass: "group-8-bg" },
+            { name: "Week 9", startDay: 41, endDay: 45, colorClass: "group-9-bg" }
+        ];
+
+        // All workout data
+        const WORKOUT_DATA = {
+            "1": {
+                title: "WEEK 1 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 10 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 55% of 1RM, 30s rest. Use a parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 10 reps, RPE 8, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 10 reps, BW, 1 min rest. Progression: +1 rep each week.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, Heavy, 1 min rest. Do 10 partials after each set." }
+                ]
+            },
+            "2": {
+                title: "WEEK 1 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 55% of 1RM, 30s rest. Use 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure (RPE 9 &rarr; 12), 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps, RPE 8-9, 3 min rest. Hold the top for 2 seconds on the 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 12 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest." }
+                ]
+            },
+            "3": {
+                title: "WEEK 1 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 8 reps, RPE 9, 3 min rest. Use a pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Do an isohold on the last rep." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "4": {
+                title: "WEEK 1 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Follow with 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 55% of 1RM, 10s rest. Conventional stance, with straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest per leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 10 reps, BW, 1 min rest." }
+                ]
+            },
+            "5": {
+                title: "WEEK 1 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Follow with 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 20 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "6": {
+                title: "WEEK 2 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 15 sets of 2 reps. 55% of 1RM, 30s rest. Use a parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Use the same weight as Week 1." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 11 reps, BW, 1 min rest. +1 rep from Week 1.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. Do 10 partials after each set." }
+                ]
+            },
+            "7": {
+                title: "WEEK 2 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 12 sets of 3 reps. 55% of 1RM, 30s rest. Use 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold on 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. <em>Slow down your tempo even more than last week.</em>" }
+                ]
+            },
+            "8": {
+                title: "WEEK 2 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest. Reduce your rest period by <strong>15 seconds</strong>.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest. Reduce your rest period by <strong>15 seconds</strong>." }
+                ]
+            },
+            "9": {
+                title: "WEEK 2 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 60% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 11 reps, BW, 1 min rest." }
+                ]
+            },
+            "10": {
+                title: "WEEK 2 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 25 reps, RPE 9, 2 min rest. <em>Increase reps.</em>" },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "11": {
+                title: "WEEK 3 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 60% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Use the same weight as Week 2." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 12 reps, BW, 1 min rest. +1 rep from Week 2.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "12": {
+                title: "WEEK 3 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 60% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "13": {
+                title: "WEEK 3 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "14": {
+                title: "WEEK 3 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 65% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 12 reps, BW, 1 min rest." }
+                ]
+            },
+            "15": {
+                title: "WEEK 3 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 25 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "16": {
+                title: "WEEK 4 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 65% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 3." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 13 reps, BW, 1 min rest. +1 rep from Week 3.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "17": {
+                title: "WEEK 4 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 65% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "18": {
+                title: "WEEK 4 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "19": {
+                title: "WEEK 4 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 70% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 13 reps, BW, 1 min rest." }
+                ]
+            },
+            "20": {
+                title: "WEEK 4 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 30 reps, RPE 9, 2 min rest. <em>Increase reps.</em>" },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "21": {
+                title: "WEEK 5 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 70% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 4." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 14 reps, BW, 1 min rest. +1 rep from Week 4.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "22": {
+                title: "WEEK 5 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 70% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "23": {
+                title: "WEEK 5 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "24": {
+                title: "WEEK 5 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 75% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 14 reps, BW, 1 min rest." }
+                ]
+            },
+            "25": {
+                title: "WEEK 5 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 30 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "26": {
+                title: "WEEK 6 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 75% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 5." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 15 reps, BW, 1 min rest. +1 rep from Week 5.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "27": {
+                title: "WEEK 6 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 75% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "28": {
+                title: "WEEK 6 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "29": {
+                title: "WEEK 6 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 80% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 15 reps, BW, 1 min rest." }
+                ]
+            },
+            "30": {
+                title: "WEEK 6 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 35 reps, RPE 9, 2 min rest. <em>Increase reps.</em>" },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "31": {
+                title: "WEEK 7 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 80% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 6." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 16 reps, BW, 1 min rest. +1 rep from Week 6.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "32": {
+                title: "WEEK 7 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 80% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "33": {
+                title: "WEEK 7 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "34": {
+                title: "WEEK 7 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 85% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 16 reps, BW, 1 min rest." }
+                ]
+            },
+            "35": {
+                title: "WEEK 7 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 40 reps, RPE 9, 2 min rest. <em>Increase reps.</em>" },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "36": {
+                title: "WEEK 8 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 85% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 7." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 17 reps, BW, 1 min rest. +1 rep from Week 7.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "37": {
+                title: "WEEK 8 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 85% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "38": {
+                title: "WEEK 8 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "39": {
+                title: "WEEK 8 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Seated Leg Curl</strong>: 3 sets of 10 reps, RPE 9, 3 min rest." },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Squat</strong>: 1 set of 3 reps, RPE 8, 3 min rest. Then 2 sets of 5 reps at 70%." },
+                    { type: "DYNAMIC WORK", content: "<strong>Speed Deadlift</strong>: 15 sets of 1 rep, 90% of 1RM, 10s rest. Conventional, straps." },
+                    { type: "ACCESSORY WORK", content: "<strong>Hack Squat</strong>: 2 sets of 8 reps, then a cluster set (RPE 8&rarr;13), 2 min rest.<br><strong>Bulgarian Drop Set</strong>: 1 set of 8 reps followed by 4 drops (50%&rarr;BW), 3 min rest/leg." },
+                    { type: "HAMSTRINGS & CALVES", content: "<strong>Stiff-Leg DL</strong>: 3 sets of 8 reps, RPE 8, 3 min rest.<br><strong>Seated Calf Raise</strong>: 4 sets of 15 reps, Heavy, 1 min rest." },
+                    { type: "CORE", content: "<strong>Sit-ups</strong>: 3 sets of 17 reps, BW, 1 min rest." }
+                ]
+            },
+            "40": {
+                title: "WEEK 8 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max-Incline Bench</strong>: 1 set of 3 reps, RPE 9, 2 min rest. Then 2 sets of 2 reps at 80% (slow)." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Decline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest.<br><strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then a drop set (RPE 9&rarr;12), 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Dips</strong>: 3 sets of 8-10 reps, BW+, 3 min rest.<br><strong>Heavy Lateral Swings</strong>: 3 sets of 45 reps, RPE 9, 2 min rest. <em>Increase reps.</em>" },
+                    { type: "TRICEPS FINISHER", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 15 reps, RPE 8-9, 2 min rest.<br><strong>Kettlebell Tate Press</strong>: 4 sets of 12 reps, RPE 9-10, 2 min rest.<br><strong>Lying DB Ext.</strong>: 3 sets of 8 reps, Slow, 2 min rest." }
+                ]
+            },
+            "41": {
+                title: "WEEK 9 – DAY 1 – LOWER (DYNAMIC)",
+                blocks: [
+                    { type: "MAIN LIFT", content: "<strong>Lying Leg Curl</strong>: 1 work set: 8 + 8 + 15 partials, Heavy to RPE 13. Drop weight after 1st 8. No rest." },
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Box Squat</strong>: 10 sets of 2 reps. 90% of 1RM, 30s rest. Parallel box." },
+                    { type: "ACCESSORY WORK", content: "<strong>Leg Press (narrow)</strong>: 2 sets of 12 reps, RPE 8, 3 min rest. Same weight as Week 8." },
+                    { type: "ACCESSORY WORK", content: "<strong>Barbell Hyperext.</strong>: 3 sets of 8 reps, RPE 8, 3 min rest." },
+                    { type: "CORE & CALVES", content: "<strong>Decline Leg Raise</strong>: 3 sets of 18 reps, BW, 1 min rest. +1 rep from Week 8.<br><strong>Standing Calf Raise</strong>: 3 sets of 8 reps, add 10lbs, 1 min rest. 10 partials after each set." }
+                ]
+            },
+            "42": {
+                title: "WEEK 9 – DAY 2 – UPPER PUSH (DYNAMIC)",
+                blocks: [
+                    { type: "DYNAMIC WORK", content: "<strong>Dynamic Bench</strong>: 9 sets of 3 reps. 90% of 1RM, 30s rest. 3 grips: 1 finger / pinky / index on ring." },
+                    { type: "ACCESSORY WORK", content: "<strong>Slight Incline DB Press</strong>: 2 sets of 8 reps, then drop 30% to failure. Use <strong>+5 lbs</strong> DBs from last week, 3 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>High-Incline Smith</strong>: 2 sets of 8 & 5 reps. Use <strong>+5 lbs</strong> from last week, 3 min rest. 2-sec top hold 1st & last rep." },
+                    { type: "ACCESSORY WORK", content: "<strong>DB Y-Raise</strong>: 3 sets of 15 reps, RPE 9, 2 min rest." },
+                    { type: "TRICEPS FINISHER", content: "<strong>Dual-Rope Tri Ext</strong>: 4 sets of 12 reps, RPE 9-10, <strong>2 min rest (reduce rest)</strong>.<br><strong>DB Kick-outs</strong>: 3 sets of 8 reps, RPE 9, 2 min rest. Slow down your tempo even more than last week." }
+                ]
+            },
+            "43": {
+                title: "WEEK 9 – DAY 3 – UPPER PULL",
+                blocks: [
+                    { type: "BACK", content: "<strong>Chest-Supported Row</strong>: 3 sets of 10 reps, RPE 9, 3 min rest. Pronated grip.<br><strong>1-Arm Barbell Row</strong>: 3 sets of 10 reps, then a drop set (RPE 10&rarr;12), 3 min rest.<br><strong>Banded Pull-ups</strong>: 3 sets to failure, BW/Band, 2 min rest. Last rep isohold." },
+                    { type: "REAR DELTS", content: "<strong>Machine Rear-Delt Fly</strong>: 3 sets of 30 reps, RPE 8-9, 3 min rest." },
+                    { type: "BICEPS", content: "<strong>Incline Hammer Curl</strong>: 3 sets of 10 reps + 5 partials, RPE 12, 2 min rest.<br><strong>Preacher Curl</strong>: 3 sets of 8 reps, RPE 9-10, 2 min rest." }
+                ]
+            },
+            "44": {
+                title: "WEEK 9 – DAY 4 – LOWER (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Lying Leg Curl</strong>: 2 sets of 6 reps, RPE 7, 3 min rest. (taper)<br><strong>Max Effort Front Squat</strong>: Skip this exercise.<br><strong>Deadlift</strong>: 5 sets of 1 rep @ 70%, 405 lbs, 2 min rest.<br><strong>Deadlift</strong>: 5 sets of 1 rep @ 75%, 435 lbs, 2 min rest." },
+                    { type: "ACCESSORY WORK", content: "<strong>Farmers Walk</strong>: 2 sets of 30 yds, taper, 2 min rest.<br><strong>Leg Extension</strong>: 2 sets of 15 reps, RPE 7, 2 min rest.<br><strong>DB Stiff-Leg DL</strong>: 2 sets of 5 reps, RPE 7, 2 min rest.<br><strong>Seated Calf</strong>: 2 sets of 12 reps, taper, 1 min rest.<br><strong>V-ups</strong>: 2 sets of 10 reps, BW, 1 min rest." }
+                ]
+            },
+            "45": {
+                title: "WEEK 9 – DAY 5 – UPPER PUSH (MAX + VOLUME)",
+                blocks: [
+                    { type: "WARM-UP", content: "<strong>Machine Press</strong>: 2 sets of 6 reps, RPE 7, 2 min rest. (taper)" },
+                    { type: "MAX EFFORT LIFT", content: "<strong>Max Effort Close-Grip Incline</strong>: 3 sets of 2 reps @ 85%, 90%, 95%. 315-335-355 lbs, 3 min rest." },
+                    { type: "ASSISTANCE WORK", content: "<strong>Hammer Strength Iso-Incline</strong>: 2 sets of 12 reps, RPE 8, 2 min rest.<br><strong>Band Pull-Aparts</strong>: 2 sets of 25 reps, taper, 1 min rest.<br><strong>Lateral Raise</strong>: 2 sets of 12 reps, RPE 7, 2 min rest.<br><strong>Pinwheel Curl</strong>: 2 sets of 8 reps, RPE 7, 2 min rest." }
+                ]
+            }
+        };
+
+        const STATIC_PAGES_CONFIG = [
+            {id: "program-overview", title: "Program Overview"},
+            {id: "program-design", title: "Program Design"},
+            {id: "progression-scheme", title: "Progressive Overload"},
+            {id: "warm-up", title: "Global Warm-Up"}
+        ];
+
+        // --- DYNAMIC RENDERING FUNCTIONS ---
+
+        // Function to show a specific screen
+        function showScreen(screenId) {
+            document.querySelectorAll('main, section').forEach(screen => {
+                screen.classList.add('u-display-none');
+            });
+            document.getElementById(screenId).classList.remove('u-display-none');
+        }
+
+        // Function to generate the day grid
+        function generateDayGrid() {
+            const dayGridContainer = document.getElementById('day-grid-container');
+            dayGridContainer.innerHTML = '';
+            
+            // Set grid columns
+            dayGridContainer.style.gridTemplateColumns = `repeat(${PROGRAM_DETAILS.gridColumns}, 1fr)`;
+
+            const allDaysOrdered = [];
+            let currentGroupIndex = 0;
+
+            for (let i = 1; i <= PROGRAM_DETAILS.totalDays; i++) {
+                const card = document.createElement('div');
+                card.classList.add('card', 'group-card');
+                
+                // Find the correct group and apply styling
+                if (i > PROGRAM_GROUPING[currentGroupIndex].endDay) {
+                    currentGroupIndex++;
+                }
+                card.classList.add(PROGRAM_GROUPING[currentGroupIndex].colorClass);
+                card.dataset.groupName = PROGRAM_GROUPING[currentGroupIndex].name;
+
+                card.textContent = `Day ${i}`;
+                card.dataset.dayNumber = i;
+
+                allDaysOrdered.push(i);
+
+                card.addEventListener('click', () => {
+                    renderWorkoutDetail(parseInt(card.dataset.dayNumber));
+                });
+
+                dayGridContainer.appendChild(card);
+            }
+        }
+
+        // Function to render a specific workout's detail screen
+        function renderWorkoutDetail(dayNumber) {
+            const workout = WORKOUT_DATA[dayNumber];
+            if (!workout) {
+                console.error(`Workout data for Day ${dayNumber} not found.`);
+                return;
+            }
+
+            const workoutTitle = document.getElementById('workout-title');
+            const workoutContent = document.getElementById('workout-content');
+            const prevDayButton = document.getElementById('prev-day-button');
+            const nextDayButton = document.getElementById('next-day-button');
+            
+            workoutTitle.textContent = workout.title;
+            workoutContent.innerHTML = ''; // Clear previous content
+
+            workout.blocks.forEach(block => {
+                const blockSection = document.createElement('div');
+                blockSection.classList.add('workout-block');
+                const blockHeader = document.createElement('h3');
+                blockHeader.textContent = block.type;
+                blockSection.appendChild(blockHeader);
+                
+                const blockContent = document.createElement('div');
+                blockContent.innerHTML = block.content;
+                blockSection.appendChild(blockContent);
+
+                workoutContent.appendChild(blockSection);
+            });
+
+            // Set up navigation buttons
+            if (dayNumber > 1) {
+                prevDayButton.style.display = 'block';
+                prevDayButton.onclick = () => renderWorkoutDetail(dayNumber - 1);
+            } else {
+                prevDayButton.style.display = 'none';
+            }
+
+            if (dayNumber < PROGRAM_DETAILS.totalDays) {
+                nextDayButton.style.display = 'block';
+                nextDayButton.onclick = () => renderWorkoutDetail(dayNumber + 1);
+            } else {
+                nextDayButton.style.display = 'none';
+            }
+
+            showScreen('workout-detail-screen');
+        }
+
+        // --- EVENT LISTENERS ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Event Listeners for Static Pages
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', (event) => {
+                    const targetScreen = event.currentTarget.dataset.target;
+                    if (targetScreen) {
+                        showScreen(targetScreen + '-screen');
+                    }
+                });
+            });
+
+            // Event Listeners for Back Buttons
+            document.querySelectorAll('.detail-screen__back-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    showScreen('home-screen');
+                });
+            });
+
+            // Event Listeners for "Back to Home" buttons
+            document.querySelectorAll('.back-to-home-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    showScreen('home-screen');
+                });
+            });
+
+            // Initial setup
+            generateDayGrid();
+            showScreen('home-screen');
+        });
+    </script>
+</body>
+</html>
