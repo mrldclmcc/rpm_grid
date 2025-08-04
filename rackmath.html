@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Barbell Plate Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #ffffff;
+    }
+
+    .input-section {
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .adjust-btn {
+      background: #333;
+      border: none;
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .adjust-btn:hover {
+      background: #444;
+    }
+
+    .adjust-btn:active {
+      background: #555;
+      transform: scale(0.95);
+    }
+
+    #targetWeight {
+      flex: 1;
+      min-width: 0;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      color: #fff;
+      padding: 15px;
+      font-size: 2rem;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    #targetWeight:focus {
+      border-color: #4a9eff;
+    }
+
+    .result {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 25px;
+      border: 1px solid #333;
+    }
+
+    .weight-display {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .target-weight {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #4a9eff;
+      margin-bottom: 5px;
+    }
+
+    .weight-label {
+      font-size: 1rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .plate-stack {
+      margin-bottom: 25px;
+    }
+
+    .stack-label {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .plates-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      min-height: 50px;
+      flex-wrap: wrap;
+    }
+
+    .plate {
+      height: 50px;
+      width: 50px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #000;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    }
+
+    .plate-45 { background: #ff4444; }
+    .plate-25 { background: #44ff44; }
+    .plate-10 { background: #4444ff; }
+    .plate-5 { background: #ffff44; }
+    .plate-2-5 { background: #ff44ff; }
+
+    .plates-text {
+      background: #0a0a0a;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #222;
+    }
+
+    .plates-list {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 40px 20px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .target-weight {
+        font-size: 2.5rem;
+      }
+      
+      #targetWeight {
+        font-size: 1.8rem;
+        padding: 12px;
+      }
+      
+      .adjust-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 1.1rem;
+      }
+      
+      .input-group {
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Plate Calculator</h1>
+    
+    <div class="input-section">
+      <div class="input-group">
+        <button class="adjust-btn" data-adjust="-10">-10</button>
+        <button class="adjust-btn" data-adjust="-5">-5</button>
+        <input type="number" id="targetWeight" placeholder="315" min="45" step="2.5">
+        <button class="adjust-btn" data-adjust="5">+5</button>
+        <button class="adjust-btn" data-adjust="10">+10</button>
+      </div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="empty-state">Enter target weight</div>
+    </div>
+  </div>
+
+  <script>
+    const maxPairs = {
+      '45': 3,
+      '25': 3,
+      '10': 2,
+      '5': 2,
+      '2.5': 1
+    };
+
+    const plateColors = {
+      '45': 'plate-45',
+      '25': 'plate-25',
+      '10': 'plate-10',
+      '5': 'plate-5',
+      '2.5': 'plate-2-5'
+    };
+
+    function generateCombinations() {
+      const combinations = [];
+      for (let a = 0; a <= maxPairs['45']; a++) {
+        for (let b = 0; b <= maxPairs['25']; b++) {
+          for (let c = 0; c <= maxPairs['10']; c++) {
+            for (let d = 0; d <= maxPairs['5']; d++) {
+              for (let e = 0; e <= maxPairs['2.5']; e++) {
+                const total = 45 + 2 * (a * 45 + b * 25 + c * 10 + d * 5 + e * 2.5);
+                const totalPlates = a + b + c + d + e;
+                combinations.push({
+                  weight: total,
+                  plates: { '45': a, '25': b, '10': c, '5': d, '2.5': e },
+                  plateCount: totalPlates
+                });
+              }
+            }
+          }
+        }
+      }
+      return combinations;
+    }
+
+    const allCombinations = generateCombinations();
+    const targetInput = document.getElementById('targetWeight');
+    const resultDiv = document.getElementById('result');
+
+    function updateResult() {
+      const input = parseFloat(targetInput.value);
+      
+      if (isNaN(input) || input < 45) {
+        resultDiv.innerHTML = '<div class="empty-state">Enter target weight</div>';
+        return;
+      }
+
+      let closest = null;
+      let smallestDiff = Infinity;
+      let fewestPlates = Infinity;
+
+      for (const combo of allCombinations) {
+        const diff = Math.abs(combo.weight - input);
+        if (diff < smallestDiff || (diff === smallestDiff && combo.plateCount < fewestPlates)) {
+          smallestDiff = diff;
+          fewestPlates = combo.plateCount;
+          closest = combo;
+        }
+      }
+
+      // Create visual representation
+      const plateStack = [];
+      const plateSizes = ['45', '25', '10', '5', '2.5'];
+      
+      for (const size of plateSizes) {
+        for (let i = 0; i < closest.plates[size]; i++) {
+          plateStack.push(size);
+        }
+      }
+
+      let visualHTML = '';
+      plateStack.forEach(size => {
+        visualHTML += `<div class="plate ${plateColors[size]}">${size}</div>`;
+      });
+
+      // Create text representation
+      const sortedPlates = Object.entries(closest.plates)
+        .filter(([_, count]) => count > 0)
+        .sort((a, b) => parseFloat(b[0]) - parseFloat(a[0]))
+        .map(([size, count]) => `${count} pair${count > 1 ? 's' : ''} of ${size} lb`)
+        .join('<br>');
+
+      resultDiv.innerHTML = `
+        <div class="weight-display">
+          <div class="target-weight">${closest.weight}</div>
+          <div class="weight-label">pounds</div>
+        </div>
+        
+        <div class="plate-stack">
+          <div class="stack-label">Loading Order</div>
+          <div class="plates-visual">${visualHTML}</div>
+        </div>
+        
+        <div class="plates-text">
+          <div class="plates-list">${sortedPlates || 'Just the bar (45 lb)'}</div>
+        </div>
+      `;
+    }
+
+    // Input event listener
+    targetInput.addEventListener('input', updateResult);
+
+    // Adjust button listeners
+    document.querySelectorAll('.adjust-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const adjust = parseInt(btn.dataset.adjust);
+        const current = parseFloat(targetInput.value) || 45;
+        const newValue = Math.max(45, current + adjust);
+        targetInput.value = newValue;
+        updateResult();
+      });
+    });
+
+    // Focus input on load
+    targetInput.focus();
+  </script>
+</body>
+</html>
