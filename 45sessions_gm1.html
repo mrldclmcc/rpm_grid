@@ -400,9 +400,9 @@ DAY 2: MEDIUM PRESS
                 const rawBlocks = remainingText.split(/\*\s+\*\*/);
                 
                 const workoutBlocks = rawBlocks.map(block => {
-                    const [blockTitlePart, ...blockContentParts] = block.split(/:\s/);
+                    const [blockTitlePart, ...rest] = block.split(/:\s/);
                     const blockTitle = blockTitlePart.trim().replace(/\*\*/g, '');
-                    const blockContent = blockContentParts.join(':\s').trim();
+                    const blockContent = rest.join(': ').trim();   // join back any extra colons
                     
                     return {
                         title: blockTitle,
