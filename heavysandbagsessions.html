@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbag Workouts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .app-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 500px;
+            perspective: 1000px;
+        }
+
+        .workout-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+            cursor: grab;
+        }
+
+        .workout-card.swiping {
+            cursor: grabbing;
+        }
+
+        .workout-card.swipe-left {
+            transform: translateX(-100%) rotate(-15deg);
+            opacity: 0;
+        }
+
+        .workout-card.swipe-right {
+            transform: translateX(100%) rotate(15deg);
+            opacity: 0;
+        }
+
+        .workout-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #2d3748;
+            line-height: 1.3;
+        }
+
+        .workout-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .intensity {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .time {
+            background: #f7fafc;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .workout-summary {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4a5568;
+            overflow-y: auto;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .skip-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .browse-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .browse-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .browse-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .browse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .browse-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+        }
+
+        .workout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .workout-item {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .workout-item:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .workout-item .workout-name {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .workout-item .workout-meta {
+            margin-bottom: 0;
+        }
+
+        /* Enhanced text formatting for readability */
+        .workout-summary {
+            font-weight: 400;
+        }
+
+        .workout-summary strong {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.7rem;
+            }
+            
+            .workout-card {
+                padding: 25px;
+            }
+            
+            .workout-name {
+                font-size: 1.3rem;
+            }
+            
+            .browse-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1 class="app-title">Sandbag Workouts</h1>
+        <p class="app-subtitle">Swipe or tap to find your next session</p>
+    </div>
+
+    <div class="card-container" id="cardContainer">
+        <div class="workout-card" id="workoutCard">
+            <div class="workout-name" id="workoutName">Loading...</div>
+            <div class="workout-meta">
+                <div class="intensity" id="workoutIntensity">-</div>
+                <div class="time" id="workoutTime">-</div>
+            </div>
+            <div class="workout-summary" id="workoutSummary">Loading workout...</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn skip-btn" id="skipBtn" title="Skip workout">⇄</button>
+        <button class="control-btn browse-btn" id="browseBtn" title="Browse all">☰</button>
+    </div>
+
+    <div class="browse-modal" id="browseModal">
+        <div class="browse-content">
+            <div class="browse-header">
+                <h2 class="browse-title">All Workouts</h2>
+                <button class="close-btn" id="closeBtn">×</button>
+            </div>
+            <div class="workout-list" id="workoutList"></div>
+        </div>
+    </div>
+
+    <script>
+        const workouts = [
+          {
+            "session_name": "SANDBAG SESSION #002 \"Boulder Shoulders\"",
+            "intensity_level": "2/5",
+            "time_required": "10 Minutes",
+            "summary": "For 10 minutes, at the top of every minute, complete two sandbag loads over your shoulder. Use a sandbag slightly heavier than your body weight. Rest during the remainder of the minute. If this session is too easy, increase the bag's weight or the number of reps you complete each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #007 \"Phelps\" - Basic Goldilocks Shuttle (Multiple Bags)",
+            "intensity_level": "3/5",
+            "time_required": "10 -12 Minutes",
+            "summary": "Complete 3 to 4 rounds, trying to beat your previous times. Begin a 50-foot (15-meter) course with three sandbags (light, medium, and heavy) at the start line. Pick up the lightest bag, carry it 150 feet (45 meters) in the bearhug position, and sprint back. Next, pick up the medium bag, carry it 100 feet (30 meters), sprint 50 feet (15 meters) to the far line, touch it, and sprint back to the bag. Finally, pick up the heaviest bag, carry it 50 feet (15 meters), and sprint through the finish line. If this session is too easy, use heavier bags or increase the distance to them."
+          },
+          {
+            "session_name": "SANDBAG SESSION #012 \"Dad Strength\"",
+            "intensity_level": "1/5",
+            "time_required": "10 Minutes",
+            "summary": "For 10 minutes, at the top of every minute, complete a 50-foot (15-meter) carry in the bearhug position. Use a sandbag slightly heavier than your body weight. Rest during the remainder of the minute. If this session is too easy, increase the bag's weight or the distance you carry each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #016 \"Crab Soup\"",
+            "intensity_level": "3/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. First, pick up the bag to chest height in the bearhug position, then descend into a deep squat, pushing your knees out to make room for the bag. Stand and pause for one second, engaging your upper back and glutes. Drop the bag to the floor; you have completed one sandbag squat. Next, pick up the bag and perform two squats, pausing after each before dropping the bag. Continue this pattern, adding one rep each round and going as high as you can in 10 minutes. Record your top completed set."
+          },
+          {
+            "session_name": "SANDBAG SESSION #019 \"Scuba Steve\"",
+            "intensity_level": "3/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight and work out for 10 minutes (five rounds). On odd minutes, complete eight alternating sandbag-over-shoulder reps, then rest for the remainder of the minute. On even minutes, complete a 100-foot (30-meter) sandbag carry in the bearhug position, then rest for the remainder of the minute. If this session is too easy, increase the bag's weight or the carry distance."
+          },
+          {
+            "session_name": "SANDBAG SESSION #021 \"Tuck & Roll\"",
+            "intensity_level": "1/5",
+            "time_required": "10 Minutes",
+            "summary": "For 10 minutes, at the top of every minute, complete the prescribed reps, then rest for the remainder of the minute. Use a sandbag slightly heavier than your body weight and complete three sandbag loads over a bar that is 52 inches high for men or 48 inches high for women. If this is too easy, increase the bag's weight, the bar's height, or the number of reps you complete each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #023 \"Sandbag Snail Triathlon\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Complete two sandbag-over-shoulder reps (one on each side), followed by five sandbag squats in the bearhug position, then a 50-foot (15-meter) sandbag carry in the bearhug position. Repeat this sequence, going as far as you can in 10 to 15 minutes. If this session is too easy, increase the bag's weight or the carry distance each round."
+          },
+          {
+            "session_name": "SANDBAG SESSION #030 \"Brothers Hug\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Pick up the bag and hold it in the bearhug position for as long as you can. When you drop it, complete five burpees as a penalty, then rest for 30 to 60 seconds. Pick up the bag and return to the hug position. Do this for 10 minutes and track your total number of drops."
+          },
+          {
+            "session_name": "SANDBAG SESSION #031 \"Baby Everest\"",
+            "intensity_level": "3/5",
+            "time_required": "10+ Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Complete seven rounds of 10 sandbag squats followed by a 100-foot (30-meter) carry in the bearhug position. Maintain a strict 30-second rest between rounds. If this session is too easy, increase the bag's weight or the carry distance each round."
+          },
+          {
+            "session_name": "SANDBAG SESSION #035 \"Leonardo\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Complete five rounds or 10 total minutes of work. Each round consists of 30 seconds of sandbag loads over a bar, 30 seconds of sandbag over shoulder, 30 seconds of sandbag carry in the bearhug position, and a 30-second rest. If this session is too easy, increase the bag's weight."
+          },
+          {
+            "session_name": "SANDBAG SESSION #036 \"Headbangers Ball\"",
+            "intensity_level": "4/5",
+            "time_required": "10+ Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Perform this workout for a minimum of 10 minutes or as long as you can keep up with the clock. In minute one, complete one sandbag-over-bar rep (52 inches for men, 48 inches for women). In minute two, do two reps; in minute three, do three. Continue to add one rep every minute until you can no longer keep up. If this session is too easy, increase the bag's weight."
+          },
+          {
+            "session_name": "SANDBAG SESSION #039 \"the Distance\"",
+            "intensity_level": "2/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Complete seven rounds of a 200-foot (60-meter) sandbag carry in the bearhug position. Maintain a strict one-minute rest between rounds. If this session is too easy, increase the bag's weight or the carry distance each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #043 \"the Descent\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight and carry it for nine minutes. In minute one, do a 150-foot (45-meter) carry in the bearhug position. In minute two, do a 150-foot (45-meter) single-shoulder carry on the left side. In minute three, do a 150-foot (45-meter) single-shoulder carry on the right side. In minutes four through six, repeat this pattern but with 100-foot (30-meter) carries. In minutes seven through nine, repeat the pattern with 50-foot (15-meter) carries. If this session is too easy, increase the bag's weight or the distance you carry it."
+          },
+          {
+            "session_name": "SANDBAG SESSION #046 \"Tri-Sandathon\" - Heavy Weight Option",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Complete this workout as fast as possible with a heavy sandbag. Complete all exercises with the same bag; you cannot move on to the next exercise until you finish all reps of the previous one. Perform 25 sandbag-over-shoulder reps, then 50 sandbag-over-bar reps (52 inches for men, 48 inches for women), then 75 sandbag squats. Record your total time."
+          },
+          {
+            "session_name": "SANDBAG SESSION #047 \"Airmail\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. With a running clock, first, do as many reps as you can of sandbag loads over a bar (52 inches for men, 48 inches for women) for 90 seconds, then rest for 90 seconds. Next, do as many reps as you can for 60 seconds, then rest for 60 seconds. Finally, do as many reps as you can for 30 seconds, then rest for 30 seconds. If this session is too easy, increase the bag's weight."
+          },
+          {
+            "session_name": "SANDBAG SESSION #048 \"Ice cream Sandwich\"",
+            "intensity_level": "3/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. For 10 minutes, at the top of every minute, complete seven deep sandbag squats in the bearhug position, immediately followed by a 50-foot (15-meter) sandbag carry in the bearhug position, then immediately into seven more deep sandbag squats. Rest for the remainder of the minute. If this session is too easy, increase the bag's weight or the carry distance."
+          },
+          {
+            "session_name": "SANDBAG SESSION #050 \"Sisyphus\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. Using a clock and a way to track your rounds on a 50-foot (15-meter) course, complete as many carries as you can in 10 minutes. Leave everything on the floor. You may walk backward if you need to. Get as many runs done as you can in 10 minutes and record the total number."
+          },
+          {
+            "session_name": "SANDBAG SESSION #055 \"Butts & Backs\"",
+            "intensity_level": "2/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. For 10 minutes, at the top of every minute, complete three sandbag squats, two sandbag extensions, and one sandbag load over a bar (52 inches for men, 48 inches for women). If this session is too easy, increase the bag's weight or the number of squats and loads you do each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #059 \"Smash & Grab\"",
+            "intensity_level": "4/5",
+            "time_required": "10 Minutes",
+            "summary": "Use a sandbag heavier than your body weight. For 10 minutes (five rounds) and with a running clock, perform as many sandbag loads over a bar (52 inches for men, 48 inches for women) as you can on odd minutes. On even minutes, complete five sandbag sprawls and a 50-foot (15-meter) carry in the bearhug position. Rest for the remainder of the minute. If this session is too easy, increase the bag's weight or the number of sprawls each minute."
+          },
+          {
+            "session_name": "SANDBAG SESSION #061 \"1 Mile Carry\"",
+            "intensity_level": "5/5",
+            "time_required": "As Much As needed",
+            "summary": "Grab a sandbag that is heavier than you want but lighter than you are thinking. Put a timer in your pocket and carry the bag a mile. Preferably, use only the bearhug position, but do what you need to do. Allow as many drops and as much rest as you need. Record your total time."
+          },
+          {
+            "session_name": "SANDBAG SESSION #062 \"the Dan John\"",
+            "intensity_level": "6/5",
+            "time_required": "??? (20+ Minutes total)",
+            "summary": "Grab a sandbag that is heavier than you want but lighter than you are thinking. Put a timer in your pocket. Pick up the bag however you want; you may drop it and rest as much as you need. For seven minutes, carry the sandbag as far from your starting point as you possibly can. After seven minutes, drop to the ground and rest for a full five minutes. Once your rest period is over, pick up the bag and bring it back to your starting point in less time than it took you to get it out there. This is a challenging goal, but it is the aim. This workout should not be done often, but it will help you discover something about yourself."
+          }
+        ];
+
+        let currentWorkout = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isDragging = false;
+
+        // Enhanced text formatting function
+        function formatWorkoutText(text) {
+            return text
+                // Bold numbers followed by common workout terms
+                .replace(/\b(\d+)\s*(minutes?|seconds?|reps?|rounds?|feet|meter[s]?|inches?)\b/gi, '<strong>$1 $2</strong>')
+                // Bold exercise names and positions
+                .replace(/\b(sandbag[\s\-][\w\s]*|bearhug position|over[\s\-]shoulder|over[\s\-]bar|burpees?|squats?|carries?|loads?|sprawls?)\b/gi, '<strong>$1</strong>')
+                // Bold time references
+                .replace(/\b(minute\s+\w+|odd minutes?|even minutes?|top of every minute)\b/gi, '<strong>$1</strong>')
+                // Bold important phrases
+                .replace(/\b(as fast as possible|rest between rounds?|record your|total time|running clock|strict.*rest)\b/gi, '<strong>$1</strong>')
+                // Bold measurements in parentheses
+                .replace(/\((\d+[\s\-]*(?:feet|meter[s]?|inches?))\)/gi, '(<strong>$1</strong>)')
+                // Bold "In minute X" patterns
+                .replace(/\b(In minute \w+)\b/gi, '<strong>$1</strong>');
+        }
+
+        function getRandomWorkout() {
+            const randomIndex = Math.floor(Math.random() * workouts.length);
+            return workouts[randomIndex];
+        }
+
+        function displayWorkout(workout) {
+            currentWorkout = workout;
+            document.getElementById('workoutName').textContent = workout.session_name;
+            document.getElementById('workoutIntensity').textContent = `Intensity: ${workout.intensity_level}`;
+            document.getElementById('workoutTime').textContent = workout.time_required;
+            document.getElementById('workoutSummary').innerHTML = formatWorkoutText(workout.summary);
+        }
+
+        function swipeCard(direction) {
+            const card = document.getElementById('workoutCard');
+            card.classList.add(direction === 'left' ? 'swipe-left' : 'swipe-right');
+            
+            setTimeout(() => {
+                card.classList.remove('swipe-left', 'swipe-right');
+                displayWorkout(getRandomWorkout());
+            }, 300);
+        }
+
+        function showBrowseModal() {
+            const modal = document.getElementById('browseModal');
+            const workoutList = document.getElementById('workoutList');
+            
+            workoutList.innerHTML = '';
+            workouts.forEach((workout, index) => {
+                const item = document.createElement('div');
+                item.className = 'workout-item';
+                item.innerHTML = `
+                    <div class="workout-name">${workout.session_name}</div>
+                    <div class="workout-meta">
+                        <div class="intensity">Intensity: ${workout.intensity_level}</div>
+                        <div class="time">${workout.time_required}</div>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    displayWorkout(workout);
+                    modal.style.display = 'none';
+                });
+                workoutList.appendChild(item);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        // Event listeners
+        document.getElementById('skipBtn').addEventListener('click', () => {
+            swipeCard('left');
+        });
+
+        document.getElementById('browseBtn').addEventListener('click', showBrowseModal);
+
+        document.getElementById('closeBtn').addEventListener('click', () => {
+            document.getElementById('browseModal').style.display = 'none';
+        });
+
+        document.getElementById('browseModal').addEventListener('click', (e) => {
+            if (e.target.id === 'browseModal') {
+                document.getElementById('browseModal').style.display = 'none';
+            }
+        });
+
+        // Touch events for swiping
+        const card = document.getElementById('workoutCard');
+        
+        card.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isDragging = true;
+            card.classList.add('swiping');
+        });
+
+        card.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+            
+            // Only handle horizontal swipes
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+                e.preventDefault();
+                const rotation = deltaX * 0.1;
+                card.style.transform = `translateX(${deltaX * 0.5}px) rotate(${rotation}deg)`;
+            }
+        });
+
+        card.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const deltaX = touchEndX - touchStartX;
+            
+            card.classList.remove('swiping');
+            card.style.transform = '';
+            
+            if (Math.abs(deltaX) > 100) {
+                swipeCard(deltaX > 0 ? 'right' : 'left');
+            }
+            
+            isDragging = false;
+        });
+
+        // Prevent context menu on long press
+        card.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Initialize with a random workout
+        displayWorkout(getRandomWorkout());
+    </script>
+</body>
+</html>
