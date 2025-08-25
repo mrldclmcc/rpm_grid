@@ -83,6 +83,35 @@
             color: #2d3748;
             line-height: 1.3;
         }
+        
+        /* New Styles for Session Name Display */
+        .workout-title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .workout-session-num {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .workout-creative-name {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            text-transform: capitalize;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Color Tiers based on Intensity */
+        .color-low { color: #4ecdc4; }
+        .color-medium { color: #764ba2; }
+        .color-high { color: #ff6b6b; }
 
         .workout-meta {
             display: flex;
@@ -228,6 +257,10 @@
         .workout-item .workout-meta {
             margin-bottom: 0;
         }
+        
+        .workout-item .workout-title-container {
+            margin-bottom: 0;
+        }
 
         /* Enhanced text formatting for readability */
         .workout-summary {
@@ -267,7 +300,10 @@
 
     <div class="card-container" id="cardContainer">
         <div class="workout-card" id="workoutCard">
-            <div class="workout-name" id="workoutName">Loading...</div>
+            <div class="workout-title-container">
+                <div class="workout-session-num" id="workoutSessionNum">Loading...</div>
+                <div class="workout-creative-name" id="workoutCreativeName">Loading...</div>
+            </div>
             <div class="workout-meta">
                 <div class="intensity" id="workoutIntensity">-</div>
                 <div class="time" id="workoutTime">-</div>
@@ -425,21 +461,14 @@
         let touchStartX = 0;
         let touchStartY = 0;
         let isDragging = false;
-
-        // Enhanced text formatting function
+        
         function formatWorkoutText(text) {
             return text
-                // Bold numbers followed by common workout terms
                 .replace(/\b(\d+)\s*(minutes?|seconds?|reps?|rounds?|feet|meter[s]?|inches?)\b/gi, '<strong>$1 $2</strong>')
-                // Bold exercise names and positions
-                .replace(/\b(sandbag[\s\-][\w\s]*|bearhug position|over[\s\-]shoulder|over[\s\-]bar|burpees?|squats?|carries?|loads?|sprawls?)\b/gi, '<strong>$1</strong>')
-                // Bold time references
+                .replace(/\b(sandbag[\s\-][\w\s]*|bearhug position|over[\s\-]shoulder|over[\s\-]bar|burpees?|squats?|carries?|loads?|sprawls?|extensions?)\b/gi, '<strong>$1</strong>')
                 .replace(/\b(minute\s+\w+|odd minutes?|even minutes?|top of every minute)\b/gi, '<strong>$1</strong>')
-                // Bold important phrases
-                .replace(/\b(as fast as possible|rest between rounds?|record your|total time|running clock|strict.*rest)\b/gi, '<strong>$1</strong>')
-                // Bold measurements in parentheses
+                .replace(/\b(as fast as possible|rest between rounds?|record your|total time|running clock|strict.*rest|as many reps as you can)\b/gi, '<strong>$1</strong>')
                 .replace(/\((\d+[\s\-]*(?:feet|meter[s]?|inches?))\)/gi, '(<strong>$1</strong>)')
-                // Bold "In minute X" patterns
                 .replace(/\b(In minute \w+)\b/gi, '<strong>$1</strong>');
         }
 
@@ -450,10 +479,31 @@
 
         function displayWorkout(workout) {
             currentWorkout = workout;
-            document.getElementById('workoutName').textContent = workout.session_name;
+            
+            const sessionNameMatch = workout.session_name.match(/SANDBAG SESSION #(\d+)\s+"(.*)"/);
+            const sessionNum = sessionNameMatch ? sessionNameMatch[1] : 'N/A';
+            const creativeName = sessionNameMatch ? sessionNameMatch[2].replace(/"/g, '') : 'Workout';
+            
+            const workoutCard = document.getElementById('workoutCard');
+            const intensityClass = getIntensityClass(workout.intensity_level);
+            
+            document.getElementById('workoutSessionNum').textContent = `SANDBAG SESSION #${sessionNum}`;
+            document.getElementById('workoutCreativeName').textContent = creativeName;
+            document.getElementById('workoutCreativeName').className = `workout-creative-name ${intensityClass}`;
             document.getElementById('workoutIntensity').textContent = `Intensity: ${workout.intensity_level}`;
             document.getElementById('workoutTime').textContent = workout.time_required;
             document.getElementById('workoutSummary').innerHTML = formatWorkoutText(workout.summary);
+        }
+
+        function getIntensityClass(intensity) {
+            const level = parseFloat(intensity.split('/')[0]);
+            if (level <= 2) {
+                return 'color-low';
+            } else if (level === 3) {
+                return 'color-medium';
+            } else {
+                return 'color-high';
+            }
         }
 
         function swipeCard(direction) {
@@ -471,11 +521,20 @@
             const workoutList = document.getElementById('workoutList');
             
             workoutList.innerHTML = '';
-            workouts.forEach((workout, index) => {
+            workouts.forEach((workout) => {
                 const item = document.createElement('div');
                 item.className = 'workout-item';
+                
+                const sessionNameMatch = workout.session_name.match(/SANDBAG SESSION #(\d+)\s+"(.*)"/);
+                const sessionNum = sessionNameMatch ? sessionNameMatch[1] : 'N/A';
+                const creativeName = sessionNameMatch ? sessionNameMatch[2].replace(/"/g, '') : 'Workout';
+                const intensityClass = getIntensityClass(workout.intensity_level);
+
                 item.innerHTML = `
-                    <div class="workout-name">${workout.session_name}</div>
+                    <div class="workout-title-container">
+                        <div class="workout-session-num">SANDBAG SESSION #${sessionNum}</div>
+                        <div class="workout-creative-name ${intensityClass}">${creativeName}</div>
+                    </div>
                     <div class="workout-meta">
                         <div class="intensity">Intensity: ${workout.intensity_level}</div>
                         <div class="time">${workout.time_required}</div>
