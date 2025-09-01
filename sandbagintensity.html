@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbag Intensity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 1. Design Overhaul: Scandinavian Color Palette & Typography */
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #3b82f6;
+            --accent-light: #eff6ff;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+            --radius: 12px;
+            --spacing: 1.75rem;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 1.5rem var(--spacing);
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .header .tagline {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+        }
+        
+        .header .workout-indicator {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 1.5rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+            /* 2. Mobile UX: Larger Touch Target */
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-primary);
+        }
+
+        .main-content {
+            padding: var(--spacing);
+        }
+
+        .workout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .workout-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1.5rem; /* Increased white space */
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            position: relative;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+            /* 3. Performance: CSS Containment */
+            contain: content;
+        }
+
+        .workout-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .workout-card:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .workout-card h3 {
+            font-size: 1.2rem; /* Refined typography */
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .workout-card .description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .workout-card .exercise-count {
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .workout-detail {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-secondary);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            z-index: 10;
+            /* 3. Performance: Hardware Acceleration */
+            will-change: transform;
+        }
+
+        .workout-detail.active {
+            transform: translateX(-100%);
+        }
+
+        .workout-detail-content {
+            padding: var(--spacing);
+            padding-top: 7rem; /* Space for fixed header */
+        }
+
+        .exercise-block {
+            border-radius: var(--radius);
+            padding: 1.5rem; /* Increased padding for touch target */
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .exercise-block:hover {
+            border-color: #d1d5db;
+        }
+
+        .exercise-block:active {
+            transform: scale(0.98);
+        }
+
+        .exercise-title {
+            font-size: 1.15rem; /* Refined typography */
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .exercise-scheme {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-hover);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.75rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            width: 44px;
+            height: 44px;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .modal-body h4 {
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .modal-body p, .modal-body ul {
+            margin-bottom: 1rem;
+        }
+        .modal-body ul { padding-left: 1.5rem; }
+        .modal-body li { margin-bottom: 0.5rem; }
+
+        .swipe-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            background: var(--text-primary);
+            color: var(--bg-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(-50%) translateY(20px);
+        }
+
+        .swipe-indicator.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* 2. UX: Improved Loading Spinner */
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-block;
+            border-top: 3px solid var(--accent);
+            border-right: 3px solid transparent;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            :root { --spacing: 1.25rem; }
+            .header { padding: 1rem var(--spacing); }
+            .workout-detail-content { padding-top: 6rem; }
+            .modal-content { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header" id="appHeader">
+            <button class="back-btn" id="backBtn" aria-label="Go back">&larr;</button>
+            <h1 id="headerTitle">Sandbag Intensity</h1>
+            <p class="tagline" id="headerTagline">The 50-Rep Squat Program</p>
+            <div class="workout-indicator" id="workoutIndicator"></div>
+        </header>
+
+        <main class="main-content" id="mainContent">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading Workouts</p>
+            </div>
+            <div class="workout-grid" id="workoutGrid"></div>
+        </main>
+
+        <div class="workout-detail" id="workoutDetail">
+            <div class="workout-detail-content" id="workoutDetailContent"></div>
+        </div>
+
+        <div class="swipe-indicator" id="swipeIndicator">
+            Swipe to Navigate
+        </div>
+
+        <div class="modal" id="exerciseModal" role="dialog" aria-modal="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle"></h3>
+                    <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const programData = {
+            "program": { "name": "Sandbag Intensity", "tagline": "The 50-Rep Squat Program" },
+            "workouts": [ { "id": "sandbag_a", "name": "Sandbag Workout A", "description": "Explosive lifts, rowing, and the legendary 50-rep squat challenge", "blocks": [ { "exerciseId": "one_motion_lift", "schemeId": "explosive_singles" }, { "exerciseId": "sandbag_row", "schemeId": "waving_row" }, { "exerciseId": "sandbag_box_squat", "schemeId": "rest_pause_50" }, { "exerciseId": "band_good_morning", "schemeId": "hundred_reps" }, { "exerciseId": "crunches", "schemeId": "hundred_reps" }, { "exerciseId": "oblique_crunches", "schemeId": "fifty_per_side" } ] }, { "id": "sandbag_b", "name": "Sandbag Workout B", "description": "Explosive lifts, carries, and the relentless 50-rep squat", "blocks": [ { "exerciseId": "one_motion_lift", "schemeId": "explosive_singles" }, { "exerciseId": "bear_hug_carry", "schemeId": "waving_carry" }, { "exerciseId": "sandbag_box_squat", "schemeId": "rest_pause_50" }, { "exerciseId": "band_good_morning", "schemeId": "hundred_reps" }, { "exerciseId": "crunches", "schemeId": "hundred_reps" }, { "exerciseId": "oblique_crunches", "schemeId": "fifty_per_side" } ] }, { "id": "calisthenics_a", "name": "Calisthenics Workout A", "description": "High-intensity circuits with neck and arm isolation work", "blocks": [ { "exerciseId": "circuit_a", "schemeId": "density_20_25" }, { "exerciseId": "neck_curl", "schemeId": "neck_pyramid" }, { "exerciseId": "neck_extension", "schemeId": "neck_pyramid" }, { "exerciseId": "forearm_circuit", "schemeId": "failure_10_30" }, { "exerciseId": "giant_set_a", "schemeId": "giant_set_2x" }, { "exerciseId": "tricep_pushdown", "schemeId": "hundred_rest_pause" } ] }, { "id": "calisthenics_b", "name": "Calisthenics Workout B", "description": "Density circuits focused on maximum training efficiency", "blocks": [ { "exerciseId": "circuit_b", "schemeId": "density_20_25" }, { "exerciseId": "neck_curl", "schemeId": "neck_pyramid" }, { "exerciseId": "neck_extension", "schemeId": "neck_pyramid" }, { "exerciseId": "forearm_circuit", "schemeId": "failure_10_30" }, { "exerciseId": "giant_set_b", "schemeId": "giant_set_2x" }, { "exerciseId": "tricep_pushdown", "schemeId": "hundred_rest_pause" } ] } ],
+            "schemes": [ { "id": "explosive_singles", "description": "5 explosive single reps" }, { "id": "waving_row", "description": "Waving sets: 10→5→10 sets, progressing reps" }, { "id": "waving_carry", "description": "Waving sets: 10→5→10 sets, progressing time" }, { "id": "rest_pause_50", "description": "One all-out rest-pause set targeting 50 reps" }, { "id": "hundred_reps", "description": "100 total reps (split into sets)" }, { "id": "fifty_per_side", "description": "50 reps per side" }, { "id": "density_20_25", "description": "Complete max rounds in 20-25 minutes" }, { "id": "neck_pyramid", "description": "4 sets of 25 reps, last set to failure" }, { "id": "failure_10_30", "description": "One set to failure (10-30 rep range)" }, { "id": "giant_set_2x", "description": "Giant set x2: biceps→triceps→shoulders" }, { "id": "hundred_rest_pause", "description": "100 total reps via rest-pause" } ],
+            "exercises": [ { "id": "one_motion_lift", "name": "One-Motion Lift", "description": "Explosive power development and nervous system activation.", "instructions": "Start with sandbag on ground. Explosively lift to chest level in one fluid motion. Treat each rep as max effort.", "tips": "Focus on speed and power. Rest 60-90 seconds between singles." }, { "id": "sandbag_row", "name": "Sandbag Row", "description": "Posterior chain strength with hamstring emphasis.", "instructions": "Start with sandbag horizontal on ground. Maintain flat back, drive with legs. Focus on hamstrings as much as back muscles.", "tips": "Keep core tight throughout movement. Drive through heels." }, { "id": "sandbag_box_squat", "name": "Sandbag Box Squat", "description": "The centerpiece exercise for mental and physical endurance.", "instructions": "Hold sandbag in bear hug. Sit back onto box (thighs parallel). Stand up and repeat. Rocking off box is encouraged for even fatigue distribution.", "tips": "This is about mental toughness. Take 10-15 second rests between reps if needed." }, { "id": "bear_hug_carry", "name": "Bear-Hug Carry", "description": "Functional strength and core stability under load.", "instructions": "Hold sandbag in bear hug position and walk. Maintain upright posture throughout carry.", "tips": "Use a platform between sets to avoid lifting from the ground repeatedly." }, { "id": "band_good_morning", "name": "Band Good Morning", "description": "Posterior chain activation and recovery.", "instructions": "Place band around neck/shoulders. Hinge at hips, keeping back straight. Focus on hamstring and glute engagement.", "tips": "Use light resistance for high reps. Focus on movement quality." }, { "id": "crunches", "name": "Crunches", "description": "Basic abdominal endurance.", "instructions": "Standard crunch movement. Focus on controlled motion and full range of movement.", "tips": "Break into manageable sets. Quality over speed." }, { "id": "oblique_crunches", "name": "Oblique Crunches", "description": "Lateral core strength and endurance.", "instructions": "Side crunch movement targeting oblique muscles. Perform specified reps on each side.", "tips": "Control the movement. Focus on side flexion of the spine." }, { "id": "circuit_a", "name": "Circuit A", "description": "High-intensity ladder circuit for strength endurance.", "instructions": "Complete all exercises back-to-back in ladder format. One round = 6 reps each → 5 reps each → 4 reps each. Race the clock!", "tips": "Aim to beat previous time by at least 1 second. When under 20 minutes, add another round.", "moves": [ { "name": "Neutral Pull-ups" }, { "name": "Diamond Push-ups" }, { "name": "Ab Wheel Rollouts" }, { "name": "Pike Push-ups" } ] }, { "id": "circuit_b", "name": "Circuit B", "description": "Compact density circuit for maximum efficiency.", "instructions": "Complete all exercises back-to-back in ladder format. One round = 5 reps each → 3 reps each → 2 reps each.", "tips": "Focus on maintaining form while racing the clock. Substitute exercises as needed for your fitness level.", "moves": [ { "name": "Pull-ups" }, { "name": "Dips" }, { "name": "Hanging Leg Raises" }, { "name": "Decline Pike Push-ups" } ] }, { "id": "neck_curl", "name": "Neck Curl", "description": "Anterior neck strengthening.", "instructions": "Using neck harness or manual resistance, perform controlled neck flexion movement.", "tips": "Progressive loading through 4 sets. Last set to near-failure, not complete failure." }, { "id": "neck_extension", "name": "Neck Extension", "description": "Posterior neck strengthening.", "instructions": "Using neck harness or manual resistance, perform controlled neck extension movement.", "tips": "Alternate with neck curls. Focus on controlled movement pattern." }, { "id": "forearm_circuit", "name": "Forearm Circuit", "description": "Complete forearm development and injury prevention.", "instructions": "Perform one set to failure for each of the six forearm movements. Use bands or rice bucket training.", "tips": "This unlocks significant gains and improves wrist/elbow health. Don't skip!", "moves": [ { "name": "Wrist Flexion" }, { "name": "Wrist Extension" }, { "name": "Supination" }, { "name": "Pronation" }, { "name": "Radial Deviation" }, { "name": "Ulnar Deviation" } ] }, { "id": "giant_set_a", "name": "Giant Set A", "description": "Biceps, triceps, and rear delt giant set.", "instructions": "Perform bicep curls → tricep extensions → band pull-aparts back-to-back. Rest 2-3 minutes, then repeat.", "tips": "Aim for muscular failure in the 10-30 rep range for each exercise." }, { "id": "giant_set_b", "name": "Giant Set B", "description": "Same format as Giant Set A with potential exercise variations.", "instructions": "Same structure as Giant Set A. Feel free to substitute similar exercises.", "tips": "Maintain the bicep-tricep-shoulder pattern for balanced development." }, { "id": "tricep_pushdown", "name": "Tricep Pushdown", "description": "High-volume tricep finisher.", "instructions": "One long rest-pause set targeting 100 total reps. Use weight you could normally do for 30-50 reps." } ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+			const dom = {
+                headerTitle: document.getElementById('headerTitle'),
+                headerTagline: document.getElementById('headerTagline'),
+                workoutIndicator: document.getElementById('workoutIndicator'),
+                backBtn: document.getElementById('backBtn'),
+                loading: document.getElementById('loading'),
+                workoutGrid: document.getElementById('workoutGrid'),
+                workoutDetail: document.getElementById('workoutDetail'),
+                workoutDetailContent: document.getElementById('workoutDetailContent'),
+                swipeIndicator: document.getElementById('swipeIndicator'),
+                exerciseModal: document.getElementById('exerciseModal'),
+                modalContent: document.querySelector('.modal-content'), // This line is added
+                modalTitle: document.getElementById('modalTitle'),
+                modalBody: document.getElementById('modalBody'),
+                modalClose: document.getElementById('modalClose'),
+            };
+
+            const state = {
+                currentWorkoutIndex: null,
+                workouts: programData.workouts,
+                touchStartX: 0,
+                touchStartY: 0,
+                swipeThreshold: 50,
+            };
+
+            const findById = (array, id) => array.find(item => item.id === id);
+
+            // 2. UX: Haptic Feedback function
+            const hapticFeedback = () => {
+                if ('vibrate' in navigator) navigator.vibrate(10);
+            };
+
+            const renderWorkoutGrid = () => {
+                dom.workoutGrid.innerHTML = '';
+                state.workouts.forEach((workout, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'workout-card';
+                    card.style.animationDelay = `${index * 80}ms`;
+                    card.dataset.index = index;
+                    // 4. A11y: Add role and tabindex for keyboard navigation
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('tabindex', '0');
+                    card.innerHTML = `<h3>${workout.name}</h3><p class="description">${workout.description}</p><span class="exercise-count">${workout.blocks.length} exercises</span>`;
+                    
+                    card.addEventListener('click', () => showDetailView(index));
+                    card.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') showDetailView(index);
+                    });
+                    
+                    dom.workoutGrid.appendChild(card);
+                });
+                dom.loading.style.display = 'none';
+            };
+            
+            const renderWorkoutDetail = (workoutIndex) => {
+                const workout = state.workouts[workoutIndex];
+                if (!workout) return console.error('Workout not found');
+
+                state.currentWorkoutIndex = workoutIndex;
+                dom.headerTagline.style.opacity = '0';
+                dom.workoutIndicator.textContent = `${workoutIndex + 1} / ${state.workouts.length}`;
+                dom.workoutIndicator.style.opacity = '1';
+                dom.workoutDetailContent.innerHTML = '';
+
+                workout.blocks.forEach(block => {
+                    const exercise = findById(programData.exercises, block.exerciseId);
+                    const scheme = findById(programData.schemes, block.schemeId);
+
+                    // 1. Data: Graceful error handling
+                    if (!exercise || !scheme) {
+                        console.warn(`Data missing for exerciseId: ${block.exerciseId} or schemeId: ${block.schemeId}`);
+                        return;
+                    }
+
+                    const el = document.createElement('div');
+                    el.className = 'exercise-block';
+                    el.dataset.exerciseId = exercise.id;
+                    el.setAttribute('role', 'button');
+                    el.setAttribute('tabindex', '0');
+                    el.innerHTML = `<div class="exercise-title">${exercise.name}</div><div class="exercise-scheme">${scheme.description}</div>`;
+                    
+                    el.addEventListener('click', () => showModal(exercise.id));
+                    el.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') showModal(exercise.id);
+                    });
+                    dom.workoutDetailContent.appendChild(el);
+                });
+                dom.workoutDetail.scrollTop = 0;
+            };
+
+            const renderModal = (exerciseId) => {
+                const exercise = findById(programData.exercises, exerciseId);
+                dom.modalTitle.textContent = exercise.name;
+                
+                let bodyHtml = `<p>${exercise.description}</p>`;
+                if (exercise.instructions) bodyHtml += `<h4>Instructions</h4><p>${exercise.instructions}</p>`;
+                if (exercise.tips) bodyHtml += `<h4>Tips</h4><p>${exercise.tips}</p>`;
+                if (exercise.moves) {
+                     bodyHtml += `<h4>Circuit Moves</h4><ul>${exercise.moves.map(m => `<li>${m.name}</li>`).join('')}</ul>`;
+                }
+                dom.modalBody.innerHTML = bodyHtml;
+                // 4. UX: Scroll modal to top on open
+                dom.modalContent.scrollTop = 0;
+            };
+
+            const showDetailView = (workoutIndex) => {
+                hapticFeedback();
+                renderWorkoutDetail(workoutIndex);
+                dom.workoutDetail.classList.add('active');
+                dom.backBtn.classList.add('visible');
+                
+                dom.swipeIndicator.classList.add('visible');
+                setTimeout(() => dom.swipeIndicator.classList.remove('visible'), 2500);
+            };
+
+            const showGridView = () => {
+                hapticFeedback();
+                dom.workoutDetail.classList.remove('active');
+                dom.backBtn.classList.remove('visible');
+                dom.headerTagline.style.opacity = '1';
+                dom.workoutIndicator.style.opacity = '0';
+                state.currentWorkoutIndex = null;
+            };
+
+            const showModal = (exerciseId) => {
+                hapticFeedback();
+                renderModal(exerciseId);
+                dom.exerciseModal.classList.add('active');
+            };
+
+            const closeModal = () => {
+                dom.exerciseModal.classList.remove('active');
+            };
+
+            // 2. UX: Improved Swipe Gesture Handling
+            const handleTouchStart = (e) => {
+                state.touchStartX = e.touches[0].clientX;
+                state.touchStartY = e.touches[0].clientY;
+            };
+            
+            const handleTouchEnd = (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - state.touchStartX;
+                const deltaY = touchEndY - state.touchStartY;
+
+                // Only trigger swipe if horizontal movement is greater than vertical
+                if (Math.abs(deltaX) < state.swipeThreshold || Math.abs(deltaX) < Math.abs(deltaY)) return;
+
+                hapticFeedback();
+                let nextIndex = state.currentWorkoutIndex;
+                if (deltaX > 0) { // Swipe Right
+                    nextIndex = (state.currentWorkoutIndex - 1 + state.workouts.length) % state.workouts.length;
+                } else { // Swipe Left
+                    nextIndex = (state.currentWorkoutIndex + 1) % state.workouts.length;
+                }
+                renderWorkoutDetail(nextIndex);
+            };
+            
+            const addEventListeners = () => {
+                dom.backBtn.addEventListener('click', showGridView);
+                dom.modalClose.addEventListener('click', closeModal);
+                dom.exerciseModal.addEventListener('click', (e) => { if (e.target === dom.exerciseModal) closeModal(); });
+                
+                dom.workoutDetail.addEventListener('touchstart', handleTouchStart, { passive: true });
+                dom.workoutDetail.addEventListener('touchend', handleTouchEnd, { passive: true });
+                
+                // 4. A11y: Close modal with Escape key
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && dom.exerciseModal.classList.contains('active')) closeModal();
+                });
+            };
+
+            const init = () => {
+                renderWorkoutGrid();
+                addEventListeners();
+            };
+
+            init();
+        });
+    </script>
+</body>
+</html>
